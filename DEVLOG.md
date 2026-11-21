@@ -23,6 +23,7 @@
 | 7 | 2026-11-21 晚 | **建立 git 仓库 + 本开发日志** | `e68173a` `d6f1c54` |
 | 8 | 2026-11-21 夜 | **课表周视图（P0）+ 周次锚点手动设置 + 修 `null` 显示 bug** | 见本节 |
 | 9 | 2026-11-21 夜 | **定位校准为测试软件；打开即登录门禁（5 条必需凭证）** | 见本节 |
+| 10 | 2026-11-21 夜 | **原生登录（学号密码直连 CAS，不跳网页）** | 见本节 |
 
 ---
 
@@ -342,3 +343,88 @@
 - 更新：`AGENTS.md`（§一 定位校准）、`docs/11`（索引 + 下一步）
 - 单测 95 → **113 个**，全绿
 - 截图：`~/Desktop/data/截屏/ubcm-gate-0{1..4}-*.png`
+
+## 轮次 10 · 2026-11-21 21:51 → 22:20 · 原生登录（不跳网页）
+
+**用户需求**
+> 登陆打开网页后会每个网页跳转一遍，实际只登陆数字北中医即可。优化：做成一个简洁的页面，
+> 输入用户名与密码，如果要求验证码就额外出现验证码框。输入完成后用这条数据直接获取所有凭证，
+> 不跳转到任何网页，然后进入主页面。
+
+**先划边界（动了红线相关的东西）**
+
+"输入用户名密码"碰的是红线里的「不存密码」。守住的方式：
+- 密码只作为 `LoginViewModel.login()` 的入参活一次，**`UiState` 里没有 password 字段**（编译期就存不了）
+- 不写 prefs、不写日志、只发往 `cas.bucm.edu.cn`
+- 仍然只是用户本人在自己设备上登自己的号，不为他人登录、不托管
+- 已把这条边界写进 `AGENTS.md` §五，避免下一棒误解成"现在可以存密码了"
+
+**做了什么**
+
+- `DesLegacy.kt`（新，240 行）：把学校 CAS 的 `des.js` **逐行移植**成 Kotlin
+- `CasCrypto.kt`（新）：登录表单三件套 `seal()` → rsa / ul / pl
+- `CasLogin.kt`（新）：取登录页 → 解析 lt/execution → 提交 → 拿 CASTGC；解析服务端错误原话
+- `NativeLogin.kt`（新）：CASTGC → 门户 accessToken（OAuth2 码流）/ 教务 JSESSIONID / 一卡通 / 座位
+- `LoginViewModel.kt`（新）：登录状态机（**无密码字段**）
+- `LoginGateScreen.kt`：改成学号密码表单 + 条件验证码框 + 逐条进度
+- `MainActivity.kt`：删掉上一轮的「跳 4 个网页」串联，只留座位一个网页补登入口
+- `Net.kt`：加 `getBytes()`（验证码图片）
+- 单测 113 → **136**（DES 对拍 12 + CAS 解析 11）
+
+**关键发现**
+
+1. 🔴 **`des.js` 不是标准 DES**。我先用 `javax.crypto` 的 `DES/ECB` 实现，结果对不上。
+   逐步排查：经典向量（key=`133457799BBCDFF1`/pt=`0123456789ABCDEF`）标准 DES 得
+   `85E813540F0AB405`（openssl 验证），`des.js` 得 `CC38B78305003643`；
+   而 IP/FP/E/PC-1/PC-2/P/8 个 S 盒**逐项都是标准的**，且 `des.js` 自身 enc/dec 闭环正常。
+   → 它是**自洽的非标准变体**，只能逐行移植。测试里加了反向断言钉死"不能换成 javax.crypto"。
+2. **`ul`/`pl` 是长度不是值**（`login10.js:153-155`），填成值会直接「用户名或密码错误」。
+3. 🔴 **门户 accessToken 从不下发 cookie** —— 是 `cas.html` 用 JS 自己 `$.cookie()` 写的。
+   纯 native 必须走 OAuth2 码流：
+   `pingcurrent`（拿 authorize URL）→ authorize（带 CASTGC，302 出 code）→ `sems-authc/oauth2/casToken/<code>/bucmnup`。
+   参数来源在 `defaults/js/constant.js`（`gateway_url` / `contextpathAuthc` / `oauth_client_id=bucmnup`）。
+4. **CAS 风控**：连续失败 **15 次锁 10 分钟**。而且 `execution` 每失败一次就推进（e1s1→e1s2），
+   同一份 lt/execution 不能重复提交。
+
+**验证（决定性的一条）**
+
+用**假账号**（99999999999）POST 一次，服务端返回
+「连续登录失败15次，账号将被锁定10分钟，剩余次数15」——
+进的是**密码错误分支而不是参数错误分支**，证明加密格式/字段名/长度字段全对。
+（这一步不需要真实密码，是整轮最有价值的验证。）
+
+其它实测：
+- 用手机里的真实 CASTGC 验 `jwCookie()` → ✅ 拿到 JSESSIONID/jsxsd/SERVERID_jwxt
+- 验 `portalToken()` → ✅ OAuth2 走通，accessToken 长度 927 且与手机已存的一致
+- 验 `seatCookie()` → ❌ 拿不到 ic-cookie（与 docs/13 结论一致）
+- 模拟器零凭证 → ✅ 登录表单渲染正确，验证码框按需隐藏
+- 手机凭证齐全 → ✅ 门禁放行直接进体检页
+
+**坑**
+
+1. **标准 DES 的诱惑**。表全标准、代码结构也像标准 DES，但结果不同 ——
+   差点就直接用 javax.crypto 了。靠"拿 openssl 做第三方仲裁"才定位清楚。
+2. **手机截图全黑**。查 logcat 发现 `performDraw: Not drawing due to screen off` ——
+   是手机息屏了，不是崩溃。先 `input keyevent KEYCODE_WAKEUP` 再截。
+3. `rememberLauncherForActivityResult` 里 `return@` 的 label 写错会编译不过（顺手记）。
+4. 上一轮 `install -r` 保留数据，导致我以为要验证登录页，实际上用户已经登录过、门禁直接放行了 ——
+   验证登录页要显式清 prefs 或者换设备。
+
+**没做的 / 未验证**
+
+- 🔴 **真实账号密码的端到端登录没跑过**。这必须用户本人在手机上做（我不能持有密码）。
+  已验证的是「加密格式被接受」+「四条凭证各自能换」，**没验证「一次完整登录从输入到进体检页」串起来**。
+- **验证码分支没真实触发过**。当前账号登录不需要验证码；代码做了 `captchaRequired` 判断和图片加载，但没遇到真实要求。
+- **座位 `ic-cookie` 仍拿不到**。走完 doAuth 后 `auth/token` 返回 200/0 字节，不带 ic-cookie，
+  但会带出一个 `uniToken` —— 前端拿它还要再换一次，这条没挖完。所以座位上保留「网页补」这一个例外。
+- 密码明文在内存里**无法主动擦除**（Kotlin String 不可变），只能保证不落盘。
+- 登录页 UI 是功能性的，没打磨（用户要求 UI 后排）。
+
+**产出**
+
+- 新文件：`DesLegacy.kt`、`CasCrypto.kt`、`CasLogin.kt`、`NativeLogin.kt`、`LoginViewModel.kt`
+- 新测试：`CasCryptoTest.kt`（12）、`CasLoginTest.kt`（11）
+- 改动：`LoginGateScreen.kt`、`MainActivity.kt`、`Net.kt`、`Session.kt`、`LoginWebViewActivity.kt`
+- 新文档：`docs/16-原生登录.md`
+- 更新：`AGENTS.md`（红线边界细化 + 坑表加 des.js/风控两条）、`docs/11`（索引）
+- 截图：`~/Desktop/data/截屏/ubcm-native-0{1,2,3,4}-*.png`
