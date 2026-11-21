@@ -180,7 +180,12 @@ object DeskFinder {
         }
     }
 
-    private fun findInRoom(seats: List<SeatApi.Seat>, minSize: Int, slot: TimeSlot?): List<Desk> {
+    private fun findInRoom(
+        seats: List<SeatApi.Seat>,
+        minSize: Int,
+        slot: TimeSlot?,
+        requireFree: Boolean = true,
+    ): List<Desk> {
         // 去掉图上没定位的座位（学校数据里 devProp=0/坐标 0,0 的"未放置座位"）
         val valid = seats.filter { !(it.x == 0.0 && it.y == 0.0) }
         if (valid.isEmpty()) return emptyList()
@@ -209,20 +214,41 @@ object DeskFinder {
             val rows = g.map { it.y }.toSet().size
             val neat = rows == 1 || (cols == 2 && g.size == cols * rows)
             if (neat) {
-                flush(desks, g, minSize, slot)
+                flush(desks, g, minSize, slot, requireFree)
             } else {
                 // 单座列 / 不规整 → 拆回单座，交给 minSize 过滤
-                for (s in g) flush(desks, listOf(s), minSize, slot)
+                for (s in g) flush(desks, listOf(s), minSize, slot, requireFree)
             }
         }
         return desks
     }
 
-    private fun flush(into: MutableList<Desk>, group: List<SeatApi.Seat>, minSize: Int, slot: TimeSlot?) {
+    private fun flush(
+        into: MutableList<Desk>,
+        group: List<SeatApi.Seat>,
+        minSize: Int,
+        slot: TimeSlot?,
+        requireFree: Boolean = true,
+    ) {
         if (group.size < minSize) return
-        if (!group.all { freeAt(it, slot) }) return
+        if (requireFree && !group.all { freeAt(it, slot) }) return
         val first = group.first()
         into.add(Desk(group.toList(), first.roomId, first.roomName, first.labName))
+    }
+
+    /**
+     * **只做分组，不过滤**（不要求全空、不设最小座位数）。
+     *
+     * 用途：画「整个区域的座位图」时要把**所有**座位都画出来（占用的也要画成红色），
+     * 而 [findFreeDesks] 只返回全空的桌 —— 用它画图会漏掉一半座位。
+     *
+     * 仍然按 roomId 分组，各区域坐标系独立。
+     */
+    fun groupAll(seats: List<SeatApi.Seat>): List<Desk> {
+        if (seats.isEmpty()) return emptyList()
+        return seats.groupBy { it.roomId }.values.flatMap { list ->
+            findInRoom(list, minSize = 1, slot = null, requireFree = false)
+        }
     }
 
     /** 区域摘要：总座 / 空座 / 空桌数（4 连座以上） */

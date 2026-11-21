@@ -96,6 +96,8 @@ fun LibraryScreen(
                     }
                 }
 
+                item { SeatMapSection(st, vm) }
+
                 item { FreeDeskSection(st, onOpenRoom, vm) }
 
                 if (st.floors.isNotEmpty()) {
@@ -780,4 +782,228 @@ private fun Footer(st: LibraryState) {
         fontSize = 10.sp, color = UbcmColors.Ash, lineHeight = 15.sp,
         modifier = Modifier.padding(top = 4.dp),
     )
+}
+
+/**
+ * 座位图区块：**按官方布局还原整个区域**。
+ *
+ * 与「空桌」列表的分工：
+ * - 空桌列表 = 告诉你「哪几张桌子空着」（结果导向）
+ * - 座位图   = 让你看见「整个区域长什么样」（空间导向，能自己挑位置）
+ *
+ * 交互：拖动平移 / 双指缩放（手机上区域图按原比例铺不下）；
+ * 点座位 → 底部出现确认面板 → 确认后走三段式预约。
+ */
+@Composable
+private fun SeatMapSection(st: LibraryState, vm: LibraryViewModel) {
+    val areas = st.floors.flatMap { f -> f.areas.map { f.name to it } }
+    var pickedSeat by remember { mutableStateOf<SeatApi.Seat?>(null) }
+
+    Column(
+        Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(UbcmColors.CardWhite)
+            .border(1.dp, UbcmColors.Line, RoundedCornerShape(16.dp))
+            .padding(15.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("座位图", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = UbcmColors.Cinnabar, letterSpacing = 1.4.sp)
+            Spacer(Modifier.width(8.dp))
+            Text(
+                if (st.mapDate.isNotBlank()) "约 ${mdText(st.mapDate)}" else "点区域加载",
+                fontSize = 10.sp, color = UbcmColors.Ash, fontFamily = FontFamily.Monospace,
+            )
+            Spacer(Modifier.weight(1f))
+            if (st.mapLoading) Text("加载中…", fontSize = 10.sp, color = UbcmColors.Amber)
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        // 区域选择
+        FlowRowSimple(
+            items = areas,
+            keyOf = { it.second.id },
+            labelOf = { "${it.first}·${it.second.name}" },
+            selectedId = st.mapRoomId,
+            onPick = { pair -> vm.loadMapRoom(pair.second.id, pair.second.name); pickedSeat = null },
+        )
+
+        if (st.mapSeats.isEmpty() && st.mapError == null && !st.mapLoading) {
+            Spacer(Modifier.height(8.dp))
+            Text("选一个区域就能看到座位图", fontSize = 11.sp, color = UbcmColors.Ash)
+            return@Column
+        }
+
+        st.mapError?.let {
+            Spacer(Modifier.height(8.dp))
+            Text(it, fontSize = 11.sp, color = UbcmColors.Cinnabar, lineHeight = 15.sp)
+        }
+
+        if (st.mapSeats.isNotEmpty()) {
+            Spacer(Modifier.height(10.dp))
+
+            // 筛选：桌子类型
+            Text("桌子类型", fontSize = 10.sp, color = UbcmColors.InkSoft)
+            Spacer(Modifier.height(4.dp))
+            FlowRowSimple(
+                items = SeatFilter.DeskType.entries,
+                keyOf = { it.ordinal },
+                labelOf = { "${it.label} ${it.rangeText()}" },
+                selectedId = st.filterType.ordinal,
+                onPick = { vm.setFilterType(it) },
+            )
+
+            Spacer(Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("只显示整桌全空", fontSize = 11.sp, color = UbcmColors.InkSoft)
+                Spacer(Modifier.width(8.dp))
+                Box(
+                    Modifier.clip(RoundedCornerShape(6.dp))
+                        .background(if (st.filterOnlyFree) UbcmColors.Jade else UbcmColors.Line)
+                        .clickable { vm.setFilterOnlyFree(!st.filterOnlyFree) }
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        if (st.filterOnlyFree) "开" else "关",
+                        fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White,
+                    )
+                }
+                Spacer(Modifier.weight(1f))
+                val hit = remember(st.mapSeats, st.filterType, st.filterOnlyFree, st.slotStart, st.slotEnd) {
+                    vm.highlightedRanges().size
+                }
+                Text("命中 $hit 桌", fontSize = 10.sp, color = UbcmColors.Jade, fontWeight = FontWeight.SemiBold)
+            }
+
+            Spacer(Modifier.height(8.dp))
+            RoomSeatMap(
+                seats = st.mapSeats,
+                criteria = SeatFilter.Criteria(st.slotStart, st.slotEnd, st.filterType, st.filterOnlyFree),
+                highlighted = remember(st.mapSeats, st.filterType, st.filterOnlyFree, st.slotStart, st.slotEnd) {
+                    vm.highlightedRanges()
+                },
+                onSeatClick = { pickedSeat = it },
+            )
+
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "拖动平移 · 双指缩放 · 双击复位 · 点座位预约",
+                fontSize = 10.sp, color = UbcmColors.Ash,
+            )
+
+
+            // 点击座位后的确认面板
+            pickedSeat?.let { seat ->
+                Spacer(Modifier.height(10.dp))
+                ReserveConfirmPanel(
+                    seat = seat,
+                    st = st,
+                    onCancel = { pickedSeat = null },
+                    onConfirm = {
+                        vm.reserveSeat(seat, DeskFinder.TimeSlot(st.slotStart, st.slotEnd))
+                    },
+                )
+            }
+        }
+    }
+}
+
+/** 预约确认：**用户必须自己点确认**，不做自动选座（那是抢座，红线） */
+@Composable
+private fun ReserveConfirmPanel(
+    seat: SeatApi.Seat,
+    st: LibraryState,
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    Column(
+        Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(UbcmColors.Paper)
+            .border(1.dp, UbcmColors.Line, RoundedCornerShape(12.dp))
+            .padding(12.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(seat.name, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = UbcmColors.Ink)
+                Text(
+                    "${seat.roomName} · ${clockText(st.slotStart)}–${clockText(st.slotEnd)}",
+                    fontSize = 11.sp, color = UbcmColors.InkSoft,
+                )
+            }
+            Text(
+                "取消",
+                fontSize = 11.sp, color = UbcmColors.Ash,
+                modifier = Modifier.clip(RoundedCornerShape(6.dp)).clickable { onCancel() }
+                    .padding(horizontal = 8.dp, vertical = 5.dp),
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+
+        st.reserveMessage?.let { m ->
+            Text(
+                m,
+                fontSize = 11.sp,
+                color = if (st.reserveOk) UbcmColors.Jade else UbcmColors.Amber,
+                lineHeight = 15.sp,
+            )
+            Spacer(Modifier.height(6.dp))
+        }
+
+        Box(
+            Modifier.fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(if (st.reserving) UbcmColors.Ink.copy(alpha = .35f) else UbcmColors.Cinnabar)
+                .clickable(enabled = !st.reserving) { onConfirm() }
+                .padding(vertical = 11.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                if (st.reserving) "预约中…" else "确认预约",
+                fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White,
+            )
+        }
+        Spacer(Modifier.height(6.dp))
+        Text(
+            "预约会真占座，到时不去会记违约。确认前请核对座位和时段。",
+            fontSize = 9.sp, color = UbcmColors.Ash, lineHeight = 13.sp,
+        )
+    }
+}
+
+private fun clockText(min: Int): String = "%02d:%02d".format(min / 60, min % 60)
+
+/** 简单的横向可换行 chip 组（不引 FlowRow，保持零依赖） */
+@Composable
+private fun <T> FlowRowSimple(
+    items: List<T>,
+    keyOf: (T) -> Int,
+    labelOf: (T) -> String,
+    selectedId: Int?,
+    onPick: (T) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+        items.chunked(3).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                row.forEach { it2 ->
+                    val sel = keyOf(it2) == selectedId
+                    Box(
+                        Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (sel) UbcmColors.Ink else UbcmColors.Paper)
+                            .border(1.dp, if (sel) UbcmColors.Ink else UbcmColors.Line, RoundedCornerShape(8.dp))
+                            .clickable { onPick(it2) }
+                            .padding(horizontal = 9.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            labelOf(it2),
+                            fontSize = 10.sp,
+                            fontWeight = if (sel) FontWeight.Bold else FontWeight.Normal,
+                            color = if (sel) Color.White else UbcmColors.InkSoft,
+                        )
+                    }
+                }
+            }
+        }
+    }
 }

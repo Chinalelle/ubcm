@@ -42,6 +42,16 @@ data class LibraryState(
     /** 用户选择的使用时段（当天分钟数），默认 08:30–22:00 */
     val slotStart: Int = 8 * 60 + 30,
     val slotEnd: Int = 22 * 60,
+    /** 座位图：当前选中区域的全部座位 + 日期 */
+    val mapSeats: List<SeatApi.Seat> = emptyList(),
+    val mapRoomId: Int? = null,
+    val mapRoomName: String = "",
+    val mapDate: String = "",
+    val mapLoading: Boolean = false,
+    val mapError: String? = null,
+    /** 筛选：桌子类型 + 是否只要全空 */
+    val filterType: SeatFilter.DeskType = SeatFilter.DeskType.ALL,
+    val filterOnlyFree: Boolean = true,
     /** 预约流程状态 */
     val reserving: Boolean = false,
     val reserveMessage: String? = null,
@@ -179,6 +189,67 @@ class LibraryViewModel(app: Application) : AndroidViewModel(app) {
      * 日期默认取**明天** —— 学校规则 `earliestResvTime=1440`（最早提前 24 小时），
      * 当日约不了，明天才是真正可约的第一天。
      */
+    /**
+     * 拉某个区域的**全部座位**用于座位图渲染。
+     *
+     * 与 [loadDesks] 的区别：那个是「找空桌」（只关心全空的），这个是「画整张图」
+     * （占用的也要画成红色）。所以单独存一份，互不干扰。
+     */
+    fun loadMapRoom(roomId: Int, roomName: String = "") {
+        if (_state.value.mapLoading) return
+        val ctx = getApplication<Application>()
+        val cookie = Session.loadSeatCookie(ctx)
+        if (cookie.isNullOrBlank()) {
+            _state.value = _state.value.copy(needLogin = true)
+            return
+        }
+        val date = java.time.LocalDate.now().plusDays(1)
+            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"))
+        _state.value = _state.value.copy(
+            mapLoading = true, mapRoomId = roomId,
+            mapRoomName = roomName, mapDate = date, mapError = null,
+        )
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                var body = SeatApi.seatMap(cookie, date, roomId).body
+                var list = SeatApi.parseSeats(body)
+                // 服务端限流：<300ms 会被拒，隔 1.2s 再试一次
+                if (list.isEmpty()) {
+                    kotlinx.coroutines.delay(1200)
+                    body = SeatApi.seatMap(cookie, date, roomId).body
+                    list = SeatApi.parseSeats(body)
+                }
+                _state.value = _state.value.copy(
+                    mapSeats = list,
+                    mapLoading = false,
+                    mapError = if (list.isEmpty()) "这个区域没有取到座位（可能接口限流，稍后再试）" else null,
+                )
+            } catch (e: Exception) {
+                _state.value = _state.value.copy(
+                    mapLoading = false,
+                    mapError = "${e.javaClass.simpleName}: ${e.message}",
+                )
+            }
+        }
+    }
+
+    fun setFilterType(t: SeatFilter.DeskType) {
+        _state.value = _state.value.copy(filterType = t)
+    }
+
+    fun setFilterOnlyFree(v: Boolean) {
+        _state.value = _state.value.copy(filterOnlyFree = v)
+    }
+
+    /** 当前筛选条件下命中的桌（座位图上要高亮） */
+    fun highlightedRanges(): Set<String> {
+        val st = _state.value
+        if (st.mapSeats.isEmpty()) return emptySet()
+        val criteria = SeatFilter.Criteria(st.slotStart, st.slotEnd, st.filterType, st.filterOnlyFree)
+        val desks = DeskFinder.findFreeDesks(st.mapSeats, minSize = 1, slot = criteria.slot)
+        return SeatFilter.apply(desks, criteria).map { it.nameRange }.toSet()
+    }
+
     fun loadDesks(roomIds: List<Int>, minDeskSize: Int = 4) {
         if (_state.value.desksLoading || roomIds.isEmpty()) return
         val slot = DeskFinder.TimeSlot(_state.value.slotStart, _state.value.slotEnd)
