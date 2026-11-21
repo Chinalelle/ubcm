@@ -21,6 +21,7 @@
 | 5 | 2026-11-21 凌晨 | 完整流程：时段 → 空桌 → 简略图 → 预约 | 同基线 |
 | 6 | 2026-11-21 凌晨 | 座位缩略图（Canvas 真实坐标） | 同基线 |
 | 7 | 2026-11-21 晚 | **建立 git 仓库 + 本开发日志** | `e68173a` `d6f1c54` |
+| 8 | 2026-11-21 夜 | **课表周视图（P0）+ 周次锚点手动设置 + 修 `null` 显示 bug** | 见本节 |
 
 ---
 
@@ -179,3 +180,84 @@
 ---
 
 <!-- 新的一轮请从这里往下追加，格式参考上面各节 -->
+
+## 轮次 8 · 2026-11-21 21:16 → 21:40 · 课表周视图（P0）
+
+**用户需求**：以接棒开发者身份接手，按 `AGENTS.md` 的下一步优先级推进。本轮取 **P0 课表周视图**。
+
+**做了什么**
+
+- 新增 `WeekGrid.kt`（纯逻辑，不依赖 Android）：
+  - 按周切成网格；周末列判定（整学期有没有周六周日的课，有才画 7 列）
+  - **同天冲突分栏**（区间图贪心着色），跨天绝不一起算
+  - `WeekGeometry`：节次 → dp 的三个几何函数
+  - `weekRange` / `maxPeriod` / `periodCount`、周次压缩显示 `compressWeeks`
+- 新增 `WeekScreen.kt`（Compose）：节次轴 + 5/7 列 + **绝对定位课程块**（`offset` + `height` 由节次算出）
+  - 周切换（‹ › / 回到本周），周次默认**跟随今天**，手动翻走后停住（`pinnedWeek`）
+  - 底部详情卡（课名/节次/起止/教室/教师/班级/周次），点块开关
+  - 左侧 3dp 实色竖条做课程色标识
+- 新增 `WeekGridTest.kt`：**59 个单测**（网格 38 + 压缩 9 + 清洗 5 + 锚点 7）
+- `Timetable.kt` 新增 `validateFirstWeekMonday`（必须是周一）与 `cleanFieldText`（`"null"` 归一）
+- `TimetableStore.decode`、`JwApi.parseCoursesJson` 的文本字段过 `cleanFieldText`（**老缓存自愈**）
+- `HomeViewModel`：`HomeState` 加 `sessions/slots/firstWeekMonday/pinnedWeek`，加 `selectWeek`/`shiftWeek`，
+  `setFirstWeekMonday` 改成返回校验错误
+- `HomeScreen`：主卡与「今天」卡可点进周视图，顶部加「课表」入口
+- `MainActivity`：`Page` 加 `WEEK`（四页）
+- **`TestTimetable.kt` 夹具校准**：与平板实机缓存比对，发现 3 处偏差，修到 34/34 零差异
+- 单测 36 → **95 个**，全绿
+
+**关键发现**
+
+1. 🔴 **`org.json` 的 `optString` 对 JSON null 返回字符串 `"null"`**。
+   真机上「思想政治理论课Ⅰ」的教室显示成 `null`。而且**教务返回的 `jx0601mc` 正常就是 null**
+   （思政第 12–15 周没排教室），所以这不是脏数据防御，是主路径。
+   修法：`cleanFieldText` 整串匹配（**不能 contains**，否则 `nullroom` 这类正常词被误杀），
+   解析层与缓存解码层都过一遍，老缓存不用重拉就自愈。
+
+2. 🔴 **测试夹具与真实数据有偏差，而它号称"由真实课表生成"**。
+   拿平板 `files/timetable.json`（34 条）逐条比对，3 处不一致：
+   - 人工智能概论 周一 9–11：真实是**两条**（`4-10,13,14` + `11,12`），夹具合成一条 `4-14`
+   - 思政 周三 3–4：真实**缺第 10 周**（国庆调课），夹具写成 4–17 连续
+   - 思政 周二 5–6（良东150教，仅第 12 周）：夹具**完全漏了**
+   已校准并补断言（`第10周周三没有思政课`、`人工智能概论拆成两段周次后仍只画一块`）。
+   **教训：夹具是真实数据的子集 ≠ 夹具是齐全的。**
+
+3. 课程色不能只靠淡背景区分：暖白纸面风格下 `alpha=.13` 让「中医基础学（琥珀）」和
+   「正常人体学Ⅰ（红）」几乎同色。加 3dp 实色竖条后才一眼能认。
+
+4. 分栏用 `Math.floorMod(hashCode, n)` 而不是 `abs()` —— `Int.MIN_VALUE` 的 `abs` 溢出成负数，直接下标越界。
+
+**坑**
+
+- **平板限宽 640dp 对课表是错的**。首页是卡片流，640dp 合理；课表是横向密集内容，
+  在 3408px 平板上两边空出大半屏、7 列被挤成细条。周视图单独用 1100dp。
+- **`verticalScroll` 上不能加 `fillMaxSize()`**：会把高度钉死成视口高度，内容滚不动。
+  要 `fillMaxWidth()` 让内容自然高度。
+- **`const val` 不能是 `Dp`**（`AXIS_W = 40.dp`）→ 只能 `private val`。
+- `remember(week) { picked = null }` 里做副作用赋值不对，改 `LaunchedEffect(week)`。
+- 锚点错误文案里写了 Markdown `**周一**`，Compose 不解析，真机上直接显示星号 → 去掉。
+- 模拟器注入课表缓存：`run-as cp /sdcard/t.json` 会 `Permission denied`（scoped storage），
+  必须走 `/data/local/tmp/t.json`。
+
+**没做的 / 未验证**
+
+- **周次锚点自动化没做**。只做了手动设置（校验周一 + 当场拦截非法值）。
+  换学期仍需要人去点一下，否则周视图整张表全错。
+- **周次锚点的手动流程只在模拟器/平板上验证到"拒绝非法值"**，
+  **没有验证"保存合法值后周次真的变了"** —— 因为一旦保存就会写进 prefs，
+  当时没有立刻恢复的手段（虽然再改回去即可，但没测）。
+- **周末 7 列的手机布局未实测**：岐黄班整学期没有周末课，所以一直走 5 列分支。
+  有周末课时的窄屏表现只有推断，没有证据。
+- **调课/停课通知未处理**：教务里存在但没有接口，周视图只反映静态排课。
+- 罗马数字 `Ⅰ`（U+2160）在部分字体下渲染得像 `I`/`！`，未做字形替换（不是 bug，是字体）。
+- 未提交过任何写操作（本轮全是只读 + 本地计算）。
+
+**产出**
+
+- 新文件：`app-android/app/src/main/java/com/kang/ubcm/WeekGrid.kt`、`WeekScreen.kt`
+- 新测试：`app/src/test/java/com/kang/ubcm/WeekGridTest.kt`（59 个）
+- 改动：`Timetable.kt`、`TimetableStore.kt`、`JwApi.kt`、`HomeViewModel.kt`、`HomeScreen.kt`、`MainActivity.kt`、`TestTimetable.kt`
+- 新文档：[`docs/14-课表周视图.md`](docs/14-课表周视图.md)
+- 更新：[`docs/11-交接文档.md`](docs/11-交接文档.md)（索引 + 下一步）、[`AGENTS.md`](AGENTS.md)（坑表 9 → 12 条）
+- 真机截图：`~/Desktop/data/截屏/ubcm-week-0{1..5}-*.png`（平板）、`ubcm-week-1{0,1}-*.png`（手机）
+

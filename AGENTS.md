@@ -125,6 +125,9 @@ export ANDROID_HOME=$HOME/android-sdk
 | 座位接口限流 | 请求间隔 <300ms 会被拒，要 ≥350ms |
 | 图书馆路由 | 移动端 Vue Router **没有** `/ic/` 前缀 |
 | 学校页面 hash | 冷启动不认 URL hash，要加载完延迟 2.5s 再 `$router.push()` |
+| `optString` 的 null | `org.json` 的 `optString` 碰到 JSON null 返回**字符串 `"null"`**，必须过 `cleanFieldText`（教务的教室字段正常就是 null） |
+| 测试夹具 | 夹具是真实数据的**子集 ≠ 齐全**。`TestTimetable` 曾漏 1 条、错 2 条，已用平板实机缓存校准到 34/34；改夹具前先比对 |
+| 跨节排版 | 1–3 节必须按 **3 个行高绝对排版**，按「两节一组」分组会把它切成 1–2 + 3 |
 
 ---
 
