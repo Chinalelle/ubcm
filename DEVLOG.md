@@ -25,6 +25,7 @@
 | 9 | 2026-11-21 夜 | **定位校准为测试软件；打开即登录门禁（5 条必需凭证）** | 见本节 |
 | 10 | 2026-11-21 夜 | **原生登录（学号密码直连 CAS，不跳网页）** | 见本节 |
 | 11 | 2026-11-21 夜 | **退出登录（一键清空凭证回登录页）** | 见本节 |
+| 12 | 2026-11-21 夜 | **座位 ic-cookie 用不可见 WebView 静默补齐（登录 6/6 全 native 体感）** | 见本节 |
 
 ---
 
@@ -472,3 +473,61 @@
 - 改动：`Session.kt`、`LoginViewModel.kt`、`MainActivity.kt`、`HomeScreen.kt`
 - 文档：`docs/15-登录门禁.md` §八
 - 截图：`~/Desktop/data/截屏/ubcm-logout-01-confirm.png`、`ubcm-logout-02-backtologin.png`
+
+## 轮次 12 · 2026-11-21 23:10 → 23:35 · 座位 ic-cookie 静默补齐
+
+**用户需求**
+> 真机测试了下，现在显示图书馆座位没有cookie
+
+（这是上一轮原生登录唯一没打通的一条。用户真机跑通了其余 5 条：门户 927 字节、教务会话、
+一卡通 openid 全拿到了 —— 也补齐了轮次 10 里"端到端没验证"的缺口。）
+
+**做了什么**
+
+- 新增 `SilentSeatLoginActivity`：**1×1 像素、透明、无动画**的 WebView，
+  预置 CASTGC → 加载 `kjyy/mobile.html` → SPA 自动单点 → 轮询抓 `ic-cookie` → 立即退出（25s 超时）
+- `themes.xml` 加 `Theme.Ubcm.Silent`（透明、disablePreview、无动画）
+- `AndroidManifest` 注册，`noHistory` + `excludeFromRecents`
+- `NativeLogin.Outcome` 加 `needSeat`；登录成功后若座位缺，**自动**起这个静默页（只一次）
+- 「网页补」按钮也改成触发静默补齐（用户点一下，后台完成，仍看不到网页）
+- 文档：`docs/16` 加 §八；`docs/13` §3.2 更正"唯一路径=WebView"的隐含意思
+
+**关键发现**
+
+1. **纯 native 确实做不到**，本轮又补试 7 种，全失败：
+   `ic-cookie=<uniToken>` / `uniToken=<uniToken>` / `Authorization: Bearer` / `Authorization:` /
+   `uni-token` 头 / `token` 头 → 全部 `code:300 用户未登录`；
+   保持完整 cookie jar 重跑 doAuth → 全程零 cookie；
+   `POST auth/token` → 405。
+   `uniToken` 解 gzip 后只是身份令牌（`loginName`/`iss=unifound`/`exp`），不能替代 ic-cookie。
+2. **但只差"让 SPA 跑一次"**。1×1 透明 WebView + 预置 CASTGC 就够了：
+   实测约 **12 秒**拿到 `ic-cookie`（长度 36、UUID 形态，与 docs/13 记录一致）。
+3. 用拿到的 cookie 打接口全部通过：`userInfo` → `code:0`（pid=学号、accNo=53247）、
+   `seatMenu` → 二层 282 座、`reserve` → "预约日期不能为空"（参数没给全，符合预期）。
+   **证明 cookie 是真能用的，不只是存下来了。**
+4. WebView 必须**可见但极小且透明**。设 `INVISIBLE/GONE` 有被系统暂停渲染的风险，
+   JS 可能不执行。
+
+**坑**
+
+- 一开始用 `curl -L` 一把跟完，把中间跳的 `Set-Cookie` 糊掉了。
+  改成不用 `-L`、逐跳打印 http/Location/Set-Cookie，才发现"全程零 cookie"这个事实。
+- `auth/token` 的 URL 是 `/ic-web//auth/token`（双斜杠），试了单斜杠也一样，说明不是路径问题。
+- 手机前台的 `topResumedActivity` 全程是 `MainActivity` —— 这是"静默"成功的判据，
+  比截图更可靠（截图那一刻可能正好在转场）。
+
+**没做的 / 未验证**
+
+- **登录后的自动触发没实测**。我是点「网页补」手动触发的（同一条代码路径）。
+  自动触发需要用户重新登录一次真密码才能验。
+- 静默页失败时的表现没实测（CASTGC 过期 / 学校加人机验证时会安静失败，座位仍标「缺」）。
+- 静默补齐全过程约 10–12 秒，期间登录页只有原来的状态文字，**没有"正在补座位"的提示** ——
+  用户可能觉得卡住了。这个 UX 没补。
+- 座位补齐后**没有自动刷新**图书馆页面的数据（进图书馆时才拉）。
+
+**产出**
+
+- 新文件：`SilentSeatLoginActivity.kt`
+- 改动：`themes.xml`、`AndroidManifest.xml`、`NativeLogin.kt`、`MainActivity.kt`
+- 文档：`docs/16-原生登录.md` §八、`docs/13-图书馆座位模块.md` §3.2 更正
+- 截图：`~/Desktop/data/截屏/ubcm-seat-01-silent-ok.png`

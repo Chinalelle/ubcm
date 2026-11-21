@@ -179,6 +179,13 @@ object NativeLogin {
         /** 逐条进度（给人看） */
         val steps: List<Step>,
         val log: String,
+        /**
+         * 座位 `ic-cookie` 没拿到。
+         *
+         * 它不是靠 HTTP 能补的（见 docs/13 §3.2），只能让前端 SPA 跑一次 ——
+         * 调用方看到这个标记就去起 [SilentSeatLoginActivity]（不可见 WebView）。
+         */
+        val needSeat: Boolean = false,
     )
 
     data class Step(val label: String, val ok: Boolean, val detail: String = "")
@@ -220,6 +227,6 @@ object NativeLogin {
         steps += Step("图书馆座位", seat != null, seat?.let { "${it.length} 字节" } ?: "未拿到（可能需要网页登录一次）")
 
         val ok = steps.count { it.ok } >= 4
-        return Outcome(ok, steps, log.toString())
+        return Outcome(ok, steps, log.toString(), needSeat = seat == null)
     }
 }

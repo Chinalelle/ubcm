@@ -37,5 +37,12 @@
             android:exported="false"
             android:label="登录"
             android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".SilentSeatLoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Ubcm.Silent"
+            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
     </application>
 </manifest>

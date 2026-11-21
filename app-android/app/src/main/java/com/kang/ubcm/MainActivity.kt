@@ -94,12 +94,25 @@ private fun AppRoot() {
     val loginVm: LoginViewModel = viewModel()
     val loginState by loginVm.state.collectAsStateWithLifecycle()
     var gateKey by remember { mutableStateOf(0) }
+    // 静默补座位只自动跑一次，避免拿不到时反复弹
+    var silentSeatTried by remember { mutableStateOf(false) }
 
     val audit = remember(gateKey) { CredentialGate.audit(readCredentialSnapshot(ctx)) }
 
+    // 座位 ic-cookie 拿不到纯 native 版本，只能让前端 SPA 跑一次（不可见 WebView）
+    val silentSeatLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { gateKey++ }
+
     // 换凭证跑完就重读 Session：齐了会自动切到主内容
     LaunchedEffect(loginState.steps) {
-        if (loginState.steps.isNotEmpty()) gateKey++
+        if (loginState.steps.isEmpty()) return@LaunchedEffect
+        gateKey++
+        val seatStep = loginState.steps.firstOrNull { it.label == "图书馆座位" }
+        if (seatStep != null && !seatStep.ok && !silentSeatTried) {
+            silentSeatTried = true
+            silentSeatLauncher.launch(SilentSeatLoginActivity.newIntent(ctx))
+        }
     }
 
     // 座位用网页补登（唯一保留的例外），回来重读
@@ -125,10 +138,10 @@ private fun AppRoot() {
                 else if (openid.isNotBlank()) Session.saveEcardOpenid(ctx, openid)
                 gateKey++
             },
+            // 座位这一条：后台不可见 WebView 补齐（用户看不到网页）。
+            // 拿不到再让他走可见的网页登录 —— 那是最后的兜底。
             onWebLoginSeat = {
-                seatLauncher.launch(
-                    LoginWebViewActivity.newIntent(ctx, LoginWebViewActivity.Target.SEAT)
-                )
+                silentSeatLauncher.launch(SilentSeatLoginActivity.newIntent(ctx))
             },
         )
         return

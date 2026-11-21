@@ -5,4 +5,14 @@
         <item name="android:navigationBarColor">#FBF7F0</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
+
+    <!-- 不可见的座位凭证补齐页：全透明、无动画、不抢焦点 -->
+    <style name="Theme.Ubcm.Silent" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
 </resources>
