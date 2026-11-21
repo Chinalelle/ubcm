@@ -3,6 +3,8 @@ package com.kang.ubcm
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -67,17 +69,96 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * 四个页面：首页（聚合卡片，默认）/ 课表周视图 / 图书馆 / 数据体检页（探针 + 登录面板）。
+ * 四个页面：首页（聚合卡片）/ 课表周视图 / 图书馆 / 数据体检页（探针 + 登录面板）。
  * 不引 Navigation 库 —— 四个页面一个状态位就够，保持零依赖。
+ *
+ * ⚠️ 这些都**在登录门禁之后**：凭证不齐时根本走不到这里（见 [AppRoot]）。
  */
 private enum class Page { HOME, WEEK, LIBRARY, PROBE }
 
+/**
+ * 根组件 = **登录门禁** + 门禁后的主内容。
+ *
+ * 定位（2026-11-21 用户明确）：这是测试软件，用来验底层接口和算法，不是产品。
+ * 所以打开第一件事是「凭证齐不齐」，缺任何一条必需凭证都强制留在登录页。
+ *
+ * 登录页的「一键补全」会按 PORTAL → JW → ECARD → SEAT 顺序自动串起来：
+ * 门户登录时顺带存下 CASTGC，后面三个目标靠 CAS 单点基本自动过。
+ * 每返回一次就重读 Session 判断，只自动跑一轮（避免某个站点挂掉时无限弹登录）。
+ */
 @Composable
 private fun AppRoot() {
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    var gateKey by remember { mutableStateOf(0) }
+    var autoMode by remember { mutableStateOf(false) }
+    var lastTried by remember { mutableStateOf<String?>(null) }
+    var pendingLaunch by remember { mutableStateOf<String?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { res ->
+        gateKey++     // 无论成功与否都重读一次：cookie 可能已经存进去了
+        if (!autoMode) return@rememberLauncherForActivityResult
+        val next = CredentialGate.audit(readCredentialSnapshot(ctx)).nextTarget
+        if (res.resultCode == android.app.Activity.RESULT_OK && next != null && next != lastTried) {
+            lastTried = next
+            // 不能在 launcher 自己的回调里引用 launcher（val 未初始化），
+            // 所以只是打个标记，由下面的 LaunchedEffect 真正启动
+            pendingLaunch = next
+        } else {
+            // 用户按返回键退出 / 同一个目标补不动 → 停下，别把人困在弹窗循环里
+            autoMode = false
+        }
+    }
+
+    LaunchedEffect(pendingLaunch) {
+        val name = pendingLaunch ?: return@LaunchedEffect
+        pendingLaunch = null
+        launcher.launch(LoginWebViewActivity.newIntent(ctx, LoginWebViewActivity.Target.of(name)))
+    }
+
+    val audit = remember(gateKey) { CredentialGate.audit(readCredentialSnapshot(ctx)) }
+
+    if (!audit.allOk) {
+        LoginGateScreen(
+            audit = audit,
+            onLoginTarget = { name ->
+                autoMode = false
+                launcher.launch(LoginWebViewActivity.newIntent(ctx, LoginWebViewActivity.Target.of(name)))
+            },
+            onAutoFill = {
+                val next = CredentialGate.audit(readCredentialSnapshot(ctx)).nextTarget
+                if (next != null) {
+                    autoMode = true
+                    lastTried = next
+                    launcher.launch(LoginWebViewActivity.newIntent(ctx, LoginWebViewActivity.Target.of(next)))
+                }
+            },
+            onRecheck = { gateKey++ },
+            onSaveManual = { jwt, jw, castgc, seat, ecard, openid ->
+                // 空着的字段不动，只覆盖用户真的粘了东西的那些
+                if (jwt.isNotBlank()) Session.saveToken(ctx, jwt)
+                if (jw.isNotBlank()) Session.saveJwSession(ctx, jw)
+                if (castgc.isNotBlank()) Session.saveCastgc(ctx, castgc)
+                if (seat.isNotBlank()) Session.saveSeatCookie(ctx, seat)
+                if (ecard.isNotBlank()) Session.saveEcard(ctx, ecard, openid.ifBlank { null })
+                else if (openid.isNotBlank()) Session.saveEcardOpenid(ctx, openid)
+                gateKey++
+            },
+        )
+        return
+    }
+
+    MainContent()
+}
+
+@Composable
+private fun MainContent() {
     val homeVm: HomeViewModel = viewModel()
     val probeVm: ProbeViewModel = viewModel()
     val libVm: LibraryViewModel = viewModel()
-    var page by remember { mutableStateOf(Page.HOME) }
+    // 测试软件落到「数据体检」而不是首页：这里有 18 个探针，是真正要看的东西
+    var page by remember { mutableStateOf(Page.PROBE) }
     var showAuth by remember { mutableStateOf(false) }
     val ctx = androidx.compose.ui.platform.LocalContext.current
 

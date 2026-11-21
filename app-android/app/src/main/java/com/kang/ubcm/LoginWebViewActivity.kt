@@ -75,8 +75,12 @@ class LoginWebViewActivity : ComponentActivity() {
 
     companion object {
         private const val EXTRA = "target"
-        fun start(ctx: Context, target: Target) =
-            ctx.startActivity(Intent(ctx, LoginWebViewActivity::class.java).putExtra(EXTRA, target.name))
+
+        /** 供 `registerForActivityResult` 用：需要 Intent 才能拿到 resultCode */
+        fun newIntent(ctx: Context, target: Target): Intent =
+            Intent(ctx, LoginWebViewActivity::class.java).putExtra(EXTRA, target.name)
+
+        fun start(ctx: Context, target: Target) = ctx.startActivity(newIntent(ctx, target))
     }
 
     private lateinit var target: Target
@@ -145,7 +149,12 @@ class LoginWebViewActivity : ComponentActivity() {
             visibility = View.GONE
             setTextColor(AColor.WHITE)
             setBackgroundColor(AColor.parseColor("#B33A2B"))
-            setOnClickListener { finish() }
+            setOnClickListener {
+                // 回 RESULT_OK 是给登录门禁的「一键补全」用的：
+                // 门禁只有收到 OK 才继续下一个目标，用户按返回键退出就停，不会被一直弹窗拽回去。
+                setResult(RESULT_OK)
+                finish()
+            }
         }
         bar.addView(doneBtn, LinearLayout.LayoutParams(dp(88), ViewGroup.LayoutParams.WRAP_CONTENT).apply {
             leftMargin = dp(8)

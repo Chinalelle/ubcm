@@ -64,6 +64,10 @@ object Session {
     fun loadEcardOpenid(ctx: Context): String? =
         prefs(ctx).getString(KEY_ECARD_OPENID, null)?.takeIf { it.isNotBlank() }
 
+    /** 只补 openid（手工粘贴时可能只拿到这一个值） */
+    fun saveEcardOpenid(ctx: Context, v: String) =
+        prefs(ctx).edit().putString(KEY_ECARD_OPENID, v.trim()).apply()
+
     fun clearEcard(ctx: Context) =
         prefs(ctx).edit().remove(KEY_ECARD_SESSION).remove(KEY_ECARD_OPENID).remove(KEY_ECARD_TS).apply()
 
