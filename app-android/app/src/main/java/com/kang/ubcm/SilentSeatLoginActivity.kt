@@ -47,6 +47,7 @@ class SilentSeatLoginActivity : ComponentActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private var finished = false
     private var routePushed = false
+    private var verifying = false
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -156,11 +157,23 @@ class SilentSeatLoginActivity : ComponentActivity() {
             ?.substringAfter("=")
             ?.takeIf { it.isNotBlank() }
             ?: return false
-        // 有值 ≠ 有效：必须真打一次接口确认，否则会把残留的失效 cookie 存下来
-        if (!SeatApi.validCookie(hit)) return false
-        Session.saveSeatCookie(this, hit)
-        finishWith(true)
-        return true
+        // 有值 ≠ 有效：必须真打一次接口确认，否则会把残留的失效 cookie 存下来。
+        // ⚠️ tryGrab 是在 Handler（主线程）里调的，网络校验必须挪到后台线程，
+        // 否则 Net.get 抛 NetworkOnMainThreadException → 永远返回 false。
+        if (verifying) return false
+        verifying = true
+        Thread {
+            val ok = SeatApi.validCookie(hit)
+            runOnUiThread {
+                if (ok && !finished) {
+                    Session.saveSeatCookie(this, hit)
+                    finishWith(true)
+                } else {
+                    verifying = false
+                }
+            }
+        }.apply { isDaemon = true }.start()
+        return false
     }
 
     private fun finishWith(ok: Boolean) {

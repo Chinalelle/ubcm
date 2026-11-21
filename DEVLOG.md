@@ -30,6 +30,7 @@
 | 14 | 2026-11-21 深夜 | **区域座位图：按官方布局渲染 + 三筛选 + 拖动 + 点座位预约** | 见本节 |
 | 15 | 2026-11-21 深夜 | **座位图三项修正：框住整桌、圆角变小、全屏页（修双指缩放）** | 见本节 |
 | 16 | 2026-11-22 凌晨 | **座位 cookie 两个真 bug：残留值冒充有效、静默补齐抓残留** | 见本节 |
+| 17 | 2026-11-22 凌晨 | **🔴 主线程网络校验导致座位凭证永远存不下（找到并修好）** | 见本节 |
 
 ---
 
@@ -785,3 +786,62 @@ y=46.18  2N105  2N106    ← 跳到 103–108 = 6 座桌
 
 - 改动：`SeatApi.kt`（validCookie）、`SilentSeatLoginActivity.kt`、`LoginWebViewActivity.kt`、`MainActivity.kt`
 - 单测仍 173 全绿
+
+## 轮次 17 · 2026-11-22 01:34 → 02:25 · 座位凭证拿不到的真正原因
+
+**用户反馈**
+> 现在图书馆凭证一直拿不到
+
+**根因：我把网络校验写在了主线程**
+
+上一轮为了防止「残留 cookie 冒充有效」，我在 `SeatApi.validCookie()` 里真打了一次接口，
+但**调用点全在 Handler 的主线程回调里**：
+
+- `LoginWebViewActivity.tick`（`handler.postDelayed(this, 1000)`）
+- `SilentSeatLoginActivity.tryGrab`（同样在 Handler 里）
+
+`Net.get` 用的是 `HttpURLConnection`，**在主线程调用必抛 `NetworkOnMainThreadException`**，
+被 `try/catch` 吞掉后 `validCookie` 永远返回 `false` → 抓到的 cookie 永远存不下来。
+
+**这是我自己上一轮引入的 bug**，而且症状正好是"怎么点都拿不到"，很难一眼看出是线程问题。
+
+**修法**
+
+- `LoginWebViewActivity.verifySeatCookieAsync()`：把校验丢到 `Thread`，
+  校验通过再 `handler.post` 回主线程存盘 + 亮「完成」；无效则 `grabbed = null` 继续等
+- `SilentSeatLoginActivity.tryGrab()`：同样改成后台线程校验，
+  加 `verifying` 标志防止重复起线程
+- 两个都加 `isDaemon = true`，避免线程泄漏
+
+**验证（真机 M610BB）**
+
+| 步骤 | 结果 |
+|---|---|
+| 点「网页补」→ 网页里过滑块 | WebView 状态显示 `cookie=46B · 已获取 ic-cookie` |
+| 存下来的值 | 36 字节 |
+| 服务端验证 | ✅ `code:0`、`pid`=学号、`accNo`=53247 |
+| 门禁 | ✅ 放行，进体检页 |
+| 座位图 | ✅ 全屏页渲染成功，结构对上官方图 |
+
+**顺带调的视觉**
+
+蓝框原来只比金框外扩 0.6k，两层几乎重叠、分不清「可用」和「筛选命中」。
+改成金框贴合座位（0.12k）、蓝框明显外扩（1.8k），两层一眼能分开。
+
+**真机渲染确认（三层南区）**
+
+座位图与实际布局完全一致：上面 2 个竖桌、中间一排 7 个、右边 1 个长竖桌、
+下面一排（2+2+3 结构）、底部 2 条水平长桌。
+「命中 19 桌」与算法结果一致（三层南区 19 桌全空）。
+
+**没做的 / 未验证**
+
+- **双指缩放仍然没实测**：adb `input` 不支持多指。全屏页解决父容器抢手势是依据
+  Compose 手势分发机制的推断，需要用户用手指试。
+- 座位图里桌子的棕色柱体偏粗（桌宽 2.2% vs 座位 1.65%），比官方图显得敦实，可再调。
+- 点座位 → 确认预约**仍未真实执行过**（会占座，且红线要求用户自己点第一次）。
+
+**产出**
+
+- 改动：`LoginWebViewActivity.kt`（后台线程校验）、`SilentSeatLoginActivity.kt`、`RoomSeatMap.kt`（框间距）
+- 截图：`~/Desktop/data/截屏/ubcm-seatmap-08-real.png`、`ubcm-seatmap-09-tuned.png`、`ubcm-seat-wv-01.png`

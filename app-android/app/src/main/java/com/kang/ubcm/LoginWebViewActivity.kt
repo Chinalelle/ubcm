@@ -214,6 +214,24 @@ class LoginWebViewActivity : ComponentActivity() {
         return root
     }
 
+    /** 抓到的座位 cookie 放到后台线程校验，通过才存（避免主线程网络异常 + 避免存失效残留） */
+    private fun verifySeatCookieAsync(ctx: android.content.Context, hit: String) {
+        statusText.text = "已抓到，校验中…"
+        Thread {
+            val ok = SeatApi.validCookie(hit)
+            handler.post {
+                if (ok) {
+                    Session.saveSeatCookie(ctx, hit)
+                    statusText.text = "已获取座位凭证（校验通过，${hit.length} 字节）"
+                    doneBtn.visibility = View.VISIBLE
+                } else {
+                    statusText.text = "抓到了但无效，继续等…"
+                    grabbed = null
+                }
+            }
+        }.apply { isDaemon = true }.start()
+    }
+
     /** 每秒查一次目标 cookie，命中就落盘 */
     private fun startPolling() {
         polling = true
@@ -247,14 +265,11 @@ class LoginWebViewActivity : ComponentActivity() {
                         when (target) {
                             // 座位 cookie 抓到后要**校验真的能用**再存：
                             // WebView 罐里可能残留上一次登录的失效值，长度一样但服务端不认
-                            Target.SEAT -> if (SeatApi.validCookie(hit)) {
-                                Session.saveSeatCookie(ctx, hit)
-                                statusText.text = "已获取且校验有效（${hit.length} 字节）"
-                            } else {
-                                statusText.text = "抓到了但无效，继续等…"
-                                grabbed = null
-                                return
-                            }
+                            // 🔴 校验**必须放到后台线程**：这里的 tick 跑在主线程（Handler），
+                            // 而 Net.get 是同步网络请求 —— 主线程调用会抛 NetworkOnMainThreadException，
+                            // 被 catch 吞掉后永远返回 false，结果就是「抓到了也永远存不下来」。
+                            // 2026-11-22 真机踩到：座位凭证一直拿不到，根因就在这里。
+                            Target.SEAT -> verifySeatCookieAsync(ctx, hit)
                             Target.PORTAL -> Session.saveToken(ctx, hit)
                             Target.JW -> Session.saveJwSession(ctx, raw.replace(" ", ""))
                             Target.ECARD -> Session.saveEcard(ctx, hit, pendingOpenid)

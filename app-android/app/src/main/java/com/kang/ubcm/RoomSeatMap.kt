@@ -170,7 +170,7 @@ fun RoomSeatMap(
                 if (d.size <= 1) continue
                 if (!d.allFreeDuring(criteria.slot)) continue
                 val outer = DeskGeometry.outerBoxOf(d) ?: continue
-                val grow = k * 0.25f
+                val grow = k * 0.12f
                 val tl = Offset(sx(outer.left) - grow, sy(outer.top) - grow)
                 val ts = Size(outer.width * k + grow * 2, outer.height * k + grow * 2)
                 drawRoundRect(UBcmMapColors.highlightFill, tl, ts, smallCorner)
@@ -186,7 +186,8 @@ fun RoomSeatMap(
                 if (d.nameRange !in highlighted) continue
                 // 圈「桌子 + 全部座位」，圆角要小（大圆角会把矩形的直角吃掉，看着像胶囊）
                 val outer = DeskGeometry.outerBoxOf(d) ?: continue
-                val grow = if (d.size == 1) k * 0.3f else k * 0.85f
+                // 明显外扩：金色是「这张桌可用」、深蓝是「筛选命中」，两层要能一眼分开
+                val grow = if (d.size == 1) k * 1.1f else k * 1.8f
                 drawRoundRect(
                     color = UBcmMapColors.selected,
                     topLeft = Offset(sx(outer.left) - grow, sy(outer.top) - grow),
