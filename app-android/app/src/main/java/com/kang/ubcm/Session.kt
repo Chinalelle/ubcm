@@ -79,6 +79,29 @@ object Session {
 
     fun clear(ctx: Context) = prefs(ctx).edit().clear().apply()
 
+    /**
+     * 退出登录：把**所有凭证**清干净，但**保留周次锚点**。
+     *
+     * 为什么单独写一个而不是直接 `clear()`：
+     * `first_week_monday` 是课程配置（本学期第 1 周的周一），不是凭证。
+     * 退出登录顺手把它清了，用户下次登录就得重新填一遍 —— 那是无谓的损失，
+     * 而且忘了填周次会静默算错（见 Timetable.validateFirstWeekMonday）。
+     *
+     * ⚠️ 这里**不碰 WebView 的 cookie**（那属于 `CookieManager`），
+     * 由调用方一并清 —— 否则重新用网页补座位时，WebView 会带着旧会话直接进去。
+     */
+    fun clearCredentials(ctx: Context) {
+        prefs(ctx).edit()
+            .remove(KEY_JWT)
+            .remove(KEY_JW_SESSION)
+            .remove(KEY_CASTGC)
+            .remove(KEY_SEAT)
+            .remove(KEY_ECARD_SESSION)
+            .remove(KEY_ECARD_OPENID)
+            .remove(KEY_ECARD_TS)
+            .apply()
+    }
+
     fun saveJwSession(ctx: Context, cookie: String) =
         prefs(ctx).edit().putString(KEY_JW_SESSION, cookie).apply()
 

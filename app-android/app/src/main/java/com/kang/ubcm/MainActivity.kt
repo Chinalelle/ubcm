@@ -134,11 +134,20 @@ private fun AppRoot() {
         return
     }
 
-    MainContent()
+    MainContent(
+        onLogout = {
+            Session.clearCredentials(ctx)
+            // WebView 的学校会话也要清，否则重新用「网页补座位」时会带着旧会话直接进去
+            android.webkit.CookieManager.getInstance().removeAllCookies(null)
+            android.webkit.CookieManager.getInstance().flush()
+            loginVm.reset()
+            gateKey++          // 重算 audit → 凭证不齐 → 自动回到登录页
+        }
+    )
 }
 
 @Composable
-private fun MainContent() {
+private fun MainContent(onLogout: () -> Unit) {
     val homeVm: HomeViewModel = viewModel()
     val probeVm: ProbeViewModel = viewModel()
     val libVm: LibraryViewModel = viewModel()
@@ -157,6 +166,7 @@ private fun MainContent() {
             },
             onOpenLibrary = { page = Page.LIBRARY },
             onOpenWeek = { page = Page.WEEK },
+            onLogout = onLogout,
         )
 
         Page.WEEK -> WeekScreen(
@@ -192,6 +202,7 @@ private fun MainContent() {
         Page.PROBE -> Screen(
             vm = probeVm,
             initialShowAuth = showAuth,
+            onLogout = onLogout,
             onBack = {
                 page = Page.HOME
                 showAuth = false
@@ -207,6 +218,7 @@ private fun MainContent() {
 private fun Screen(
     vm: ProbeViewModel = viewModel(),
     initialShowAuth: Boolean = false,
+    onLogout: () -> Unit = {},
     onBack: () -> Unit = {},
 ) {
     val st by vm.state.collectAsStateWithLifecycle()
@@ -231,7 +243,7 @@ private fun Screen(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                item { BackRow(onBack) }
+                item { BackRow(onBack, onLogout = onLogout) }
                 item { Header(st, onAuth = { showAuth = !showAuth }) }
 
                 // 一卡通是 WebView 承载的，单独给一个明显的入口
@@ -271,16 +283,68 @@ private fun Screen(
     }
 }
 
+/**
+ * 顶部一行：返回首页 + 退出登录。
+ *
+ * 退出登录用**点两次确认**而不是弹窗 —— 和项目里其它交互保持一致（不弹窗），
+ * 而且误触就清空全部凭证、要重新输密码，值得挡一下。
+ */
 @Composable
-private fun BackRow(onBack: () -> Unit) {
+private fun BackRow(onBack: () -> Unit, onLogout: () -> Unit = {}) {
+    var confirming by remember { mutableStateOf(false) }
+
     Row(
-        Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .clickable { onBack() }
-            .padding(vertical = 5.dp, horizontal = 3.dp),
+        Modifier.fillMaxWidth().padding(vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text("‹  返回首页", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = InkSoft)
+        Text(
+            "‹  返回首页",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = InkSoft,
+            modifier = Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onBack() }
+                .padding(vertical = 5.dp, horizontal = 3.dp),
+        )
+        Spacer(Modifier.weight(1f))
+        if (!confirming) {
+            Text(
+                "退出登录",
+                fontSize = 12.sp,
+                color = Cinnabar,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { confirming = true }
+                    .padding(horizontal = 8.dp, vertical = 5.dp),
+            )
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("清空所有凭证？", fontSize = 11.sp, color = InkSoft)
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    "确认退出",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Cinnabar)
+                        .clickable { onLogout() }
+                        .padding(horizontal = 10.dp, vertical = 5.dp),
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    "取消",
+                    fontSize = 11.sp,
+                    color = Ash,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .clickable { confirming = false }
+                        .padding(horizontal = 6.dp, vertical = 5.dp),
+                )
+            }
+        }
     }
 }
 

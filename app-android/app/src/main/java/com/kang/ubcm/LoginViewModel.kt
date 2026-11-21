@@ -160,4 +160,15 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
     fun clearError() {
         _state.value = _state.value.copy(error = null)
     }
+
+    /**
+     * 退出登录后重置界面状态。
+     *
+     * 必须清掉上一次的 `steps` / `error` / `captchaImage`，否则回到登录页时
+     * 会看到「凭证已齐」的旧进度条，或者上一轮的报错 —— 那会让人以为刚才是成功的。
+     */
+    fun reset() {
+        page = null
+        _state.value = UiState()
+    }
 }

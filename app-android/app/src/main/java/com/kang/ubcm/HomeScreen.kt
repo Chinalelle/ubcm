@@ -12,6 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +37,7 @@ fun HomeScreen(
     onOpenLogin: () -> Unit,
     onOpenLibrary: () -> Unit,
     onOpenWeek: () -> Unit,
+    onLogout: () -> Unit = {},
 ) {
     val st by vm.state.collectAsStateWithLifecycle()
 
@@ -82,6 +86,7 @@ fun HomeScreen(
             }
 
             item { FootNote(st) }
+            item { HomeLogoutRow(onLogout) }
         }
         }
     }
@@ -552,4 +557,56 @@ private fun CardShell(
             .padding(15.dp),
         content = content,
     )
+}
+
+/**
+ * 首页底部的退出登录。和体检页同一个交互：**点两次确认**（不弹窗）。
+ * 误触会清空全部凭证、要重新输密码，值得挡一下。
+ */
+@Composable
+private fun HomeLogoutRow(onLogout: () -> Unit) {
+    var confirming by remember { mutableStateOf(false) }
+    Row(
+        Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        if (!confirming) {
+            Text(
+                "退出登录",
+                fontSize = 11.sp,
+                color = UbcmColors.Cinnabar,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { confirming = true }
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+            )
+        } else {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("清空所有凭证？", fontSize = 11.sp, color = UbcmColors.InkSoft)
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    "确认退出",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = androidx.compose.ui.graphics.Color.White,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(UbcmColors.Cinnabar)
+                        .clickable { onLogout() }
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    "取消",
+                    fontSize = 11.sp,
+                    color = UbcmColors.Ash,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .clickable { confirming = false }
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                )
+            }
+        }
+    }
 }
