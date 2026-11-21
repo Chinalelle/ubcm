@@ -33,6 +33,7 @@ fun HomeScreen(
     onOpenProbe: () -> Unit,
     onOpenLogin: () -> Unit,
     onOpenLibrary: () -> Unit,
+    onOpenWeek: () -> Unit,
 ) {
     val st by vm.state.collectAsStateWithLifecycle()
 
@@ -54,12 +55,20 @@ fun HomeScreen(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            item { TopBar(st, onRefresh = { vm.refresh(true) }, onOpenProbe = onOpenProbe, onOpenLogin = onOpenLogin) }
+            item {
+                TopBar(
+                    st = st,
+                    onRefresh = { vm.refresh(true) },
+                    onOpenProbe = onOpenProbe,
+                    onOpenLogin = onOpenLogin,
+                    onOpenWeek = onOpenWeek,
+                )
+            }
 
-            item { NextCourseCard(st) }
+            item { NextCourseCard(st, onOpenWeek) }
 
             if (st.today.isNotEmpty()) {
-                item { TodayCard(st) }
+                item { TodayCard(st, onOpenWeek) }
             }
 
             item { MoneyRow(st) }
@@ -86,6 +95,7 @@ private fun TopBar(
     onRefresh: () -> Unit,
     onOpenProbe: () -> Unit,
     onOpenLogin: () -> Unit,
+    onOpenWeek: () -> Unit,
 ) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -129,6 +139,7 @@ private fun TopBar(
         }
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            LinkText("课表") { onOpenWeek() }
             LinkText("数据体检 / 登录") { onOpenProbe() }
             LinkText("刷新") { onRefresh() }
         }
@@ -182,7 +193,7 @@ private fun LinkText(text: String, onClick: () -> Unit) {
 // ---------------- 下一节课（主卡） ----------------
 
 @Composable
-private fun NextCourseCard(st: HomeState) {
+private fun NextCourseCard(st: HomeState, onOpenWeek: () -> Unit) {
     val next = st.next
     val hasTimetable = st.timetableFetchedAt > 0L
 
@@ -190,7 +201,9 @@ private fun NextCourseCard(st: HomeState) {
         Modifier.fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
             .background(UbcmColors.CardWhite)
-            .border(1.dp, UbcmColors.Line, RoundedCornerShape(18.dp)),
+            .border(1.dp, UbcmColors.Line, RoundedCornerShape(18.dp))
+            // 点主卡进整周课表：这是首页最自然的一个入口
+            .clickable { onOpenWeek() },
     ) {
         val accent = when {
             next == null -> UbcmColors.Ash
@@ -199,18 +212,22 @@ private fun NextCourseCard(st: HomeState) {
         }
         Box(Modifier.width(5.dp).fillMaxHeight().background(accent))
         Column(Modifier.padding(16.dp)) {
-            Text(
-                when {
-                    next == null && !hasTimetable -> "还没有课表"
-                    next == null -> "近期没有课"
-                    next.phase == CoursePhase.ONGOING -> "正在上课"
-                    else -> "下一节课"
-                },
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = accent,
-                letterSpacing = 1.4.sp,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    when {
+                        next == null && !hasTimetable -> "还没有课表"
+                        next == null -> "近期没有课"
+                        next.phase == CoursePhase.ONGOING -> "正在上课"
+                        else -> "下一节课"
+                    },
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = accent,
+                    letterSpacing = 1.4.sp,
+                )
+                Spacer(Modifier.weight(1f))
+                Text("整周课表 ›", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = UbcmColors.InkSoft)
+            }
             Spacer(Modifier.height(6.dp))
 
             if (next == null) {
@@ -304,8 +321,8 @@ fun clock(start: java.time.LocalDateTime, end: java.time.LocalDateTime): String 
 // ---------------- 今天的课 ----------------
 
 @Composable
-private fun TodayCard(st: HomeState) {
-    CardShell {
+private fun TodayCard(st: HomeState, onOpenWeek: () -> Unit) {
+    CardShell(modifier = Modifier.clickable { onOpenWeek() }) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("今天", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = UbcmColors.Cinnabar, letterSpacing = 1.4.sp)
             Spacer(Modifier.width(8.dp))
@@ -523,9 +540,12 @@ private fun FootNote(st: HomeState) {
 }
 
 @Composable
-private fun CardShell(content: @Composable ColumnScope.() -> Unit) {
+private fun CardShell(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     Column(
-        Modifier.fillMaxWidth()
+        modifier.fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(UbcmColors.CardWhite)
             .border(1.dp, UbcmColors.Line, RoundedCornerShape(16.dp))

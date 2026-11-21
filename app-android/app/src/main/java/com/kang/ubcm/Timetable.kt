@@ -93,9 +93,30 @@ object Timetable {
 
     /** 把 "2026-09-07" 解析成日期；失败返回 null（调用方回退到默认值） */
     fun parseFirstWeekMonday(raw: String?): LocalDate? = try {
-        raw?.takeIf { it.isNotBlank() }?.let { LocalDate.parse(it) }
+        raw?.takeIf { it.isNotBlank() }?.let { LocalDate.parse(it.trim()) }
     } catch (e: Exception) {
         null
+    }
+
+    /**
+     * 校验用户填的「首周周一」。
+     *
+     * 返回 null 表示合法；否则返回一句能直接显示给用户的中文说明。
+     *
+     * 为什么必须校验「是不是周一」：周次 = floorDiv(今天 - 锚点, 7) + 1。
+     * 如果用户把 2026-09-08（周二）填进来，整学期的周次会集体错位，
+     * 而且**不会报错** —— 只是所有课都错一天。这种静默错误最难排查，所以在入口就拦住。
+     */
+    fun validateFirstWeekMonday(raw: String?): String? {
+        val t = raw?.trim().orEmpty()
+        if (t.isEmpty()) return "请填写日期，格式 2026-09-07"
+        val d = parseFirstWeekMonday(t) ?: return "日期格式不对，应形如 2026-09-07"
+        if (d.dayOfWeek != java.time.DayOfWeek.MONDAY) {
+            val w = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
+                .getOrElse(d.dayOfWeek.value - 1) { "" }
+            return "$d 是$w，首周锚点必须是周一"
+        }
+        return null
     }
 
     /**
@@ -245,4 +266,22 @@ object Timetable {
             NextCourse(t, phase)
         }
     }
+}
+
+/**
+ * 把教务/缓存里各种「看起来像空」的值归一成真正的空串。
+ *
+ * 🔴 真机踩到的坑：`org.json` 的 `optString(key)` 在值是 **JSON null** 时
+ * 返回的是**字符串 "null"**，不是空串。这个 "null" 会一路穿过
+ * 解析 → 落盘 → 界面，最后课表上赫然显示「教室 null」。
+ *
+ * 教务返回的 `jx0601mc`（教室）确实会为 null（思政第 12–15 周就是），
+ * 所以这不是脏数据防御，是**正常数据**。
+ *
+ * 放在 Timetable.kt 里而不是 JwApi 里，是为了能被 JVM 单测直接覆盖
+ * （org.json 在 JVM 单测里是 Android stub，调用会抛异常）。
+ */
+fun cleanFieldText(raw: String?): String {
+    val t = raw?.trim().orEmpty()
+    return if (t.equals("null", ignoreCase = true) || t.equals("undefined", ignoreCase = true)) "" else t
 }

@@ -123,14 +123,16 @@ object TimetableStore {
             val s = sessArr.optJSONObject(i) ?: return@mapNotNull null
             val w = s.optJSONArray("w") ?: JSONArray()
             CourseSession(
-                name = s.optString("n"),
-                teacher = s.optString("t"),
-                location = s.optString("l"),
+                // cleanFieldText：老缓存里可能已经存了字符串 "null"（历史上 optString 的坑），
+                // 这里再清一遍，用户不用重新拉课表就不会看到「教室 null」。
+                name = cleanFieldText(s.optString("n")),
+                teacher = cleanFieldText(s.optString("t")),
+                location = cleanFieldText(s.optString("l")),
                 dayOfWeek = s.optInt("d"),
                 startPeriod = s.optInt("a"),
                 endPeriod = s.optInt("b"),
                 weeks = (0 until w.length()).mapNotNull { w.optInt(it).takeIf { v -> v > 0 } },
-                className = s.optString("c"),
+                className = cleanFieldText(s.optString("c")),
             )
         }
         if (sessions.isEmpty()) null

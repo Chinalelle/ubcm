@@ -74,13 +74,15 @@ object JwApi {
             }
             val weeks = o.optString("kkzcmx").split(",").mapNotNull { it.trim().toIntOrNull() }
             CourseRow(
-                name = o.optString("kcmc"),
-                location = o.optString("jx0601mc"),
+                // ⚠️ 必须过 cleanFieldText：optString 对 JSON null 返回字符串 "null"，
+                // 不清洗会在课表上显示「教室 null」（真机踩到过）。
+                name = cleanFieldText(o.optString("kcmc")),
+                location = cleanFieldText(o.optString("jx0601mc")),
                 credit = "",
-                attribute = o.optString("jzwmc"),
-                nature = o.optString("ktmc"),
-                teacher = o.optString("jg0101mc"),
-                timeRaw = o.optString("kkzc"),
+                attribute = cleanFieldText(o.optString("jzwmc")),
+                nature = cleanFieldText(o.optString("ktmc")),
+                teacher = cleanFieldText(o.optString("jg0101mc")),
+                timeRaw = cleanFieldText(o.optString("kkzc")),
                 weeks = weeks,
                 dayOfWeek = day,
                 periods = periods,

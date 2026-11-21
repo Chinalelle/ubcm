@@ -44,9 +44,30 @@ data class HomeState(
     val jwtExpired: Boolean = false,
     /** CAS 长效票据（一卡通/教务靠它） */
     val hasCastgc: Boolean = false,
+    /** 整学期排课（周视图用）。空表示还没有课表。 */
+    val sessions: List<CourseSession> = emptyList(),
+    /** 小节作息；没有时用兜底表 */
+    val slots: List<PeriodSlot> = Timetable.FALLBACK_SLOTS,
+    /** 本学期首周周一（周次锚点） */
+    val firstWeekMonday: LocalDate = LocalDate.parse(Timetable.DEFAULT_FIRST_WEEK_MONDAY),
+    /**
+     * 用户在周视图里手动翻到的周次。
+     * null = **跟随今天**（每次重算都回到当前周，这是默认且最符合直觉的行为）；
+     * 非 null = 用户已经翻走了，不要再自动把他拽回来。
+     */
+    val pinnedWeek: Int? = null,
 ) {
     val weekText: String?
         get() = week?.let { if (it >= 1) "第 $it 周" else "未开学" }
+
+    /** 今天属于第几周（没有课表时按第 1 周兜底） */
+    val currentWeek: Int get() = week ?: 1
+
+    /** 周视图正在显示第几周 */
+    val shownWeek: Int get() = pinnedWeek ?: currentWeek
+
+    /** 是否正处在「本周」 */
+    val onCurrentWeek: Boolean get() = shownWeek == currentWeek
 
     /** 距下一节课的分钟数（负数=已开始） */
     fun minutesToNext(): Long? = next?.let { it.time.minutesUntilStart(now) }
@@ -130,14 +151,44 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
             week = week,
             next = Timetable.nextCourse(sessions, slots, now, firstWeekMonday),
             today = Timetable.todayCourses(sessions, slots, now, firstWeekMonday),
+            // 周视图的数据源。列表是引用，copy 不会复制内容。
+            sessions = sessions,
+            slots = slots,
+            firstWeekMonday = firstWeekMonday,
         )
     }
 
-    fun setFirstWeekMonday(raw: String) {
-        val d = Timetable.parseFirstWeekMonday(raw) ?: return
-        Session.saveFirstWeekMonday(getApplication(), raw.trim())
+    /**
+     * 周视图切到某一周。传 null 表示「回到跟随今天」。
+     *
+     * 刻意不做边界钳制：翻到学期外看到一张空表 + 一句「这一周没有课」，
+     * 比按钮突然点不动更容易理解。
+     */
+    fun selectWeek(week: Int?) {
+        _state.value = _state.value.copy(pinnedWeek = week)
+    }
+
+    /** 上一周 / 下一周 */
+    fun shiftWeek(delta: Int) {
+        val next = (_state.value.shownWeek + delta).coerceAtLeast(MIN_NAV_WEEK)
+        selectWeek(next)
+    }
+
+    /**
+     * 改周次锚点（本学期首周的周一）。
+     *
+     * 返回 null = 保存成功；非 null = 校验失败的说明，调用方直接显示给用户。
+     * 必须校验「是周一」：填成周二不会抛异常，只会让整学期每门课都错一天（见 Timetable.validateFirstWeekMonday）。
+     */
+    fun setFirstWeekMonday(raw: String): String? {
+        Timetable.validateFirstWeekMonday(raw)?.let { return it }
+        val d = Timetable.parseFirstWeekMonday(raw) ?: return "日期解析失败"
+        Session.saveFirstWeekMonday(getApplication(), d.toString())
         firstWeekMonday = d
+        // 改了锚点，之前"翻到第 N 周"的意图已经失效，回到跟随今天
+        _state.value = _state.value.copy(pinnedWeek = null)
         recomputeTime()
+        return null
     }
 
     /**
@@ -326,5 +377,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         const val STALE_MS = 6 * 60 * 60 * 1000L
         /** 流水往回看几天：够覆盖余额 + 今天的消费 */
         const val LOOKBACK_DAYS = 30L
+        /** 周视图往左最多翻到第几周（再往前没有意义，教务也不排） */
+        const val MIN_NAV_WEEK = 0
     }
 }

@@ -67,10 +67,10 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * 两个页面：首页（聚合卡片，默认）与数据体检页（18 个探针 + 登录面板）。
- * 不引 Navigation 库 —— 两个页面一个状态位就够，保持零依赖。
+ * 四个页面：首页（聚合卡片，默认）/ 课表周视图 / 图书馆 / 数据体检页（探针 + 登录面板）。
+ * 不引 Navigation 库 —— 四个页面一个状态位就够，保持零依赖。
  */
-private enum class Page { HOME, PROBE, LIBRARY }
+private enum class Page { HOME, WEEK, LIBRARY, PROBE }
 
 @Composable
 private fun AppRoot() {
@@ -90,6 +90,13 @@ private fun AppRoot() {
                 page = Page.PROBE
             },
             onOpenLibrary = { page = Page.LIBRARY },
+            onOpenWeek = { page = Page.WEEK },
+        )
+
+        Page.WEEK -> WeekScreen(
+            vm = homeVm,
+            onBack = { page = Page.HOME },
+            onOpenProbe = { page = Page.PROBE },
         )
 
         Page.LIBRARY -> LibraryScreen(

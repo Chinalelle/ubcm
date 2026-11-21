@@ -42,19 +42,25 @@ object TestTimetable {
         CourseSession(name = "古汉语基础", teacher = "李蕊", location = "良东166教", dayOfWeek = 5, startPeriod = 3, endPeriod = 4, weeks = listOf(8,9,10,11)),
         CourseSession(name = "高等数学", teacher = "杜飞龙", location = "良东374教", dayOfWeek = 2, startPeriod = 7, endPeriod = 8, weeks = listOf(4,5,6,7,8,9,10,11,12)),
         CourseSession(name = "高等数学", teacher = "杜飞龙", location = "良东278教", dayOfWeek = 4, startPeriod = 7, endPeriod = 8, weeks = listOf(10,11,12,13,14,15,16,17)),
-        CourseSession(name = "思想政治理论课Ⅰ", teacher = "邱仁富", location = "良东174教", dayOfWeek = 3, startPeriod = 3, endPeriod = 4, weeks = listOf(4,5,6,7,8,9,10,11,12,13,14,15,16,17)),
+        // 2036 校准：真实教务数据周三这场**缺第 10 周**（国庆调课），不是 4-17 连续。
+        CourseSession(name = "思想政治理论课Ⅰ", teacher = "邱仁富", location = "良东174教", dayOfWeek = 3, startPeriod = 3, endPeriod = 4, weeks = listOf(4,5,6,7,8,9,11,12,13,14,15,16,17)),
         CourseSession(name = "思想政治理论课Ⅰ", teacher = "邱仁富", location = "良西302教", dayOfWeek = 1, startPeriod = 5, endPeriod = 6, weeks = listOf(4,5,6,8,9,10)),
         CourseSession(name = "思想政治理论课Ⅰ", teacher = "邱仁富", location = "良西302教", dayOfWeek = 1, startPeriod = 5, endPeriod = 6, weeks = listOf(11)),
         CourseSession(name = "思想政治理论课Ⅰ", teacher = "邱仁富", location = "", dayOfWeek = 1, startPeriod = 5, endPeriod = 6, weeks = listOf(12,13,14)),
         CourseSession(name = "思想政治理论课Ⅰ", teacher = "邱仁富", location = "", dayOfWeek = 1, startPeriod = 5, endPeriod = 5, weeks = listOf(15)),
         CourseSession(name = "思想政治理论课Ⅰ", teacher = "邱仁富", location = "虚拟教室", dayOfWeek = 1, startPeriod = 5, endPeriod = 6, weeks = listOf(16)),
+        // 2026-11-21 用平板实机缓存（files/timetable.json，34 条）校准补上：原夹具 32 条，漏了周二这场。
+        // 影响：第 12 周周二是 3 门课而不是 2 门；第 11 周不受影响（这场只有第 12 周有）。
+        CourseSession(name = "思想政治理论课Ⅰ", teacher = "邱仁富", location = "良东150教", dayOfWeek = 2, startPeriod = 5, endPeriod = 6, weeks = listOf(12)),
         CourseSession(name = "世界经济史概论", teacher = "杨丽丽", location = "良东170教", dayOfWeek = 3, startPeriod = 9, endPeriod = 11, weeks = listOf(4,5,7,8)),
         CourseSession(name = "世界经济史概论", teacher = "杨丽丽", location = "良东274教", dayOfWeek = 3, startPeriod = 9, endPeriod = 11, weeks = listOf(6)),
         CourseSession(name = "世界经济史概论", teacher = "杨丽丽", location = "良东149教", dayOfWeek = 3, startPeriod = 9, endPeriod = 10, weeks = listOf(9)),
         CourseSession(name = "中医基础综合实训", teacher = "李峰", location = "中诊技能实训室1", dayOfWeek = 2, startPeriod = 5, endPeriod = 6, weeks = listOf(13,14,15,16)),
         CourseSession(name = "体育Ⅰ", teacher = "王春云", location = "良东体育场", dayOfWeek = 4, startPeriod = 3, endPeriod = 4, weeks = listOf(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)),
         CourseSession(name = "大学生心理健康教育（含医学心理学）", teacher = "刘钊", location = "良东316教", dayOfWeek = 5, startPeriod = 3, endPeriod = 4, weeks = listOf(4,5,6,7)),
-        CourseSession(name = "人工智能概论", teacher = "赵步天", location = "良东258教", dayOfWeek = 1, startPeriod = 9, endPeriod = 11, weeks = listOf(4,5,6,7,8,9,10,11,12,13,14)),
+        // 真实数据把这场拆成两条（11-12 单独一条），保留拆分以覆盖「同门课同节次多周次段」。
+        CourseSession(name = "人工智能概论", teacher = "赵步天", location = "良东258教", dayOfWeek = 1, startPeriod = 9, endPeriod = 11, weeks = listOf(4,5,6,7,8,9,10,13,14)),
+        CourseSession(name = "人工智能概论", teacher = "赵步天", location = "良东258教", dayOfWeek = 1, startPeriod = 9, endPeriod = 11, weeks = listOf(11,12)),
         CourseSession(name = "人工智能概论", teacher = "赵步天", location = "良东258教", dayOfWeek = 1, startPeriod = 9, endPeriod = 9, weeks = listOf(15)),
         CourseSession(name = "大学英语Ⅰ-Ⅱ", teacher = "邵英俊", location = "良东308教", dayOfWeek = 2, startPeriod = 5, endPeriod = 6, weeks = listOf(4,5,6,7,8,9)),
         CourseSession(name = "大学英语Ⅰ-Ⅱ", teacher = "邵英俊", location = "良东308教", dayOfWeek = 2, startPeriod = 5, endPeriod = 5, weeks = listOf(10)),
