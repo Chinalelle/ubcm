@@ -51,7 +51,8 @@ fun RoomSeatMap(
     /** 筛选命中的桌（用 nameRange 作 key） */
     highlighted: Set<String>,
     modifier: Modifier = Modifier,
-    heightDp: Int = 420,
+    /** 固定高度；传 null 表示填满父容器（全屏页用） */
+    heightDp: Int? = 420,
     onSeatClick: (SeatApi.Seat) -> Unit = {},
 ) {
     // 分组：这里要画**所有**座位，所以用 groupAll（findFreeDesks 只会返回全空的桌）
@@ -62,15 +63,17 @@ fun RoomSeatMap(
     var panX by remember(seats) { mutableFloatStateOf(0f) }
     var panY by remember(seats) { mutableFloatStateOf(0f) }
 
+    // 嵌在列表里时用固定高度；全屏页用 fillMaxSize（否则 420dp 撑不满，双指缩放也没空间）
+    val sizeMod = if (heightDp != null) Modifier.fillMaxWidth().height(heightDp.dp) else Modifier.fillMaxSize()
+
     if (seats.isEmpty() || bounds == null) {
-        Box(modifier.fillMaxWidth().height(heightDp.dp).clip(RoundedCornerShape(14.dp)).background(UBcmMapColors.paper))
+        Box(modifier.then(sizeMod).clip(RoundedCornerShape(14.dp)).background(UBcmMapColors.paper))
         return
     }
 
     Box(
         modifier
-            .fillMaxWidth()
-            .height(heightDp.dp)
+            .then(sizeMod)
             .clip(RoundedCornerShape(14.dp))
             .background(UBcmMapColors.paper)
     ) {
@@ -160,50 +163,37 @@ fun RoomSeatMap(
                 }
             }
 
-            // 3.5) 整桌全空的大桌：在**桌子**上叠一层金框 + 浅蓝填充
-            //      （不是给每个座位都套框 —— 那样满屏蓝圈，看不出「这是一张空桌」）
+            // 3.5) 整桌全空的大桌：金框 + 浅蓝填充，**圈住桌子 + 全部座位**
+            //      （只圈桌面的话座位露在框外，看着不像"这张桌"）
+            val smallCorner = CornerRadius(x = 3f, y = 3f)
             for (d in desks) {
                 if (d.size <= 1) continue
                 if (!d.allFreeDuring(criteria.slot)) continue
-                val table = DeskGeometry.boxOf(d).table ?: continue
-                val tl = Offset(sx(table.left), sy(table.top))
-                val ts = Size(table.width * k, table.height * k)
-                val cr = CornerRadius(
-                    x = maxOf(3f, table.width * k * 0.18f),
-                    y = maxOf(3f, table.height * k * 0.18f),
-                )
-                drawRoundRect(UBcmMapColors.highlightFill, tl, ts, cr)
+                val outer = DeskGeometry.outerBoxOf(d) ?: continue
+                val grow = k * 0.25f
+                val tl = Offset(sx(outer.left) - grow, sy(outer.top) - grow)
+                val ts = Size(outer.width * k + grow * 2, outer.height * k + grow * 2)
+                drawRoundRect(UBcmMapColors.highlightFill, tl, ts, smallCorner)
                 drawRoundRect(
                     color = UBcmMapColors.highlightEdge,
-                    topLeft = tl, size = ts, cornerRadius = cr,
-                    style = Stroke(width = maxOf(2f, k * 0.2f)),
+                    topLeft = tl, size = ts, cornerRadius = smallCorner,
+                    style = Stroke(width = maxOf(1.8f, k * 0.16f)),
                 )
             }
 
             // 4) 筛选命中的整张桌：空心深蓝框
             for (d in desks) {
                 if (d.nameRange !in highlighted) continue
-                val table = DeskGeometry.boxOf(d).table
-                if (table != null) {
-                    val grow = k * 0.95f
-                    drawRoundRect(
-                        color = UBcmMapColors.selected,
-                        topLeft = Offset(sx(table.left) - grow, sy(table.top) - grow),
-                        size = Size(table.width * k + grow * 2, table.height * k + grow * 2),
-                        cornerRadius = CornerRadius(x = 8f, y = 8f),
-                        style = Stroke(width = maxOf(2f, k * 0.22f)),
-                    )
-                } else {
-                    // 单人座没有桌面，就在座位外包一个框
-                    val s = d.seats.firstOrNull() ?: continue
-                    val b = DeskGeometry.seatBox(s)
-                    drawRect(
-                        color = UBcmMapColors.selected,
-                        topLeft = Offset(sx(b.left) - 2f, sy(b.top) - 2f),
-                        size = Size(b.width * k + 4f, b.height * k + 4f),
-                        style = Stroke(width = maxOf(2f, k * 0.2f)),
-                    )
-                }
+                // 圈「桌子 + 全部座位」，圆角要小（大圆角会把矩形的直角吃掉，看着像胶囊）
+                val outer = DeskGeometry.outerBoxOf(d) ?: continue
+                val grow = if (d.size == 1) k * 0.3f else k * 0.85f
+                drawRoundRect(
+                    color = UBcmMapColors.selected,
+                    topLeft = Offset(sx(outer.left) - grow, sy(outer.top) - grow),
+                    size = Size(outer.width * k + grow * 2, outer.height * k + grow * 2),
+                    cornerRadius = CornerRadius(x = 3f, y = 3f),
+                    style = Stroke(width = maxOf(2f, k * 0.2f)),
+                )
             }
         }
     }

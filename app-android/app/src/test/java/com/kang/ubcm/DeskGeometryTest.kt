@@ -91,6 +91,52 @@ class DeskGeometryTest {
         )
     }
 
+    // ---------- 外接矩形（高亮/筛选框要圈住这个） ----------
+
+    @Test
+    fun `外接矩形必须包住所有座位和桌面`() {
+        // 用户要求：金框/蓝框要圈「整张桌子 + 所有座位」，不能只圈桌面
+        val d = deskOf("3S062–3S069")
+        val outer = DeskGeometry.outerBoxOf(d)!!
+        val half = DeskGeometry.SEAT_SIZE / 2f
+        for (s in d.seats) {
+            val x = s.x.toFloat()
+            val y = s.y.toFloat()
+            assertTrue("座位 ${s.name} 的左边界露在框外", x - half >= outer.left - 0.01f)
+            assertTrue("座位 ${s.name} 的右边界露在框外", x + half <= outer.right + 0.01f)
+            assertTrue("座位 ${s.name} 的上边界露在框外", y - half >= outer.top - 0.01f)
+            assertTrue("座位 ${s.name} 的下边界露在框外", y + half <= outer.bottom + 0.01f)
+        }
+        val table = DeskGeometry.boxOf(d).table!!
+        assertTrue("桌面左边界露在框外", table.left >= outer.left - 0.01f)
+        assertTrue("桌面右边界露在框外", table.right <= outer.right + 0.01f)
+    }
+
+    @Test
+    fun `外接矩形比桌面大（因为要含座位）`() {
+        val d = deskOf("3S062–3S069")
+        val outer = DeskGeometry.outerBoxOf(d)!!
+        val table = DeskGeometry.boxOf(d).table!!
+        assertTrue("外接矩形要比桌面宽", outer.width > table.width)
+        assertTrue("外接矩形要比桌面高", outer.height > table.height)
+    }
+
+    @Test
+    fun `单人座也有外接矩形`() {
+        val one = TestDesks.SAN_CENG_NAN.first().copy(name = "3S901", x = 50.0, y = 50.0)
+        val d = DeskFinder.findFreeDesks(listOf(one), minSize = 1).first()
+        val outer = DeskGeometry.outerBoxOf(d)!!
+        assertEquals(DeskGeometry.SEAT_SIZE, outer.width, 0.01f)
+    }
+
+    @Test
+    fun `水平长桌的外接矩形也含桌面`() {
+        val d = deskOf("3S049–3S061")
+        val outer = DeskGeometry.outerBoxOf(d)!!
+        val table = DeskGeometry.boxOf(d).table!!
+        assertTrue("长桌的外接矩形要盖住桌面下沿", outer.bottom >= table.bottom - 0.01f)
+    }
+
     // ---------- 座位方块 ----------
 
     @Test

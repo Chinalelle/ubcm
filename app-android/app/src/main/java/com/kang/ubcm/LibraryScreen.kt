@@ -49,6 +49,21 @@ fun LibraryScreen(
 ) {
     val st by vm.state.collectAsStateWithLifecycle()
     var expanded by remember { mutableStateOf<Set<Int>>(emptySet()) }
+    // 全屏座位图：选中区域后铺满整屏看
+    // （嵌在 LazyColumn 里时父级滚动会抢手势，双指缩放根本用不了）
+    var fullRoom by remember { mutableStateOf<Pair<Int, String>?>(null) }
+
+    // 全屏座位图优先渲染，直接吃掉整个 LibraryScreen
+    fullRoom?.let { room ->
+        SeatMapFullScreen(
+            roomId = room.first,
+            roomName = room.second,
+            st = st,
+            vm = vm,
+            onBack = { fullRoom = null },
+        )
+        return
+    }
 
     // 首次进入自动拉一次
     LaunchedEffect(Unit) { vm.refresh() }
@@ -96,7 +111,7 @@ fun LibraryScreen(
                     }
                 }
 
-                item { SeatMapSection(st, vm) }
+                item { SeatMapSection(st, vm, onOpenMap = { id, name -> fullRoom = id to name }) }
 
                 item { FreeDeskSection(st, onOpenRoom, vm) }
 
@@ -795,10 +810,11 @@ private fun Footer(st: LibraryState) {
  * 点座位 → 底部出现确认面板 → 确认后走三段式预约。
  */
 @Composable
-private fun SeatMapSection(st: LibraryState, vm: LibraryViewModel) {
-    val areas = st.floors.flatMap { f -> f.areas.map { f.name to it } }
-    var pickedSeat by remember { mutableStateOf<SeatApi.Seat?>(null) }
-
+private fun SeatMapSection(
+    st: LibraryState,
+    vm: LibraryViewModel,
+    onOpenMap: (Int, String) -> Unit,
+) {
     Column(
         Modifier.fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
@@ -809,102 +825,21 @@ private fun SeatMapSection(st: LibraryState, vm: LibraryViewModel) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("座位图", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = UbcmColors.Cinnabar, letterSpacing = 1.4.sp)
             Spacer(Modifier.width(8.dp))
-            Text(
-                if (st.mapDate.isNotBlank()) "约 ${mdText(st.mapDate)}" else "点区域加载",
-                fontSize = 10.sp, color = UbcmColors.Ash, fontFamily = FontFamily.Monospace,
-            )
+            Text("按官方布局 · 可拖动缩放", fontSize = 10.sp, color = UbcmColors.Ash)
             Spacer(Modifier.weight(1f))
             if (st.mapLoading) Text("加载中…", fontSize = 10.sp, color = UbcmColors.Amber)
         }
-
         Spacer(Modifier.height(8.dp))
-
-        // 区域选择
+        Text("点一个区域，进入全屏座位图（桌子按官方图还原，可筛选、可点座位预约）",
+            fontSize = 10.sp, color = UbcmColors.InkSoft, lineHeight = 14.sp)
+        Spacer(Modifier.height(8.dp))
         FlowRowSimple(
-            items = areas,
+            items = st.floors.flatMap { f -> f.areas.map { f.name to it } },
             keyOf = { it.second.id },
             labelOf = { "${it.first}·${it.second.name}" },
             selectedId = st.mapRoomId,
-            onPick = { pair -> vm.loadMapRoom(pair.second.id, pair.second.name); pickedSeat = null },
+            onPick = { pair -> onOpenMap(pair.second.id, pair.second.name) },
         )
-
-        if (st.mapSeats.isEmpty() && st.mapError == null && !st.mapLoading) {
-            Spacer(Modifier.height(8.dp))
-            Text("选一个区域就能看到座位图", fontSize = 11.sp, color = UbcmColors.Ash)
-            return@Column
-        }
-
-        st.mapError?.let {
-            Spacer(Modifier.height(8.dp))
-            Text(it, fontSize = 11.sp, color = UbcmColors.Cinnabar, lineHeight = 15.sp)
-        }
-
-        if (st.mapSeats.isNotEmpty()) {
-            Spacer(Modifier.height(10.dp))
-
-            // 筛选：桌子类型
-            Text("桌子类型", fontSize = 10.sp, color = UbcmColors.InkSoft)
-            Spacer(Modifier.height(4.dp))
-            FlowRowSimple(
-                items = SeatFilter.DeskType.entries,
-                keyOf = { it.ordinal },
-                labelOf = { "${it.label} ${it.rangeText()}" },
-                selectedId = st.filterType.ordinal,
-                onPick = { vm.setFilterType(it) },
-            )
-
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("只显示整桌全空", fontSize = 11.sp, color = UbcmColors.InkSoft)
-                Spacer(Modifier.width(8.dp))
-                Box(
-                    Modifier.clip(RoundedCornerShape(6.dp))
-                        .background(if (st.filterOnlyFree) UbcmColors.Jade else UbcmColors.Line)
-                        .clickable { vm.setFilterOnlyFree(!st.filterOnlyFree) }
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        if (st.filterOnlyFree) "开" else "关",
-                        fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White,
-                    )
-                }
-                Spacer(Modifier.weight(1f))
-                val hit = remember(st.mapSeats, st.filterType, st.filterOnlyFree, st.slotStart, st.slotEnd) {
-                    vm.highlightedRanges().size
-                }
-                Text("命中 $hit 桌", fontSize = 10.sp, color = UbcmColors.Jade, fontWeight = FontWeight.SemiBold)
-            }
-
-            Spacer(Modifier.height(8.dp))
-            RoomSeatMap(
-                seats = st.mapSeats,
-                criteria = SeatFilter.Criteria(st.slotStart, st.slotEnd, st.filterType, st.filterOnlyFree),
-                highlighted = remember(st.mapSeats, st.filterType, st.filterOnlyFree, st.slotStart, st.slotEnd) {
-                    vm.highlightedRanges()
-                },
-                onSeatClick = { pickedSeat = it },
-            )
-
-            Spacer(Modifier.height(6.dp))
-            Text(
-                "拖动平移 · 双指缩放 · 双击复位 · 点座位预约",
-                fontSize = 10.sp, color = UbcmColors.Ash,
-            )
-
-
-            // 点击座位后的确认面板
-            pickedSeat?.let { seat ->
-                Spacer(Modifier.height(10.dp))
-                ReserveConfirmPanel(
-                    seat = seat,
-                    st = st,
-                    onCancel = { pickedSeat = null },
-                    onConfirm = {
-                        vm.reserveSeat(seat, DeskFinder.TimeSlot(st.slotStart, st.slotEnd))
-                    },
-                )
-            }
-        }
     }
 }
 
@@ -1003,6 +938,134 @@ private fun <T> FlowRowSimple(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+/**
+ * 全屏座位图。
+ *
+ * 为什么单独做全屏而不是嵌在列表里：画布需要**双指缩放 + 单指拖动**，
+ * 而外面套着 LazyColumn 的竖向滚动 —— 父级会先把手势吃掉，缩放根本用不了。
+ * 全屏页里没有可滚动父容器，手势才归画布自己。
+ */
+@Composable
+private fun SeatMapFullScreen(
+    roomId: Int,
+    roomName: String,
+    st: LibraryState,
+    vm: LibraryViewModel,
+    onBack: () -> Unit,
+) {
+    var pickedSeat by remember { mutableStateOf<SeatApi.Seat?>(null) }
+
+    // 进来先加载该区域（同一个区域重复进来不重复拉）
+    LaunchedEffect(roomId) {
+        if (st.mapRoomId != roomId || st.mapSeats.isEmpty()) vm.loadMapRoom(roomId, roomName)
+    }
+
+    val criteria = SeatFilter.Criteria(st.slotStart, st.slotEnd, st.filterType, st.filterOnlyFree)
+    val highlighted = remember(st.mapSeats, st.filterType, st.filterOnlyFree, st.slotStart, st.slotEnd) {
+        vm.highlightedRanges()
+    }
+
+    Surface(color = UbcmColors.Paper, modifier = Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
+            // 顶栏
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "‹  返回",
+                    fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = UbcmColors.InkSoft,
+                    modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickable { onBack() }
+                        .padding(horizontal = 6.dp, vertical = 5.dp),
+                )
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(roomName.ifBlank { "座位图" }, fontSize = 17.sp, fontWeight = FontWeight.Bold, color = UbcmColors.Ink)
+                    Text(
+                        if (st.mapDate.isNotBlank()) "约 ${mdText(st.mapDate)} · ${st.mapSeats.size} 座" else "加载中…",
+                        fontSize = 10.sp, color = UbcmColors.Ash, fontFamily = FontFamily.Monospace,
+                    )
+                }
+                if (st.mapLoading) Text("加载中…", fontSize = 10.sp, color = UbcmColors.Amber)
+            }
+
+            // 筛选条
+            Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp)) {
+                FlowRowSimple(
+                    items = SeatFilter.DeskType.entries,
+                    keyOf = { it.ordinal },
+                    labelOf = { it.label },
+                    selectedId = st.filterType.ordinal,
+                    onPick = { vm.setFilterType(it) },
+                )
+                Spacer(Modifier.height(6.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("只显示整桌全空", fontSize = 11.sp, color = UbcmColors.InkSoft)
+                    Spacer(Modifier.width(8.dp))
+                    Box(
+                        Modifier.clip(RoundedCornerShape(6.dp))
+                            .background(if (st.filterOnlyFree) UbcmColors.Jade else UbcmColors.Line)
+                            .clickable { vm.setFilterOnlyFree(!st.filterOnlyFree) }
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            if (st.filterOnlyFree) "开" else "关",
+                            fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White,
+                        )
+                    }
+                    Spacer(Modifier.weight(1f))
+                    Text("命中 ${highlighted.size} 桌", fontSize = 10.sp, color = UbcmColors.Jade, fontWeight = FontWeight.SemiBold)
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            st.mapError?.let {
+                Text(it, fontSize = 11.sp, color = UbcmColors.Cinnabar, modifier = Modifier.padding(horizontal = 14.dp))
+                Spacer(Modifier.height(6.dp))
+            }
+
+            // 画布撑满剩余空间
+            Box(Modifier.weight(1f).padding(horizontal = 10.dp)) {
+                if (st.mapLoading && st.mapSeats.isEmpty()) {
+                    Text(
+                        "正在读取 ${roomName} 的座位图…",
+                        fontSize = 12.sp, color = UbcmColors.Ash,
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                } else {
+                    RoomSeatMap(
+                        seats = st.mapSeats,
+                        criteria = criteria,
+                        highlighted = highlighted,
+                        modifier = Modifier.fillMaxSize(),
+                        heightDp = null,
+                        onSeatClick = { pickedSeat = it },
+                    )
+                }
+            }
+
+            // 底部：提示 or 确认面板
+            pickedSeat?.let { seat ->
+                Box(Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) {
+                    ReserveConfirmPanel(
+                        seat = seat,
+                        st = st,
+                        onCancel = { pickedSeat = null },
+                        onConfirm = { vm.reserveSeat(seat, DeskFinder.TimeSlot(st.slotStart, st.slotEnd)) },
+                    )
+                }
+            } ?: run {
+                Text(
+                    "拖动平移 · 双指缩放 · 双击复位 · 点座位预约",
+                    fontSize = 10.sp, color = UbcmColors.Ash,
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                )
             }
         }
     }

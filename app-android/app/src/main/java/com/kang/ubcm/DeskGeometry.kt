@@ -124,6 +124,31 @@ object DeskGeometry {
         }
     }
 
+    /**
+     * **整张桌的外接矩形：桌子 + 所有座位**。
+     *
+     * 高亮框和筛选框都要框住这个范围，而不是只框桌面 ——
+     * 只框桌面的话，座位会露在框外面，看起来像「框住的不是这张桌」。
+     */
+    fun outerBoxOf(desk: DeskFinder.Desk): Box? {
+        if (desk.seats.isEmpty()) return null
+        val table = boxOf(desk).table
+        val xs = desk.seats.map { it.x.toFloat() }
+        val ys = desk.seats.map { it.y.toFloat() }
+        val half = SEAT_SIZE / 2f
+        var left = xs.min() - half
+        var top = ys.min() - half
+        var right = xs.max() + half
+        var bottom = ys.max() + half
+        if (table != null) {
+            left = minOf(left, table.left)
+            top = minOf(top, table.top)
+            right = maxOf(right, table.right)
+            bottom = maxOf(bottom, table.bottom)
+        }
+        return Box(left, top, right, bottom)
+    }
+
     /** 座位方块（百分比坐标） */
     fun seatBox(seat: SeatApi.Seat): Box {
         val half = SEAT_SIZE / 2f
