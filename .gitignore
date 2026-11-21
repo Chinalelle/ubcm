@@ -1,0 +1,28 @@
+# ---- Android 构建产物 ----
+app-android/app/build/
+app-android/build/
+app-android/.gradle/
+app-android/.kotlin/
+*.apk
+*.aab
+*.iml
+
+# ---- IDE ----
+.idea/
+*.hprof
+
+# ---- 本机配置（含 SDK 路径，因机器而异） ----
+local.properties
+
+# ---- macOS ----
+.DS_Store
+
+# ---- 临时文件 / 日志 ----
+*.log
+*.tmp
+/tmp/
+
+# ---- 凭据一律不入库（本项目的红线：数据只在本机） ----
+# 任何 *_b64 / *.cookie / session 导出文件都不许提交
+*.cookie
+session*.json

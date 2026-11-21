@@ -1,0 +1,249 @@
+{
+ "widgets": [
+  "广告（高校标准版）",
+  "顶部轮播广告（北中医）"
+ ],
+ "widgetCount": 2,
+ "widgetGroups": 2,
+ "bucmLinks": [
+  {
+   "name": "教室方位表",
+   "unit": "数字与智慧校园建设中心（网信办）",
+   "raw": "{\"type\":\"1\",\"url\":\"http://i.bucm.edu.cn/dcp/uploadfiles/data/classroom.htm\"}"
+  },
+  {
+   "name": "最新来款请查看校内通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_29827717&randomx=0.12126440963624474\"}"
+  },
+  {
+   "name": "财务处关于实行投递报销的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=39a4862dbb5c4359"
+  },
+  {
+   "name": "2016年银行来款查询",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=9c25cd550ad4479b"
+  },
+  {
+   "name": "2017年银行来款查询",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id==92473846e199442"
+  },
+  {
+   "name": "2018年银行来款查询",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=4fbcf973ef0e4f67"
+  },
+  {
+   "name": "2021年来款查询",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=7c6d0921939745ef"
+  },
+  {
+   "name": "2022年银行来款查询",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=bacbc473ec144b28"
+  },
+  {
+   "name": "2023年银行来款查询",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id==1681a5941b1845c"
+  },
+  {
+   "name": "关于风险管控流程图和控制矩阵征求意见的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=d933f279df3a4515"
+  },
+  {
+   "name": "北京中医药大学内部控制建设工作培训会顺利召开",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=8abbee1b393642bb"
+  },
+  {
+   "name": "关于填写风险评估调查问卷的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=b072a8e4bd39407a"
+  },
+  {
+   "name": "内部控制建设试运行启动会顺利召开",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=1a6e51985c814f01"
+  },
+  {
+   "name": "关于各类奖助学金网上预约发放的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=5da2aea111ef42ca"
+  },
+  {
+   "name": "关于内部控制建设工作《风险清单》征求意见的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=49281a3c7dd345c3"
+  },
+  {
+   "name": "2015.12关于规范相关报销事项的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=328b690c38dc4d7a"
+  },
+  {
+   "name": "我校2012-2014年修购、长效项目检查工作及2016-2018年修购项目初审工作顺利完成",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=ee1e5f61ae0c431f"
+  },
+  {
+   "name": "2018.8.31退款查询",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=dbce60e234884a7b"
+  },
+  {
+   "name": "平铺式粘贴规范要求",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=9cb91cdb0eb94dd7"
+  },
+  {
+   "name": "关于召开内控启动会的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=f103ce4a197c497b"
+  },
+  {
+   "name": "电子发票预约报销",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=e2315d7729804706"
+  },
+  {
+   "name": "2017.3关于重申强制使用公务卡结算的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=e91ac453dd1b4a40"
+  },
+  {
+   "name": "《行政事业单位内部控制规范》专题讲座顺利召开",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=26e1f5af7a294f63"
+  },
+  {
+   "name": "关于召开2017年校内预算批复与内部控制工作会的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=9ae6afd2f6f04566"
+  },
+  {
+   "name": "2017.1关于中央财政资金项目强制使用公务卡结算的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=b8b583d11d134e41"
+  },
+  {
+   "name": "领取A4纸以及劳保用品网上报销流程",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=435619de9fa54723"
+  },
+  {
+   "name": "关于2018年校内预算批复的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=4d0815e19475474f"
+  },
+  {
+   "name": "关于开展北京中医药大学内部控制工作的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=b32af841368d4387"
+  },
+  {
+   "name": "2017年校内预算经费执行相关规定",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=25b8b8deed4b46e1"
+  },
+  {
+   "name": "2018年改善基本办学条件项目校内论证会会议简报",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=4b9c1c18e83d44a1"
+  },
+  {
+   "name": "2018.5退款查询",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=00b7c16e47e34185"
+  },
+  {
+   "name": "2018.12财务处关于进一步简化办事流程的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=9a5c59f8ef524d6f"
+  },
+  {
+   "name": "关于财务处对校内收入计税的说明",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=d030feb145f1411e"
+  },
+  {
+   "name": "2018.4关于再次重申强制使用公务卡结算的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=da316e075d7e4e3f"
+  },
+  {
+   "name": "台港澳学生公费医疗就诊、报销流程（试行）",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=7d28aadf7c9041f0"
+  },
+  {
+   "name": "来款网上查询与确认流程",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=2671bb0f8ed948dc"
+  },
+  {
+   "name": "网上劳务报酬申报及试行科研经费网上预约报销",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=4f54ef93efd04c79"
+  },
+  {
+   "name": "关于变更党费、会费查询方式的通知",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=6ad705a8b5f24521"
+  },
+  {
+   "name": "财政专项资金预算执行推进及2018-2020年改善基本办学条件项目申报启动会",
+   "unit": "财务处",
+   "raw": "{\"type\":\"1\",\"url\":\"https://i.bucm.edu.cn/tp_nup/index.html#act=sems-tp-nup_28585749&typeid=&rid=&contentid=&ownerid=&website=0&pim_id=444dc6861eb84f14"
+  }
+ ],
+ "appHits": [
+  {
+   "name": "AI计算平台资源开通申请",
+   "unit": "数字与智慧校园建设中心（网信办）",
+   "m": "https://workflow.bucm.edu.cn/v2/matter/detail?id=580",
+   "p": "https://workflow.bucm.edu.cn/v2/matter/detail?id=580"
+  },
+  {
+   "name": "科研云主机资源开通申请",
+   "unit": "数字与智慧校园建设中心（网信办）",
+   "m": "https://workflow.bucm.edu.cn/v2/matter/detail?id=575\n",
+   "p": "https://workflow.bucm.edu.cn/v2/matter/detail?id=575\n"
+  },
+  {
+   "name": "毕业生一卡通余额退款银行信息填报",
+   "unit": "数字与智慧校园建设中心（网信办）",
+   "m": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=211",
+   "p": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=211"
+  },
+  {
+   "name": "校园卡销户及余额批量退还申请",
+   "unit": "数字与智慧校园建设中心（网信办）",
+   "m": "https://workflow.bucm.edu.cn/v2/matter/detail?id=489",
+   "p": "https://workflow.bucm.edu.cn/v2/matter/detail?id=489"
+  },
+  {
+   "name": "附属医院职工校园卡办理申请",
+   "unit": "数字与智慧校园建设中心（网信办）",
+   "m": "https://workflow.bucm.edu.cn/v2/matter/detail?id=606",
+   "p": "https://workflow.bucm.edu.cn/v2/matter/detail?id=606"
+  },
+  {
+   "name": "校园一卡通（临时卡）申请",
+   "unit": "数字与智慧校园建设中心（网信办）",
+   "m": "https://workflow.bucm.edu.cn/v2/matter/detail?id=487\n",
+   "p": "https://workflow.bucm.edu.cn/v2/matter/detail?id=487\n"
+  },
+  {
+   "name": "临时人员开通图书馆借阅权限申请",
+   "unit": "图书馆",
+   "m": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=190",
+   "p": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=190"
+  }
+ ]
+}

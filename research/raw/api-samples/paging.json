@@ -1,0 +1,723 @@
+[
+ {
+  "n": "消息-待办分页",
+  "p": "/task/getTaskInfo",
+  "b": {
+   "pageNum": 1,
+   "pageSize": 10,
+   "start_date": "",
+   "end_date": "",
+   "msg_content": "",
+   "tab_type": "message_all",
+   "type_id": "",
+   "APP_ID": "",
+   "is_read": ""
+  },
+  "http": 200,
+  "bytes": 329,
+  "envelope": [
+   "code",
+   "msg",
+   "data",
+   "errorData"
+  ],
+  "code": 200,
+  "msgKey": "msg",
+  "msg": "操作成功",
+  "dataT": "object",
+  "shape": {
+   "total": {
+    "t": "number",
+    "s": "0"
+   },
+   "list": {
+    "t": "array",
+    "len": 0
+   },
+   "pageNum": {
+    "t": "number",
+    "s": "1"
+   },
+   "pageSize": {
+    "t": "number",
+    "s": "10"
+   },
+   "size": {
+    "t": "number",
+    "s": "0"
+   },
+   "startRow": {
+    "t": "number",
+    "s": "0"
+   },
+   "endRow": {
+    "t": "number",
+    "s": "0"
+   },
+   "pages": {
+    "t": "number",
+    "s": "0"
+   },
+   "prePage": {
+    "t": "number",
+    "s": "0"
+   },
+   "nextPage": {
+    "t": "number",
+    "s": "0"
+   },
+   "isFirstPage": {
+    "t": "boolean",
+    "s": "true"
+   },
+   "isLastPage": {
+    "t": "boolean",
+    "s": "true"
+   },
+   "hasPreviousPage": {
+    "t": "boolean",
+    "s": "false"
+   },
+   "hasNextPage": {
+    "t": "boolean",
+    "s": "false"
+   },
+   "navigatePages": {
+    "t": "number",
+    "s": "8"
+   },
+   "navigatepageNums": {
+    "t": "array",
+    "len": 0
+   },
+   "navigateFirstPage": {
+    "t": "number",
+    "s": "0"
+   },
+   "navigateLastPage": {
+    "t": "number",
+    "s": "0"
+   }
+  }
+ },
+ {
+  "n": "消息-提醒分页",
+  "p": "/task/getTaskInfo",
+  "b": {
+   "pageNum": 1,
+   "pageSize": 10,
+   "start_date": "",
+   "end_date": "",
+   "msg_content": "",
+   "tab_type": "message_remind",
+   "type_id": "",
+   "APP_ID": "",
+   "is_read": ""
+  },
+  "http": 200,
+  "bytes": 8512,
+  "envelope": [
+   "code",
+   "msg",
+   "data",
+   "errorData"
+  ],
+  "code": 200,
+  "msgKey": "msg",
+  "msg": "操作成功",
+  "dataT": "object",
+  "shape": {
+   "total": {
+    "t": "number",
+    "s": "118353"
+   },
+   "list": {
+    "t": "array",
+    "len": 10,
+    "item": {
+     "MSG_ID": {
+      "t": "string",
+      "s": "76627387-8388-48e9-9c88-fdd936c704ef"
+     },
+     "IS_READ": {
+      "t": "string",
+      "s": "0"
+     },
+     "RESOURCE_ID": {
+      "t": "string",
+      "s": "66779610025984"
+     },
+     "MSG_NODE": {
+      "t": "null",
+      "s": null
+     },
+     "APP_NAME": {
+      "t": "string",
+      "s": "OA系统"
+     },
+     "PC_ACCESS_ADRESS": {
+      "t": "string",
+      "s": "https://oa.bucm.edu.cn"
+     },
+     "ROW_ID": {
+      "t": "number",
+      "s": "1"
+     },
+     "MSG_RESULT": {
+      "t": "null",
+      "s": null
+     },
+     "opebutton": {
+      "t": "array",
+      "s": "[object Object]"
+     },
+     "OTHER_PK_ID": {
+      "t": "string",
+      "s": "76627387-8388-48e9-9c88-fdd936c704ef"
+     },
+     "MSG_TYPE": {
+      "t": "string",
+      "s": "待办事项"
+     },
+     "IS_DONE": {
+      "t": "string",
+      "s": "0"
+     },
+     "MSG_TYPE_ID": {
+      "t": "string",
+      "s": "1"
+     },
+     "tab_type": {
+      "t": "string",
+      "s": "message_remind"
+     },
+     "MSG_TITLE": {
+      "t": "string",
+      "s": "(正职审核)呈文：【普通】关于护理学院招生工作追加经费的请示"
+     },
+     "SERVICE": {
+      "t": "string",
+      "s": "2181006485688320"
+     },
+     "CREATE_TIME": {
+      "t": "string",
+      "s": "2026-11-19 21:02:06"
+     },
+     "MSG_CONTENT": {
+      "t": "string",
+      "s": "(正职审核)呈文：【普通】关于护理学院招生工作追加经费的请示"
+     },
+     "APP_EN_NAME": {
+      "t": "string",
+      "s": "OA"
+     }
+    }
+   },
+   "pageNum": {
+    "t": "number",
+    "s": "1"
+   },
+   "pageSize": {
+    "t": "number",
+    "s": "10"
+   },
+   "size": {
+    "t": "number",
+    "s": "10"
+   },
+   "startRow": {
+    "t": "number",
+    "s": "1"
+   },
+   "endRow": {
+    "t": "number",
+    "s": "10"
+   },
+   "pages": {
+    "t": "number",
+    "s": "11836"
+   },
+   "prePage": {
+    "t": "number",
+    "s": "0"
+   },
+   "nextPage": {
+    "t": "number",
+    "s": "2"
+   },
+   "isFirstPage": {
+    "t": "boolean",
+    "s": "true"
+   },
+   "isLastPage": {
+    "t": "boolean",
+    "s": "false"
+   },
+   "hasPreviousPage": {
+    "t": "boolean",
+    "s": "false"
+   },
+   "hasNextPage": {
+    "t": "boolean",
+    "s": "true"
+   },
+   "navigatePages": {
+    "t": "number",
+    "s": "8"
+   },
+   "navigatepageNums": {
+    "t": "array",
+    "len": 8,
+    "item": {
+     "t": "number",
+     "s": "1"
+    }
+   },
+   "navigateFirstPage": {
+    "t": "number",
+    "s": "1"
+   },
+   "navigateLastPage": {
+    "t": "number",
+    "s": "8"
+   }
+  }
+ },
+ {
+  "n": "消息-应用列表",
+  "p": "/task/getAppList",
+  "b": {
+   "tab_type": "message_all",
+   "msg_content": "",
+   "START_DATE": "",
+   "END_DATE": "",
+   "is_read": "",
+   "APP_ID": ""
+  },
+  "http": 200,
+  "bytes": 52,
+  "envelope": [
+   "code",
+   "msg",
+   "data",
+   "errorData"
+  ],
+  "code": 200,
+  "msgKey": "msg",
+  "msg": "操作成功",
+  "dataT": "array",
+  "shape": {
+   "t": "array",
+   "len": 0
+  }
+ },
+ {
+  "n": "校园信息-分页",
+  "p": "/bucm/campusBucm/getBnuCampusPimPageInfo",
+  "b": {
+   "pageNum": 1,
+   "pageSize": 5
+  },
+  "http": 200,
+  "bytes": 5369,
+  "envelope": [
+   "code",
+   "msg",
+   "data",
+   "errorData"
+  ],
+  "code": 200,
+  "msgKey": "msg",
+  "msg": "操作成功",
+  "dataT": "object",
+  "shape": {
+   "total": {
+    "t": "number",
+    "s": "33748"
+   },
+   "list": {
+    "t": "array",
+    "len": 5,
+    "item": {
+     "BELONG_UNIT_NAME": {
+      "t": "string",
+      "s": "基建处"
+     },
+     "IS_TOP_ORDER": {
+      "t": "null",
+      "s": null
+     },
+     "CONTENT_BIG_IMG_URL": {
+      "t": "null",
+      "s": null
+     },
+     "IS_READ": {
+      "t": "string",
+      "s": "0"
+     },
+     "IS_NEW": {
+      "t": "string",
+      "s": "1"
+     },
+     "RESOURCE_ID": {
+      "t": "string",
+      "s": "18844299227123712"
+     },
+     "PIM_ID": {
+      "t": "string",
+      "s": "18844299227123712"
+     },
+     "TIME": {
+      "t": "string",
+      "s": "2026-11-19T08:34:28.000+0000"
+     },
+     "IS_TOP": {
+      "t": "string",
+      "s": "0"
+     },
+     "ROW_ID": {
+      "t": "number",
+      "s": "1"
+     },
+     "TYPE_ID": {
+      "t": "string",
+      "s": "7"
+     },
+     "CONTENT_IMG_URL": {
+      "t": "null",
+      "s": null
+     },
+     "CATEGORY_TYPE_ID": {
+      "t": "string",
+      "s": "1"
+     },
+     "PIM_TITLE": {
+      "t": "string",
+      "s": "和平街校区学三楼加固改造项目开工典礼顺利举行"
+     },
+     "CREATE_TIME": {
+      "t": "string",
+      "s": "2026-11-19 16:34:28"
+     },
+     "DATE_TIME": {
+      "t": "string",
+      "s": "2026-11-19"
+     },
+     "TYPE_NAME": {
+      "t": "string",
+      "s": "新闻资讯"
+     },
+     "PIM_CONTENT": {
+      "t": "string",
+      "s": "2026年11月19日上午，我校和平街校区学三楼（原留学生公寓）加固改造项目举行开工典礼。北京中医药"
+     },
+     "TYPE_ENGLISH_NAME": {
+      "t": "string",
+      "s": "news"
+     }
+    }
+   },
+   "pageNum": {
+    "t": "number",
+    "s": "1"
+   },
+   "pageSize": {
+    "t": "number",
+    "s": "5"
+   },
+   "size": {
+    "t": "number",
+    "s": "5"
+   },
+   "startRow": {
+    "t": "number",
+    "s": "1"
+   },
+   "endRow": {
+    "t": "number",
+    "s": "5"
+   },
+   "pages": {
+    "t": "number",
+    "s": "6750"
+   },
+   "prePage": {
+    "t": "number",
+    "s": "0"
+   },
+   "nextPage": {
+    "t": "number",
+    "s": "2"
+   },
+   "isFirstPage": {
+    "t": "boolean",
+    "s": "true"
+   },
+   "isLastPage": {
+    "t": "boolean",
+    "s": "false"
+   },
+   "hasPreviousPage": {
+    "t": "boolean",
+    "s": "false"
+   },
+   "hasNextPage": {
+    "t": "boolean",
+    "s": "true"
+   },
+   "navigatePages": {
+    "t": "number",
+    "s": "8"
+   },
+   "navigatepageNums": {
+    "t": "array",
+    "len": 8,
+    "item": {
+     "t": "number",
+     "s": "1"
+    }
+   },
+   "navigateFirstPage": {
+    "t": "number",
+    "s": "1"
+   },
+   "navigateLastPage": {
+    "t": "number",
+    "s": "8"
+   }
+  }
+ },
+ {
+  "n": "邮箱-收件箱",
+  "p": "/bucm/oaemail/getInboxHome",
+  "b": {
+   "pageNum": 1,
+   "pageSize": 5
+  },
+  "http": 200,
+  "bytes": 278,
+  "envelope": [
+   "total",
+   "list",
+   "pageNum",
+   "pageSize",
+   "size",
+   "startRow",
+   "endRow",
+   "pages",
+   "prePage",
+   "nextPage",
+   "isFirstPage",
+   "isLastPage",
+   "hasPreviousPage",
+   "hasNextPage",
+   "navigatePages",
+   "navigatepageNums",
+   "navigateFirstPage",
+   "navigateLastPage"
+  ],
+  "dataT": "undefined",
+  "shape": {
+   "t": "undefined",
+   "s": "undefined"
+  }
+ },
+ {
+  "n": "问答-分页",
+  "p": "/bucm/ask/getTotalObjList",
+  "b": {
+   "pageNum": 1,
+   "pageSize": 5
+  },
+  "http": 200,
+  "bytes": 2738,
+  "envelope": [
+   "code",
+   "msg",
+   "data",
+   "errorData"
+  ],
+  "code": 200,
+  "msgKey": "msg",
+  "msg": "操作成功",
+  "dataT": "object",
+  "shape": {
+   "total": {
+    "t": "number",
+    "s": "8682"
+   },
+   "list": {
+    "t": "array",
+    "len": 5,
+    "item": {
+     "ASK_ID": {
+      "t": "string",
+      "s": "7590817280176128"
+     },
+     "IS_ANSWER": {
+      "t": "number",
+      "s": "1"
+     },
+     "ASK_TITLE": {
+      "t": "string",
+      "s": "毕业生打印费报销拖欠问题"
+     },
+     "DEPARTMENT_ID": {
+      "t": "string",
+      "s": "900102"
+     },
+     "CREATE_USER": {
+      "t": "string",
+      "s": "20250941318"
+     },
+     "USER_NAME": {
+      "t": "string",
+      "s": "曹彦姝"
+     },
+     "ASK_CONTENT": {
+      "t": "string",
+      "s": "本人所在的东方医院25级硕士毕业生中，时隔一年余多名同学的打印费至今未报销。期间一直联系我院的研究生"
+     },
+     "ANSWER_CONTENT": {
+      "t": "string",
+      "s": "同学，你好，经与相关部门沟通，你反映的问题将由研究院和东方医院给你具体答复。"
+     },
+     "ROW_ID": {
+      "t": "number",
+      "s": "1"
+     },
+     "UNIT_NAME": {
+      "t": "null",
+      "s": null
+     },
+     "HF_UNIT_NAME": {
+      "t": "string",
+      "s": "党委办公室、校长办公室（法律事务办公室、望京校区综合管理办公室）\n"
+     },
+     "PIC_URL": {
+      "t": "null",
+      "s": null
+     },
+     "CREATE_TIME": {
+      "t": "string",
+      "s": "2026-06-01T07:08:55.000+0000"
+     }
+    }
+   },
+   "pageNum": {
+    "t": "number",
+    "s": "1"
+   },
+   "pageSize": {
+    "t": "number",
+    "s": "5"
+   },
+   "size": {
+    "t": "number",
+    "s": "5"
+   },
+   "startRow": {
+    "t": "number",
+    "s": "1"
+   },
+   "endRow": {
+    "t": "number",
+    "s": "5"
+   },
+   "pages": {
+    "t": "number",
+    "s": "1737"
+   },
+   "prePage": {
+    "t": "number",
+    "s": "0"
+   },
+   "nextPage": {
+    "t": "number",
+    "s": "2"
+   },
+   "isFirstPage": {
+    "t": "boolean",
+    "s": "true"
+   },
+   "isLastPage": {
+    "t": "boolean",
+    "s": "false"
+   },
+   "hasPreviousPage": {
+    "t": "boolean",
+    "s": "false"
+   },
+   "hasNextPage": {
+    "t": "boolean",
+    "s": "true"
+   },
+   "navigatePages": {
+    "t": "number",
+    "s": "8"
+   },
+   "navigatepageNums": {
+    "t": "array",
+    "len": 8,
+    "item": {
+     "t": "number",
+     "s": "1"
+    }
+   },
+   "navigateFirstPage": {
+    "t": "number",
+    "s": "1"
+   },
+   "navigateLastPage": {
+    "t": "number",
+    "s": "8"
+   }
+  }
+ },
+ {
+  "n": "日程-全部",
+  "p": "/up/calendar/getAllCal",
+  "b": {
+   "pageNum": 1,
+   "pageSize": 10
+  },
+  "http": 500,
+  "bytes": 29,
+  "envelope": [
+   "code",
+   "message"
+  ],
+  "code": 500,
+  "msgKey": "message",
+  "msg": "系统异常",
+  "dataT": "undefined",
+  "shape": {
+   "t": "undefined",
+   "s": "undefined"
+  }
+ },
+ {
+  "n": "服务-最近查询",
+  "p": "/bucm/fw/getRecentQuery",
+  "b": {
+   "token": "",
+   "searchStr": null
+  },
+  "http": 200,
+  "bytes": 54,
+  "envelope": [
+   "code",
+   "msg",
+   "data",
+   "errorData"
+  ],
+  "code": 400,
+  "msgKey": "msg",
+  "msg": "操作失败",
+  "dataT": "null",
+  "shape": {
+   "t": "null",
+   "s": null
+  }
+ }
+]

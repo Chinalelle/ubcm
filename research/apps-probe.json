@@ -1,0 +1,7100 @@
+{
+ "mobile_ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+ "desktop_ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+ "results": {
+  "225155950477635584": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Ftcmgest.bucm.edu.cn%2Fiplat-cas-manager%2FthirdLogin%2Flogin%2Fbucm",
+    "time": 0.037311,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://tcmgest.bucm.edu.cn/iplat-cas-manager/thirdLogin/login/bucm",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.112454,
+    "size": 13602,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Ftcmgest.bucm.edu.cn%2Fiplat-cas-manager%2FthirdLogin%2Flogin%2Fbucm",
+    "err": ""
+   }
+  },
+  "7228921016320": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fpass.fifedu.com%2Fiplat-cas-manager%2FthirdLogin%2Flogin%2Fbucm",
+    "time": 0.095276,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://pass.fifedu.com/iplat-cas-manager/thirdLogin/login/bucm",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.165382,
+    "size": 13596,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fpass.fifedu.com%2Fiplat-cas-manager%2FthirdLogin%2Flogin%2Fbucm",
+    "err": ""
+   }
+  },
+  "206196903477047296": {
+   "pc": {
+    "code": 301,
+    "redirect_url": "https://qhz.bucm.edu.cn/cc/",
+    "time": 0.058543,
+    "size": 162,
+    "ctype": "text/html",
+    "effective": "https://qhz.bucm.edu.cn/cc",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.172034,
+    "size": 11754,
+    "ctype": "text/html",
+    "effective": "https://qhz.bucm.edu.cn/cc/",
+    "err": ""
+   }
+  },
+  "27201708294144": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.108764,
+    "size": 3934,
+    "ctype": "text/html;charset=utf-8",
+    "effective": "https://xkrl.bucm.edu.cn/widgets/index/",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.101814,
+    "size": 3934,
+    "ctype": "text/html;charset=utf-8",
+    "effective": "https://xkrl.bucm.edu.cn/widgets/index/",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.111594,
+    "size": 3934,
+    "ctype": "text/html;charset=utf-8",
+    "effective": "https://xkrl.bucm.edu.cn/widgets/index/",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.123505,
+    "size": 3934,
+    "ctype": "text/html;charset=utf-8",
+    "effective": "https://xkrl.bucm.edu.cn/widgets/index/",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.130869,
+    "size": 3934,
+    "ctype": "text/html;charset=utf-8",
+    "effective": "https://xkrl.bucm.edu.cn/widgets/index/",
+    "err": ""
+   }
+  },
+  "21971829317632": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "http://202.204.38.93/sso/",
+    "time": 0.014221,
+    "size": 0,
+    "ctype": "",
+    "effective": "http://202.204.38.93/sso",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.091618,
+    "size": 13460,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fsjjx.bucm.edu.cn%2Fsso%2F",
+    "err": ""
+   }
+  },
+  "22227182739456": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://cas.bucm.edu.cn/cas?service=https%3A%2F%2Fksxt.bucm.edu.cn%3A5443%2Fsmuexam%2Fcas",
+    "time": 0.05617,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://ksxt.bucm.edu.cn:5443/smuexam/cas",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.150096,
+    "size": 13501,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fksxt.bucm.edu.cn%3A5443%2Fsmuexam%2Fcas",
+    "err": ""
+   }
+  },
+  "21628542312448": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "http://10.64.128.2:88/ve/",
+    "time": 0.019979,
+    "size": 0,
+    "ctype": "",
+    "effective": "http://10.64.128.2:88/ve",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.097168,
+    "size": 13441,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=http%3A%2F%2Fqxkt.bucm.edu.cn%3A88%2Fve%2F",
+    "err": ""
+   }
+  },
+  "19684142669824": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fbb.bucm.edu.cn%2Fwebapps%2Fbb-sso-BBLEARN%2Findex.jsp",
+    "time": 0.058439,
+    "size": 0,
+    "ctype": "application/octet-stream;charset=UTF-8",
+    "effective": "https://bb.bucm.edu.cn/webapps/bb-sso-BBLEARN/index.jsp",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.111339,
+    "size": 13504,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fbb.bucm.edu.cn%2Fwebapps%2Fbb-sso-BBLEARN%2Findex.jsp",
+    "err": ""
+   }
+  },
+  "19387806703616": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://jw.bucm.edu.cn/",
+    "time": 0.016321,
+    "size": 0,
+    "ctype": "",
+    "effective": "http://jw.bucm.edu.cn/",
+    "err": ""
+   },
+   "m": {
+    "code": 302,
+    "redirect_url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https%3A%2F%2Fjw.bucm.edu.cn%2Fnjwhd%2Flogin%2Fwechatcp&response_type=code&scope=snsapi_base#wechat_redirect",
+    "time": 0.063599,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://jw.bucm.edu.cn/njwhd/login/wechatcp",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.076272,
+    "size": 134,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://jw.bucm.edu.cn/",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 302,
+    "redirect_url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https%3A%2F%2Fjw.bucm.edu.cn%2Fnjwhd%2Flogin%2Fwechatcp&response_type=code&scope=snsapi_base#wechat_redirect",
+    "time": 0.069025,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://jw.bucm.edu.cn/njwhd/login/wechatcp",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.290209,
+    "size": 1050,
+    "ctype": "text/html; charset=gbk",
+    "effective": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https%3A%2F%2Fjw.bucm.edu.cn%2Fnjwhd%2Flogin%2Fwechatcp&response_type=code&scope=snsapi_base&connect_redirect=1#wechat_redirect",
+    "err": ""
+   }
+  },
+  "22509098688512": {
+   "m": {
+    "code": 302,
+    "redirect_url": "https://wxapp.bucm.edu.cn/site/qrcodeLogin/index?appid=200210320105100621&smlogin=1&redirect_uri=https%3A%2F%2Flexiangla.com%2Fsuites%2Fauth-callback&state=c568de9c-7254-49b5-a78f-37c08f46369b",
+    "time": 0.422936,
+    "size": 1060,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://lexiangla.com/?company_from=69461ecc75d511eb80ed0ee86723db9b",
+    "err": ""
+   },
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://wxapp.bucm.edu.cn/site/qrcodeLogin/index?appid=200210320105100621&smlogin=1&redirect_uri=https%3A%2F%2Flexiangla.com%2Fsuites%2Fauth-callback&state=4e0b78f5-c747-4c05-bd2f-a251b1e4eb66",
+    "time": 0.594131,
+    "size": 1060,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://lexiangla.com/?company_from=69461ecc75d511eb80ed0ee86723db9b",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.713795,
+    "size": 9216,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://wxapp.bucm.edu.cn/site/qrcodeLogin/index?appid=200210320105100621&smlogin=1&redirect_uri=https%3A%2F%2Flexiangla.com%2Fsuites%2Fauth-callback&state=7940493f-567a-49d5-bc01-7c236e6f438d",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 1.057919,
+    "size": 9216,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://wxapp.bucm.edu.cn/site/qrcodeLogin/index?appid=200210320105100621&smlogin=1&redirect_uri=https%3A%2F%2Flexiangla.com%2Fsuites%2Fauth-callback&state=79e86b7c-f6db-4e1c-bb01-fde00d019e01",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 302,
+    "redirect_url": "https://wxapp.bucm.edu.cn/site/qrcodeLogin/index?appid=200210320105100621&smlogin=1&redirect_uri=https%3A%2F%2Flexiangla.com%2Fsuites%2Fauth-callback&state=d7ad0d1b-2ef8-402f-99a1-79bed33a5d9d",
+    "time": 1.348963,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://lexiangla.com/?company_from=69461ecc75d511eb80ed0ee86723db9b",
+    "err": ""
+   }
+  },
+  "8675382321152": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://cas.bucm.edu.cn/cas/login?service=https%3a%2f%2fyjsxt.bucm.edu.cn%2fUlogin.aspx",
+    "time": 0.040051,
+    "size": 204,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://yjsxt.bucm.edu.cn/Ulogin.aspx",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.110075,
+    "size": 13479,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https%3a%2f%2fyjsxt.bucm.edu.cn%2fUlogin.aspx",
+    "err": ""
+   }
+  },
+  "117213035290624": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.058018,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=546",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.057545,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=546",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.057577,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=546",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.050772,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=546",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044501,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=546",
+    "err": ""
+   }
+  },
+  "1080459476910082": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044813,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=375",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.03736,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=375",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042135,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=375",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042581,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=375",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042584,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=375",
+    "err": ""
+   }
+  },
+  "1080459476910084": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040392,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=591",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042054,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=591",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040501,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=591",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043653,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=591",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038853,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=591",
+    "err": ""
+   }
+  },
+  "1052103129743361": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040388,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=368",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040525,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=368",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042443,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=368",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043129,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=368",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039022,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=368",
+    "err": ""
+   }
+  },
+  "102420484251648": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037134,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=580",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04332,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=580",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043727,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=580",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046257,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=580",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041949,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=580",
+    "err": ""
+   }
+  },
+  "1024204842516481": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038946,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=581",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036819,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=581",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041242,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=581",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041353,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=581",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041845,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=581",
+    "err": ""
+   }
+  },
+  "1024204842516482": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04848,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=575",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.051686,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=575",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.060638,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=575",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041598,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=575",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041621,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=575",
+    "err": ""
+   }
+  },
+  "1024204842516483": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037175,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=578",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.034149,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=578",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.035347,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=578",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04507,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=578",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04521,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=578",
+    "err": ""
+   }
+  },
+  "418": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044482,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=418",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042685,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=418",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041443,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=418",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042559,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=418",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048351,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=418",
+    "err": ""
+   }
+  },
+  "100396343432376320": {
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.027697,
+    "size": 834,
+    "ctype": "text/html",
+    "effective": "https://zcglyd.bucm.edu.cn/",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.053025,
+    "size": 2028,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://zcgl.bucm.edu.cn/",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042436,
+    "size": 2028,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://zcgl.bucm.edu.cn/",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.033683,
+    "size": 834,
+    "ctype": "text/html",
+    "effective": "https://zcglyd.bucm.edu.cn/",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.031828,
+    "size": 834,
+    "ctype": "text/html",
+    "effective": "https://zcglyd.bucm.edu.cn/",
+    "err": ""
+   }
+  },
+  "83105900118208512": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.034255,
+    "size": 12971,
+    "ctype": "text/html",
+    "effective": "https://ipms.bucm.edu.cn/",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037796,
+    "size": 12971,
+    "ctype": "text/html",
+    "effective": "https://ipms.bucm.edu.cn/",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.034739,
+    "size": 12971,
+    "ctype": "text/html",
+    "effective": "https://ipms.bucm.edu.cn/",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041644,
+    "size": 12971,
+    "ctype": "text/html",
+    "effective": "https://ipms.bucm.edu.cn/",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.034156,
+    "size": 12971,
+    "ctype": "text/html",
+    "effective": "https://ipms.bucm.edu.cn/",
+    "err": ""
+   }
+  },
+  "5468496830459904": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://cgpt.bucm.edu.cn/web",
+    "time": 0.025436,
+    "size": 0,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://cgpt.bucm.edu.cn/",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.051837,
+    "size": 21507,
+    "ctype": "text/html",
+    "effective": "https://cgpt.bucm.edu.cn/web/",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 301,
+    "redirect_url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https%3A%2F%2Fcgpt.bucm.edu.cn%2Fv3%2Fpublic%2Fbase%2FWechat%2Findex&response_type=code&scope=snsapi_base&state=&agentid=1000122&connect_redirect=1#wechat_redirect",
+    "time": 0.128065,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https%3A%2F%2Fcgpt.bucm.edu.cn%2Fv3%2Fpublic%2Fbase%2FWechat%2Findex&response_type=code&scope=snsapi_base&state=&agentid=1000122#wechat_redirect",
+    "err": ""
+   },
+   "m": {
+    "code": 301,
+    "redirect_url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https%3A%2F%2Fcgpt.bucm.edu.cn%2Fv3%2Fpublic%2Fbase%2FWechat%2Findex&response_type=code&scope=snsapi_base&state=&agentid=1000122&connect_redirect=1#wechat_redirect",
+    "time": 0.140153,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https%3A%2F%2Fcgpt.bucm.edu.cn%2Fv3%2Fpublic%2Fbase%2FWechat%2Findex&response_type=code&scope=snsapi_base&state=&agentid=1000122#wechat_redirect",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.207177,
+    "size": 1050,
+    "ctype": "text/html; charset=gbk",
+    "effective": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https%3A%2F%2Fcgpt.bucm.edu.cn%2Fv3%2Fpublic%2Fbase%2FWechat%2Findex&response_type=code&scope=snsapi_base&state=&agentid=1000122&connect_redirect=1#wechat_redirect",
+    "err": ""
+   }
+  },
+  "166305943552": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fszcw.bucm.edu.cn%2FWFManager%2Fhome2.jsp",
+    "time": 0.03062,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://szcw.bucm.edu.cn/WFManager/home2.jsp",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.069196,
+    "size": 13487,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fszcw.bucm.edu.cn%2FWFManager%2Fhome2.jsp",
+    "err": ""
+   },
+   "m": {
+    "code": 301,
+    "redirect_url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https://jiaofei.bucm.edu.cn/APP_MHOME/weixinentry.html&response_type=code&scope=snsapi_userinfo&state=FUYIEnquiry&connect_redirect=1#wechat_redirect",
+    "time": 0.143553,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https://jiaofei.bucm.edu.cn/APP_MHOME/weixinentry.html&response_type=code&scope=snsapi_userinfo&state=FUYIEnquiry#wechat_redirect",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 301,
+    "redirect_url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https://jiaofei.bucm.edu.cn/APP_MHOME/weixinentry.html&response_type=code&scope=snsapi_userinfo&state=FUYIEnquiry&connect_redirect=1#wechat_redirect",
+    "time": 0.14643,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https://jiaofei.bucm.edu.cn/APP_MHOME/weixinentry.html&response_type=code&scope=snsapi_userinfo&state=FUYIEnquiry#wechat_redirect",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.213731,
+    "size": 1050,
+    "ctype": "text/html; charset=gbk",
+    "effective": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&redirect_uri=https://jiaofei.bucm.edu.cn/APP_MHOME/weixinentry.html&response_type=code&scope=snsapi_userinfo&state=FUYIEnquiry&connect_redirect=1#wechat_redirect",
+    "err": ""
+   }
+  },
+  "5530656994553856": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://fwgl.bucm.edu.cn/archibus/",
+    "time": 0.051667,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://fwgl.bucm.edu.cn/archibus",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.06158,
+    "size": 385,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://fwgl.bucm.edu.cn/archibus/",
+    "err": ""
+   },
+   "m": {
+    "code": 302,
+    "redirect_url": "https://fwgl.bucm.edu.cn/archibus/",
+    "time": 0.05061,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://fwgl.bucm.edu.cn/archibus",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 302,
+    "redirect_url": "https://fwgl.bucm.edu.cn/archibus/",
+    "time": 0.051773,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://fwgl.bucm.edu.cn/archibus",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.058577,
+    "size": 385,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://fwgl.bucm.edu.cn/archibus/",
+    "err": ""
+   }
+  },
+  "18473737838592": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066,
+    "size": 107,
+    "ctype": "text/html",
+    "effective": "https://jjh.bucm.edu.cn/",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.076461,
+    "size": 107,
+    "ctype": "text/html",
+    "effective": "https://jjh.bucm.edu.cn/",
+    "err": ""
+   }
+  },
+  "84378803036160": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037273,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=528",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036885,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=528",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039042,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=528",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036279,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=528",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042416,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=528",
+    "err": ""
+   }
+  },
+  "12136102551552": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://cas.bucm.edu.cn/cas/oauth2.0/authorize?client_id=BucmGxjspt&redirect_uri=https://dygxpt.bucm.edu.cn/lfsms/user/loginFcas&response_type=code",
+    "time": 0.084082,
+    "size": 0,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://dygxpt.bucm.edu.cn/lfsms/user/loginFcas",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.12612,
+    "size": 13718,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fcas.bucm.edu.cn%2Fcas%2Foauth2.0%2FcallbackAuthorize%3Fsession_state%3D24CD4D1812D9284FC5A52C4ACD559C49",
+    "err": ""
+   }
+  },
+  "72296560910336": {
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037242,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=552",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041046,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=552",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04667,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=552",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044491,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=552",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042555,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=552",
+    "err": ""
+   }
+  },
+  "67346476883968": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040183,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=466",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.0388,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=466",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038368,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=466",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046006,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=466",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043929,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=466",
+    "err": ""
+   }
+  },
+  "673464768839681": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038385,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=425",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041516,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=425",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046677,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=425",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045457,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=425",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.050873,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=425",
+    "err": ""
+   }
+  },
+  "673464768839682": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.051882,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=426",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04404,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=426",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048679,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=426",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045609,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=426",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045787,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=426",
+    "err": ""
+   }
+  },
+  "673464768839683": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043605,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=486",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042996,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=486",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037725,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=486",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037604,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=486",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043129,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=486",
+    "err": ""
+   }
+  },
+  "673464768839684": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044747,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=525",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047057,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=525",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042222,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=525",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041819,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=525",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049479,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=525",
+    "err": ""
+   }
+  },
+  "673464768839685": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040531,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=454",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040651,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=454",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040857,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=454",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043927,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=454",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044011,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=454",
+    "err": ""
+   }
+  },
+  "66983833165824": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042336,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=469",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046651,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=469",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040462,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=469",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039631,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=469",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042233,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=469",
+    "err": ""
+   }
+  },
+  "673": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047726,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=673",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039245,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=673",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04111,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=673",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043066,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=673",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041789,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=673",
+    "err": ""
+   }
+  },
+  "699": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04142,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=699",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040822,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=699",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04929,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=699",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041611,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=699",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043595,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=699",
+    "err": ""
+   }
+  },
+  "700": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049212,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=700",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048913,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=700",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047758,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=700",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048614,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=700",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046422,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=700",
+    "err": ""
+   }
+  },
+  "211": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044763,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=211",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044914,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=211",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040049,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=211",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042007,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=211",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040529,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=211",
+    "err": ""
+   }
+  },
+  "11369878708224": {
+   "pc_follow": {
+    "code": 404,
+    "redirect_url": "",
+    "time": 0.02185,
+    "size": 3950,
+    "ctype": "text/html",
+    "effective": "http://10.6.50.201/ERP/bucmCas.jsp",
+    "err": ""
+   },
+   "pc": {
+    "code": 404,
+    "redirect_url": "",
+    "time": 0.023969,
+    "size": 3950,
+    "ctype": "text/html",
+    "effective": "http://10.6.50.201/ERP/bucmCas.jsp",
+    "err": ""
+   }
+  },
+  "4669272547328": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://cas.bucm.edu.cn/cas/login?service=http%3A%2F%2Fwsgl.bucm.edu.cn%2F%3Bjsessionid%3D9C96F0EA40AF9CB13D644DA10CD9563F",
+    "time": 0.041283,
+    "size": 0,
+    "ctype": "",
+    "effective": "https://wsgl.bucm.edu.cn/",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.081619,
+    "size": 13591,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=http%3A%2F%2Fwsgl.bucm.edu.cn%2F%3Bjsessionid%3DF97A502D8916F4CFE53221AF407DC121",
+    "err": ""
+   }
+  },
+  "99176802476032": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041349,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=579",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039434,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=579",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043805,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=579",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041036,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=579",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04139,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=579",
+    "err": ""
+   }
+  },
+  "95393997447168": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041115,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=577",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043348,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=577",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043757,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=577",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042213,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=577",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042213,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=577",
+    "err": ""
+   }
+  },
+  "953939974471681": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.05236,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=547",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045964,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=547",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045055,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=547",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045015,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=547",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044461,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=547",
+    "err": ""
+   }
+  },
+  "953939974471682": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040236,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=406",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036389,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=406",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043228,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=406",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045546,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=406",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046344,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=406",
+    "err": ""
+   }
+  },
+  "77271043203072": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.0465,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=503",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045634,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=503",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040234,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=503",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042647,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=503",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04044,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=503",
+    "err": ""
+   }
+  },
+  "15417150599168": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040016,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=502",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040346,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=502",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04301,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=502",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041928,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=502",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043901,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=502",
+    "err": ""
+   }
+  },
+  "119343083216896": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045988,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=484",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046158,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=484",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046145,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=484",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.03939,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=484",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045214,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=484",
+    "err": ""
+   }
+  },
+  "1193430832168961": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039493,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=483",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038207,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=483",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042112,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=483",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038802,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=483",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045047,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=483",
+    "err": ""
+   }
+  },
+  "11934308321689610": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038197,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=526",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038051,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=526",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040808,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=526",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040851,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=526",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042487,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=526",
+    "err": ""
+   }
+  },
+  "11934308321689611": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044352,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=464",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048464,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=464",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048192,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=464",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046268,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=464",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044755,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=464",
+    "err": ""
+   }
+  },
+  "11934308321689612": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046156,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=557",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047945,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=557",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042538,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=557",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043052,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=557",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048279,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=557",
+    "err": ""
+   }
+  },
+  "1193430832168962": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040139,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=475",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047705,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=475",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041334,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=475",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.035905,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=475",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041271,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=475",
+    "err": ""
+   }
+  },
+  "1193430832168964": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044737,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=462",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042101,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=462",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042151,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=462",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042868,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=462",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042969,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=462",
+    "err": ""
+   }
+  },
+  "1193430832168965": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042381,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=389",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038623,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=389",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044638,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=389",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.05238,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=389",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039071,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=389",
+    "err": ""
+   }
+  },
+  "1193430832168966": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.035941,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=467",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038688,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=467",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039657,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=467",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.0474,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=467",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048404,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=467",
+    "err": ""
+   }
+  },
+  "1193430832168967": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048178,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=587",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=587",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049332,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=587",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040684,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=587",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043067,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=587",
+    "err": ""
+   }
+  },
+  "1193430832168968": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043117,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=589",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046836,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=589",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036525,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=589",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036363,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=589",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04623,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=589",
+    "err": ""
+   }
+  },
+  "1193430832168969": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.052553,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=432",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045129,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=432",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049167,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=432",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042639,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=432",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043302,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=432",
+    "err": ""
+   }
+  },
+  "118380268150784": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.052297,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=461",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.052314,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=461",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048288,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=461",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044948,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=461",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.0433,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=461",
+    "err": ""
+   }
+  },
+  "118147496861696": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039083,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=493",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039475,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=493",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040788,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=493",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037754,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=493",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039855,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=493",
+    "err": ""
+   }
+  },
+  "117550001479680": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.035092,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=529",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.035543,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=529",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041266,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=529",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043226,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=529",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043698,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=529",
+    "err": ""
+   }
+  },
+  "1052103129743365": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036225,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=553",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038459,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=553",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043235,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=553",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043794,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=553",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04368,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=553",
+    "err": ""
+   }
+  },
+  "125845298798592": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040712,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=512",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04853,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=512",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041692,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=512",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045339,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=512",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04159,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=512",
+    "err": ""
+   }
+  },
+  "125606324133888": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.0449,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=532",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.03924,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=532",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04072,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=532",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042316,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=532",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040388,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=532",
+    "err": ""
+   }
+  },
+  "1256063241338881": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046431,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=549",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047028,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=549",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044528,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=549",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045414,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=549",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046136,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=549",
+    "err": ""
+   }
+  },
+  "125380783824896": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044981,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=431",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04256,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=431",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048205,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=431",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046433,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=431",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041009,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=431",
+    "err": ""
+   }
+  },
+  "124704448110592": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041383,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=541",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041366,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=541",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040803,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=541",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043141,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=541",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041686,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=541",
+    "err": ""
+   }
+  },
+  "671": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040888,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=671",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044137,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=671",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044109,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=671",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045597,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=671",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.050655,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=671",
+    "err": ""
+   }
+  },
+  "433": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041715,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=433",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042629,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=433",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.050478,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=433",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.0531,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=433",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.051217,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=433",
+    "err": ""
+   }
+  },
+  "407": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046968,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=407",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049681,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=407",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.053199,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=407",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.053051,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=407",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.050052,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=407",
+    "err": ""
+   }
+  },
+  "312": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042961,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=312",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042942,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=312",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039843,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=312",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037702,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=312",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036786,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=312",
+    "err": ""
+   }
+  },
+  "313": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.03707,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=313",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036393,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=313",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.03668,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=313",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042904,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=313",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049028,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=313",
+    "err": ""
+   }
+  },
+  "307": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04169,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=307",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044074,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=307",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038271,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=307",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04382,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=307",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041572,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=307",
+    "err": ""
+   }
+  },
+  "196": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04157,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=196",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044432,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=196",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040857,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=196",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039851,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=196",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042003,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=196",
+    "err": ""
+   }
+  },
+  "199": {
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040382,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=199",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040959,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=199",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043782,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=199",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043657,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=199",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046169,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=199",
+    "err": ""
+   }
+  },
+  "200": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042064,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=200",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043592,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=200",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039641,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=200",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.035542,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=200",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.03969,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=200",
+    "err": ""
+   }
+  },
+  "208": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=208",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045334,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=208",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045345,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=208",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042641,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=208",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041212,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=208",
+    "err": ""
+   }
+  },
+  "101910182095286272": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038149,
+    "size": 16933,
+    "ctype": "text/html",
+    "effective": "https://sdfd.bucm.edu.cn/",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038558,
+    "size": 16933,
+    "ctype": "text/html",
+    "effective": "https://sdfd.bucm.edu.cn/",
+    "err": ""
+   }
+  },
+  "1224469700608": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039053,
+    "size": 13582,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=http://jy.bucm.edu.cn/api/sso/client/validateLogin?loginType=PC",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.034867,
+    "size": 13582,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=http://jy.bucm.edu.cn/api/sso/client/validateLogin?loginType=PC",
+    "err": ""
+   }
+  },
+  "13943293927424": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047711,
+    "size": 28376,
+    "ctype": "text/html",
+    "effective": "https://zhzz.bucm.edu.cn/",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04637,
+    "size": 28376,
+    "ctype": "text/html",
+    "effective": "https://zhzz.bucm.edu.cn/",
+    "err": ""
+   }
+  },
+  "96468578131968": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042373,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=548",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039814,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=548",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037852,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=548",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043775,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=548",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.0397,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=548",
+    "err": ""
+   }
+  },
+  "86448608174080": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040255,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=573",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040445,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=573",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038605,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=573",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046581,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=573",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.055254,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=573",
+    "err": ""
+   }
+  },
+  "80497347977216": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.052851,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=407",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049989,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=407",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043896,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=407",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049718,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=407",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046306,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=407",
+    "err": ""
+   }
+  },
+  "804973479772161": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045354,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=360",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04205,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=360",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040323,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=360",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041386,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=360",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046803,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=360",
+    "err": ""
+   }
+  },
+  "804973479772162": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044319,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=353",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036753,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=353",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.032408,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=353",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04116,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=353",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042121,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=353",
+    "err": ""
+   }
+  },
+  "78322450358272": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044336,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=595",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044329,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=595",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044532,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=595",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.036873,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=595",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045165,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=595",
+    "err": ""
+   }
+  },
+  "77992341856256": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040796,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=593",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044054,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=593",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044154,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=593",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043158,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=593",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047073,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=593",
+    "err": ""
+   }
+  },
+  "742566598328322": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04382,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=345",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048262,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=345",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043379,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=345",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.05016,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=345",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04159,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=345",
+    "err": ""
+   }
+  },
+  "742566598328323": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042063,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=363",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.034354,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=363",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039263,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=363",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045545,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=363",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041536,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=363",
+    "err": ""
+   }
+  },
+  "742566598328324": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044001,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=505",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044391,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=505",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039486,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=505",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039696,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=505",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04554,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=505",
+    "err": ""
+   }
+  },
+  "742566598328325": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.053002,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=572",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044612,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=572",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042368,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=572",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044927,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=572",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.050126,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=572",
+    "err": ""
+   }
+  },
+  "742566598328326": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041653,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=381",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.03873,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=381",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042967,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=381",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042149,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=381",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045237,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=381",
+    "err": ""
+   }
+  },
+  "742566598328327": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043381,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=343",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.050633,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=343",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049931,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=343",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.051747,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=343",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.051747,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=343",
+    "err": ""
+   }
+  },
+  "742566598328328": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041224,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=571",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04677,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=571",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04698,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=571",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049923,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=571",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046255,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=571",
+    "err": ""
+   }
+  },
+  "742566598328329": {
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040513,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=418",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049464,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=418",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046331,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=418",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038723,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=418",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042228,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=418",
+    "err": ""
+   }
+  },
+  "56562959048704": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046636,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=362",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046447,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=362",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043124,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=362",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044981,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=362",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04325,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=362",
+    "err": ""
+   }
+  },
+  "195": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.050012,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=195",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047757,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=195",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049734,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=195",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047471,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=195",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043319,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=195",
+    "err": ""
+   }
+  },
+  "198": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044821,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=198",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.052412,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=198",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04513,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=198",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040795,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=198",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038081,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=198",
+    "err": ""
+   }
+  },
+  "911165497589764": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042512,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=465",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043087,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=465",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048431,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=465",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043609,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=465",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045854,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=465",
+    "err": ""
+   }
+  },
+  "18737668612096": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://cas.bucm.edu.cn/cas/login?service=https://5gssp.bucm.edu.cn:8800/sso/neusoft/index",
+    "time": 0.100603,
+    "size": 0,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://5gssp.bucm.edu.cn:8800/sso/neusoft/index",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.136949,
+    "size": 13491,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https://5gssp.bucm.edu.cn:8800/sso/neusoft/index",
+    "err": ""
+   }
+  },
+  "2881935776509952": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059009,
+    "size": 777,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://zhhq.bucm.edu.cn/mgr/",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.061801,
+    "size": 777,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://zhhq.bucm.edu.cn/mgr/",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.064372,
+    "size": 7895,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://zhhq.bucm.edu.cn/wx/#/basicHome",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.065333,
+    "size": 7895,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://zhhq.bucm.edu.cn/wx/#/basicHome",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.065381,
+    "size": 7895,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://zhhq.bucm.edu.cn/wx/#/basicHome",
+    "err": ""
+   }
+  },
+  "97755617091584": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048677,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=410",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049362,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=410",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044388,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=410",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045756,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=410",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041606,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=410",
+    "err": ""
+   }
+  },
+  "95044033110016": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045128,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=459",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048736,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=459",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04381,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=459",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039492,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=459",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046146,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=459",
+    "err": ""
+   }
+  },
+  "94498165415936": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044051,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=453",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040937,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=453",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045483,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=453",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038326,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=453",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044197,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=453",
+    "err": ""
+   }
+  },
+  "90816564748288": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043388,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=592",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041218,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=592",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.038696,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=592",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045418,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=592",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046433,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=592",
+    "err": ""
+   }
+  },
+  "87613924237312": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042668,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=392",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04709,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=392",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046873,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=392",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04079,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=392",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04725,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=392",
+    "err": ""
+   }
+  },
+  "876139242373121": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.039657,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=391",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043968,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=391",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044318,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=391",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042954,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=391",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048525,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=391",
+    "err": ""
+   }
+  },
+  "876139242373122": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.04206,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=409",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045648,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=409",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041616,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=409",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046368,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=409",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044391,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=409",
+    "err": ""
+   }
+  },
+  "804973479772163": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045466,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=489",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045872,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=489",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048091,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=489",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.037858,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=489",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044832,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=489",
+    "err": ""
+   }
+  },
+  "105210312974336": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.046342,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=586",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044591,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=586",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047617,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=586",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045142,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=586",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.040948,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=586",
+    "err": ""
+   }
+  },
+  "103914210123776": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042149,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=606",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045366,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=606",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044309,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=606",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.050293,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=606",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.047994,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=606",
+    "err": ""
+   }
+  },
+  "1039142101237761": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.044132,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=394",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.050574,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=394",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.063833,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=394",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.068059,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=394",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.06862,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=394",
+    "err": ""
+   }
+  },
+  "1039142101237762": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.069729,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=487",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.072228,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=487",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.074036,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=487",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066425,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=487",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066598,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=487",
+    "err": ""
+   }
+  },
+  "1024204842516484": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.060547,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=601",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.067499,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=601",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.063115,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=601",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.065987,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=601",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.057691,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=601",
+    "err": ""
+   }
+  },
+  "1024204842516486": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066618,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=496",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.068593,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=496",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.058838,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=496",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.069325,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=496",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.069799,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=496",
+    "err": ""
+   }
+  },
+  "508": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059811,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=508",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.061128,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=508",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066297,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=508",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.06503,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=508",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.062824,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=508",
+    "err": ""
+   }
+  },
+  "509": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059523,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=509",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.061154,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=509",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.057823,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=509",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059804,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=509",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.061189,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=509",
+    "err": ""
+   }
+  },
+  "505": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.054855,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=505",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.058984,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=505",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.05911,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=505",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.064982,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=505",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.067696,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=505",
+    "err": ""
+   }
+  },
+  "504": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.057357,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=504",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.057108,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=504",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.058738,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=504",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.060631,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=504",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.057222,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=504",
+    "err": ""
+   }
+  },
+  "501": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.060047,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=501",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059329,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=501",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.055032,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=501",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.052794,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=501",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.055054,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=501",
+    "err": ""
+   }
+  },
+  "502": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.058007,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=502",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.063199,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=502",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.063297,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=502",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059714,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=502",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.062011,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=502",
+    "err": ""
+   }
+  },
+  "476": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.061626,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=476",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.058142,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=476",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.05959,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=476",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.072871,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=476",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059104,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=476",
+    "err": ""
+   }
+  },
+  "457": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.061464,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=457",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.063513,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=457",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.067346,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=457",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.069784,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=457",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.070841,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=457",
+    "err": ""
+   }
+  },
+  "442": {
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.062368,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=442",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.064588,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=442",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.064593,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=442",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.058252,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=442",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.060008,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=442",
+    "err": ""
+   }
+  },
+  "412": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059551,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=412",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.057941,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=412",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.060985,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=412",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.063233,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=412",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059712,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=412",
+    "err": ""
+   }
+  },
+  "17776489324544": {
+   "pc": {
+    "code": "000",
+    "redirect_url": "",
+    "time": 8.083178,
+    "size": 0,
+    "ctype": "",
+    "effective": "http://ai.bucm.edu.cn/",
+    "err": "超时(-m 12) :: curl: (28) Failed to connect to ai.bucm.edu.cn port 80 after 8083 ms: Timeout was reached"
+   },
+   "pc_follow": {
+    "code": "000",
+    "redirect_url": "",
+    "time": 8.100705,
+    "size": 0,
+    "ctype": "",
+    "effective": "http://ai.bucm.edu.cn/",
+    "err": "超时(-m 12) :: curl: (28) Failed to connect to ai.bucm.edu.cn port 80 after 8100 ms: Timeout was reached"
+   }
+  },
+  "398": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.055222,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=398",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.056593,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=398",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.061525,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=398",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.058663,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=398",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.062337,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=398",
+    "err": ""
+   }
+  },
+  "17487732465664": {
+   "pc_follow": {
+    "code": "000",
+    "redirect_url": "",
+    "time": 8.099883,
+    "size": 0,
+    "ctype": "",
+    "effective": "http://scloud.bucm.edu.cn/",
+    "err": "超时(-m 12) :: curl: (28) Failed to connect to scloud.bucm.edu.cn port 80 after 8099 ms: Timeout was reached"
+   },
+   "pc": {
+    "code": "000",
+    "redirect_url": "",
+    "time": 8.101,
+    "size": 0,
+    "ctype": "",
+    "effective": "http://scloud.bucm.edu.cn/",
+    "err": "超时(-m 12) :: curl: (28) Failed to connect to scloud.bucm.edu.cn port 80 after 8100 ms: Timeout was reached"
+   }
+  },
+  "399": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.051866,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=399",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.052495,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=399",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.06007,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=399",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.062464,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=399",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.071334,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=399",
+    "err": ""
+   }
+  },
+  "397": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.062019,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=397",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.075343,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=397",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.070934,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=397",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.070861,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=397",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.0763,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=397",
+    "err": ""
+   }
+  },
+  "376": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.076085,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=376",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.070049,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=376",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.072133,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=376",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.071912,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=376",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.064733,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=376",
+    "err": ""
+   }
+  },
+  "1423289360150528": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "https://workflow.bucm.edu.cn/v2/site/index",
+    "time": 0.078619,
+    "size": 0,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://workflow.bucm.edu.cn/",
+    "err": ""
+   },
+   "m": {
+    "code": 302,
+    "redirect_url": "https://workflow.bucm.edu.cn/v2/site/index",
+    "time": 0.079925,
+    "size": 0,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://workflow.bucm.edu.cn/",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 302,
+    "redirect_url": "https://workflow.bucm.edu.cn/v2/site/index",
+    "time": 0.082419,
+    "size": 0,
+    "ctype": "text/html; charset=UTF-8",
+    "effective": "https://workflow.bucm.edu.cn/",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.11453,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/site/index",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.092447,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/site/index",
+    "err": ""
+   }
+  },
+  "10864779649024": {
+   "pc": {
+    "code": 302,
+    "redirect_url": "http://dc.bucm.edu.cn/idc/",
+    "time": 0.041617,
+    "size": 249,
+    "ctype": "text/x-cross-domain-policy",
+    "effective": "https://dc.bucm.edu.cn/idc",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.155836,
+    "size": 13445,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fdc.bucm.edu.cn%2Fidc%2Findex.jsp",
+    "err": ""
+   }
+  },
+  "3394921357312": {
+   "pc": {
+    "code": 301,
+    "redirect_url": "https://i.bucm.edu.cn/dcp/dcp/core/appstore/menu/jsp/ssoCaSelf.jsp",
+    "time": 0.021309,
+    "size": 169,
+    "ctype": "text/html",
+    "effective": "http://i.bucm.edu.cn/dcp/dcp/core/appstore/menu/jsp/ssoCaSelf.jsp",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.138495,
+    "size": 13623,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fi.bucm.edu.cn%2Fdcp%2Fdcp%2Fcore%2Fappstore%2Fmenu%2Fjsp%2FssoCaSelf.jsp",
+    "err": ""
+   }
+  },
+  "5045115740160": {
+   "pc": {
+    "code": 303,
+    "redirect_url": "https://cas.bucm.edu.cn/cas/login?service=https://cloudpan.bucm.edu.cn/cas",
+    "time": 0.058025,
+    "size": 4,
+    "ctype": "text/html",
+    "effective": "https://cloudpan.bucm.edu.cn/cas",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.12158,
+    "size": 13428,
+    "ctype": "text/html;charset=UTF-8",
+    "effective": "https://cas.bucm.edu.cn/cas/login?service=https://cloudpan.bucm.edu.cn/cas",
+    "err": ""
+   }
+  },
+  "58050074697728": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.069283,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=379",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.062851,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=379",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.06273,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=379",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.064534,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=379",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.063677,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=379",
+    "err": ""
+   }
+  },
+  "108661092704256": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059188,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=373",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.059034,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=373",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.064522,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=373",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.068625,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=373",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.067052,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=373",
+    "err": ""
+   }
+  },
+  "108334901682176": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.079366,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=507",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.069147,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=507",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.075191,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=507",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.071787,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=507",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.072396,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=507",
+    "err": ""
+   }
+  },
+  "1083349016821761": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.069918,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=611",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.074018,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=611",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.07706,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=611",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.075777,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=611",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.07734,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=611",
+    "err": ""
+   }
+  },
+  "1083349016821763": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.068011,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=378",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.069604,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=378",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.074143,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=378",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.073408,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=378",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066242,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=378",
+    "err": ""
+   }
+  },
+  "108045947691008": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.063797,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=543",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.07027,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=543",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.067686,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=543",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.07025,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=543",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066092,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=543",
+    "err": ""
+   }
+  },
+  "1080459476910081": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.06531,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=372",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.067091,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=372",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.075699,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=372",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066241,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=372",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.067882,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=372",
+    "err": ""
+   }
+  },
+  "1078035756400642": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066618,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=588",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066618,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=588",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.088852,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=588",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.085181,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=588",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.090173,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=588",
+    "err": ""
+   }
+  },
+  "10521031297433611": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.076492,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=380",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.075304,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=380",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.075536,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=380",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.083808,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=380",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.087873,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=380",
+    "err": ""
+   }
+  },
+  "10521031297433612": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.071304,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=531",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.067926,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=531",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.078646,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=531",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.078095,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=531",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.080249,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=531",
+    "err": ""
+   }
+  },
+  "10521031297433613": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.080419,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=371",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.076374,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=371",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.070484,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=371",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.068212,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=371",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.068824,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=371",
+    "err": ""
+   }
+  },
+  "10521031297433615": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.0654,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=377",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.073068,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=377",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.060322,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=377",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066321,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=377",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.069319,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=377",
+    "err": ""
+   }
+  },
+  "1052103129743364": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.068274,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=370",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.073399,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=370",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.061978,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=370",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.064502,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=370",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.070119,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=370",
+    "err": ""
+   }
+  },
+  "1052103129743366": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.062279,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=376",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.074278,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=376",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.072417,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=376",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.070984,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=376",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.073086,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=376",
+    "err": ""
+   }
+  },
+  "1052103129743368": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.07668,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=458",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.07902,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=458",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.089026,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=458",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.085735,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=458",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.106499,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=458",
+    "err": ""
+   }
+  },
+  "1052103129743369": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.101613,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=550",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.101662,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=550",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.082932,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=550",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.052508,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=550",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.087372,
+    "size": 8684,
+    "ctype": "text/html; charset=utf-8",
+    "effective": "https://workflow.bucm.edu.cn/v2/matter/detail?id=550",
+    "err": ""
+   }
+  },
+  "92030570796216320": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.057595,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/site/quicklyFilling/myQuestion",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049065,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/site/quicklyFilling/myQuestion",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048094,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/site/quicklyFilling/myQuestion",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.05581,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/site/quicklyFilling/myQuestion",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.070929,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/site/quicklyFilling/myQuestion",
+    "err": ""
+   }
+  },
+  "459": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.110157,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=459",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.064491,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=459",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.098633,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=459",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.060752,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=459",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.055759,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=459",
+    "err": ""
+   }
+  },
+  "458": {
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.053096,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=458",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066438,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=458",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.09582,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=458",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.138335,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=458",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.128975,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=458",
+    "err": ""
+   }
+  },
+  "406": {
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041017,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=406",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.063079,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=406",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.085585,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=406",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.083701,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=406",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.086226,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=406",
+    "err": ""
+   }
+  },
+  "424": {
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.041546,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=424",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.080058,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=424",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.072813,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=424",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.103731,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=424",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.138081,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=424",
+    "err": ""
+   }
+  },
+  "405": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.058117,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=405",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.066025,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=405",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.073816,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=405",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.078747,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=405",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.08683,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=405",
+    "err": ""
+   }
+  },
+  "286": {
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.042344,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=286",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.067984,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=286",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.048586,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=286",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.078385,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=286",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.092735,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=286",
+    "err": ""
+   }
+  },
+  "350": {
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.05966,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=350",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.070609,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=350",
+    "err": ""
+   },
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.080462,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=350",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.081247,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=350",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.095647,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=350",
+    "err": ""
+   }
+  },
+  "277": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.10054,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=277",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.043441,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=277",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.094999,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=277",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.104883,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=277",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.135293,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=277",
+    "err": ""
+   }
+  },
+  "190": {
+   "pc_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.054519,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=190",
+    "err": ""
+   },
+   "m_ua": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.045743,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=190",
+    "err": ""
+   },
+   "m": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.052619,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=190",
+    "err": ""
+   },
+   "pc": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.079174,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/matterApplication?app_id=190",
+    "err": ""
+   },
+   "m_ua_follow": {
+    "code": 200,
+    "redirect_url": "",
+    "time": 0.049176,
+    "size": 4749,
+    "ctype": "text/html",
+    "effective": "https://workflow.bucm.edu.cn/newservice/fe/taskCenter/m_matterApplication?app_id=190",
+    "err": ""
+   }
+  }
+ }
+}
