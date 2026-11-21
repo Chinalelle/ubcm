@@ -82,58 +82,38 @@ private enum class Page { HOME, WEEK, LIBRARY, PROBE }
  * 定位（2026-11-21 用户明确）：这是测试软件，用来验底层接口和算法，不是产品。
  * 所以打开第一件事是「凭证齐不齐」，缺任何一条必需凭证都强制留在登录页。
  *
- * 登录页的「一键补全」会按 PORTAL → JW → ECARD → SEAT 顺序自动串起来：
- * 门户登录时顺带存下 CASTGC，后面三个目标靠 CAS 单点基本自动过。
- * 每返回一次就重读 Session 判断，只自动跑一轮（避免某个站点挂掉时无限弹登录）。
+ * 登录方式（2026-11-21 改）：**原生表单**，输入学号密码 → 直接和 CAS 通信换 CASTGC
+ * → 纯 native SSO 换齐其余凭证。**不跳任何网页**。
+ * 只有座位 `ic-cookie` 保留一个网页补登的例外（native 路径不稳，见 docs/13）。
+ *
+ * 🔴 密码只经过 `loginVm.login()` 一次，不落盘、不写日志。
  */
 @Composable
 private fun AppRoot() {
     val ctx = androidx.compose.ui.platform.LocalContext.current
+    val loginVm: LoginViewModel = viewModel()
+    val loginState by loginVm.state.collectAsStateWithLifecycle()
     var gateKey by remember { mutableStateOf(0) }
-    var autoMode by remember { mutableStateOf(false) }
-    var lastTried by remember { mutableStateOf<String?>(null) }
-    var pendingLaunch by remember { mutableStateOf<String?>(null) }
-
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { res ->
-        gateKey++     // 无论成功与否都重读一次：cookie 可能已经存进去了
-        if (!autoMode) return@rememberLauncherForActivityResult
-        val next = CredentialGate.audit(readCredentialSnapshot(ctx)).nextTarget
-        if (res.resultCode == android.app.Activity.RESULT_OK && next != null && next != lastTried) {
-            lastTried = next
-            // 不能在 launcher 自己的回调里引用 launcher（val 未初始化），
-            // 所以只是打个标记，由下面的 LaunchedEffect 真正启动
-            pendingLaunch = next
-        } else {
-            // 用户按返回键退出 / 同一个目标补不动 → 停下，别把人困在弹窗循环里
-            autoMode = false
-        }
-    }
-
-    LaunchedEffect(pendingLaunch) {
-        val name = pendingLaunch ?: return@LaunchedEffect
-        pendingLaunch = null
-        launcher.launch(LoginWebViewActivity.newIntent(ctx, LoginWebViewActivity.Target.of(name)))
-    }
 
     val audit = remember(gateKey) { CredentialGate.audit(readCredentialSnapshot(ctx)) }
+
+    // 换凭证跑完就重读 Session：齐了会自动切到主内容
+    LaunchedEffect(loginState.steps) {
+        if (loginState.steps.isNotEmpty()) gateKey++
+    }
+
+    // 座位用网页补登（唯一保留的例外），回来重读
+    val seatLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { gateKey++ }
 
     if (!audit.allOk) {
         LoginGateScreen(
             audit = audit,
-            onLoginTarget = { name ->
-                autoMode = false
-                launcher.launch(LoginWebViewActivity.newIntent(ctx, LoginWebViewActivity.Target.of(name)))
-            },
-            onAutoFill = {
-                val next = CredentialGate.audit(readCredentialSnapshot(ctx)).nextTarget
-                if (next != null) {
-                    autoMode = true
-                    lastTried = next
-                    launcher.launch(LoginWebViewActivity.newIntent(ctx, LoginWebViewActivity.Target.of(next)))
-                }
-            },
+            login = loginState,
+            onLoadLoginPage = { loginVm.loadLoginPage() },
+            onLogin = { u, p, c -> loginVm.login(u, p, c) },
+            onRefreshCaptcha = { loginVm.refreshCaptcha() },
             onRecheck = { gateKey++ },
             onSaveManual = { jwt, jw, castgc, seat, ecard, openid ->
                 // 空着的字段不动，只覆盖用户真的粘了东西的那些
@@ -144,6 +124,11 @@ private fun AppRoot() {
                 if (ecard.isNotBlank()) Session.saveEcard(ctx, ecard, openid.ifBlank { null })
                 else if (openid.isNotBlank()) Session.saveEcardOpenid(ctx, openid)
                 gateKey++
+            },
+            onWebLoginSeat = {
+                seatLauncher.launch(
+                    LoginWebViewActivity.newIntent(ctx, LoginWebViewActivity.Target.SEAT)
+                )
             },
         )
         return

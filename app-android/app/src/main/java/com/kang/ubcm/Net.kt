@@ -91,6 +91,27 @@ object Net {
         return exec(conn, null)
     }
 
+    /** 取二进制（图形验证码图片）。返回 null 表示失败。 */
+    fun getBytes(url: String, cookie: String? = null, timeoutMs: Int = 15000): ByteArray? {
+        var conn: HttpURLConnection? = null
+        return try {
+            conn = (URL(url).openConnection() as HttpURLConnection).apply {
+                requestMethod = "GET"
+                connectTimeout = timeoutMs
+                readTimeout = timeoutMs
+                setRequestProperty("User-Agent", UA)
+                cookie?.let { setRequestProperty("Cookie", it) }
+                instanceFollowRedirects = false
+            }
+            if (conn.responseCode !in 200..299) null
+            else conn.inputStream.use { it.readBytes() }
+        } catch (e: Exception) {
+            null
+        } finally {
+            conn?.disconnect()
+        }
+    }
+
     private fun request(url: String, body: String, token: String?, method: String, timeoutMs: Int): Resp {
         val conn = (URL(url).openConnection() as HttpURLConnection).apply {
             requestMethod = method

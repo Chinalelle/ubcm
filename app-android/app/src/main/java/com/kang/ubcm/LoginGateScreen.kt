@@ -1,6 +1,8 @@
 package com.kang.ubcm
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,12 +10,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,8 +26,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,23 +56,34 @@ fun readCredentialSnapshot(ctx: Context): CredentialGate.Snapshot {
 }
 
 /**
- * 登录门禁页。**凭证不齐时 App 唯一能看到的页面。**
+ * 登录页。**凭证不齐时 App 唯一能看到的页面。**
  *
- * 三种补齐方式，缺一不可：
- *  1. 一键补全：按 PORTAL → JW → ECARD → SEAT 顺序自动串起来（后三个靠 CASTGC 自动 SSO）
- *  2. 单项去登录：哪条缺点哪条
- *  3. 手工粘贴：某些凭证只能从别处捞（比如浏览器里已有的 cookie），必须留这条路，
- *     否则门禁会把人锁死在门外
+ * 主路径是**原生登录**：在这里输入学号和密码，App 直接和学校 CAS 通信换凭证，
+ * 不跳任何网页（2026-11-21 用户要求）。
+ *
+ * 🔴 红线守住的方式：
+ *  - 密码只在 [onLogin] 的入参里活一次，不落盘、不写日志、不进 State
+ *  - 不做任何自动重试（学校 CAS 连续失败 15 次锁 10 分钟）
+ *  - 「手工粘贴」保留为退路，站点改版时 App 不至于变砖
  */
 @Composable
 fun LoginGateScreen(
     audit: CredentialGate.Audit,
-    onLoginTarget: (String) -> Unit,
-    onAutoFill: () -> Unit,
+    login: LoginViewModel.UiState,
+    onLoadLoginPage: () -> Unit,
+    onLogin: (username: String, password: String, captcha: String?) -> Unit,
+    onRefreshCaptcha: () -> Unit,
     onRecheck: () -> Unit,
     onSaveManual: (jwt: String, jw: String, castgc: String, seat: String, ecard: String, openid: String) -> Unit,
+    onWebLoginSeat: () -> Unit,
 ) {
     var showManual by remember { mutableStateOf(false) }
+    var username by remember { mutableStateOf(login.lastUsername) }
+    var password by remember { mutableStateOf("") }
+    var captcha by remember { mutableStateOf("") }
+
+    // 首次进来先拉一次登录页：拿 lt/execution，顺便探一下要不要验证码
+    LaunchedEffect(Unit) { onLoadLoginPage() }
 
     Surface(color = UbcmColors.Paper, modifier = Modifier.fillMaxSize()) {
         Box(
@@ -83,71 +101,155 @@ fun LoginGateScreen(
                 Text("先登录，再测接口", fontSize = 12.sp, color = UbcmColors.InkSoft)
 
                 Spacer(Modifier.height(14.dp))
+                StatusCard(audit)
+                Spacer(Modifier.height(12.dp))
 
-                // 总状态
-                val tone = if (audit.allOk) UbcmColors.Jade else UbcmColors.Cinnabar
-                Row(
+                // ---- 登录表单 ----
+                Column(
                     Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
                         .background(UbcmColors.CardWhite)
                         .border(1.dp, UbcmColors.Line, RoundedCornerShape(14.dp))
                         .padding(14.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Column(Modifier.weight(1f)) {
+                    Text("学号 / 密码登录", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = UbcmColors.Ink)
+                    Text(
+                        "直接和学校统一身份认证通信，不跳网页。\n密码只在本机内存里用一次，不保存、不上传。",
+                        fontSize = 10.sp,
+                        color = UbcmColors.Ash,
+                        lineHeight = 14.sp,
+                    )
+
+                    OutlinedTextField(
+                        value = username,
+                        onValueChange = { username = it },
+                        singleLine = true,
+                        label = { Text("学号", fontSize = 11.sp) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = LocalTextStyle.current.copy(fontSize = 13.sp, fontFamily = FontFamily.Monospace),
+                    )
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        singleLine = true,
+                        label = { Text("密码", fontSize = 11.sp) },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = LocalTextStyle.current.copy(fontSize = 13.sp),
+                    )
+
+                    if (login.captchaRequired) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            OutlinedTextField(
+                                value = captcha,
+                                onValueChange = { captcha = it },
+                                singleLine = true,
+                                label = { Text("图形验证码", fontSize = 11.sp) },
+                                modifier = Modifier.weight(1f),
+                                textStyle = LocalTextStyle.current.copy(fontSize = 13.sp, fontFamily = FontFamily.Monospace),
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Box(
+                                Modifier
+                                    .size(width = 92.dp, height = 44.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(UbcmColors.Paper)
+                                    .border(1.dp, UbcmColors.Line, RoundedCornerShape(8.dp))
+                                    .clickable { onRefreshCaptcha() },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                val bmp = login.captchaImage
+                                    ?.let { runCatching { BitmapFactory.decodeByteArray(it, 0, it.size) }.getOrNull() }
+                                if (bmp != null) {
+                                    Image(bmp.asImageBitmap(), contentDescription = "验证码", modifier = Modifier.fillMaxSize())
+                                } else {
+                                    Text("点我刷新", fontSize = 10.sp, color = UbcmColors.Ash)
+                                }
+                            }
+                        }
+                    }
+
+                    login.error?.let { err ->
                         Text(
-                            if (audit.allOk) "凭证齐全" else "缺 ${audit.missingRequired.size} 条必需凭证",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = tone,
-                        )
-                        Spacer(Modifier.height(3.dp))
-                        Text(
-                            if (audit.allOk) "可以开始测试"
-                            else "缺凭证时跑测试会一片红，分不清是接口坏了还是没登录，所以先挡住",
+                            err,
                             fontSize = 11.sp,
-                            color = UbcmColors.InkSoft,
-                            lineHeight = 15.sp,
+                            color = UbcmColors.Cinnabar,
+                            lineHeight = 16.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(UbcmColors.Cinnabar.copy(alpha = .08f))
+                                .padding(10.dp),
                         )
                     }
-                    Spacer(Modifier.width(8.dp))
+
+                    login.status?.let { s ->
+                        Text("· $s", fontSize = 11.sp, color = UbcmColors.InkSoft)
+                    }
+
                     Box(
-                        Modifier.clip(RoundedCornerShape(8.dp)).background(tone.copy(alpha = .12f))
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(if (login.busy) UbcmColors.Ink.copy(alpha = .35f) else UbcmColors.Cinnabar)
+                            .clickable(enabled = !login.busy) {
+                                if (!login.busy) onLogin(username, password, captcha.takeIf { it.isNotBlank() })
+                            }
+                            .padding(vertical = 13.dp),
+                        contentAlignment = Alignment.Center,
                     ) {
-                        Text("${audit.okCount} / ${audit.items.size}", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = tone)
+                        Text(
+                            if (login.busy) "登录中…" else "登录并取齐凭证",
+                            fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White,
+                        )
+                    }
+
+                    // 换凭证的逐条结果
+                    if (login.hasProgress) {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            login.steps.forEach { st ->
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Box(
+                                        Modifier.size(6.dp).clip(CircleShape)
+                                            .background(if (st.ok) UbcmColors.Jade else UbcmColors.Amber)
+                                    )
+                                    Spacer(Modifier.width(7.dp))
+                                    Text(st.label, fontSize = 11.sp, color = UbcmColors.Ink, modifier = Modifier.width(110.dp))
+                                    Text(
+                                        st.detail,
+                                        fontSize = 10.sp,
+                                        color = if (st.ok) UbcmColors.InkSoft else UbcmColors.Amber,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
                 Spacer(Modifier.height(12.dp))
 
-                // 逐条清单
+                // ---- 凭证清单 ----
                 audit.items.forEach { item ->
-                    CredentialRow(item, onLoginTarget)
+                    CredentialRow(item, onLoginTarget = { onWebLoginSeat() })
                     Spacer(Modifier.height(7.dp))
                 }
 
                 Spacer(Modifier.height(6.dp))
-
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Box(Modifier.weight(1f)) {
-                        BigButton(
-                            text = if (audit.allOk) "重新检查" else "一键补全缺失",
-                            filled = !audit.allOk,
-                            onClick = { if (audit.allOk) onRecheck() else onAutoFill() },
-                        )
-                    }
-                    if (audit.allOk) {
-                        Box(Modifier.weight(1f)) {
-                            BigButton(text = "重新检查", filled = false, onClick = onRecheck)
-                        }
-                    }
-                }
+                BigButton(
+                    text = "重新检查",
+                    filled = false,
+                    onClick = onRecheck,
+                )
 
                 Spacer(Modifier.height(10.dp))
 
-                // 手工粘贴：门禁的最后一条退路
+                // ---- 退路：手工粘贴 ----
                 Row(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).clickable { showManual = !showManual }
                         .padding(vertical = 8.dp, horizontal = 4.dp),
@@ -155,25 +257,27 @@ fun LoginGateScreen(
                 ) {
                     Text(
                         if (showManual) "收起手工粘贴" else "手工粘贴凭证（从别处捞的 cookie）",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = UbcmColors.Cinnabar,
+                        fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = UbcmColors.Cinnabar,
                     )
                     Spacer(Modifier.weight(1f))
                     Text(if (showManual) "▲" else "▼", fontSize = 10.sp, color = UbcmColors.Ash)
                 }
+                if (showManual) ManualPanel(onSaveManual)
 
-                if (showManual) {
-                    ManualPanel(onSaveManual)
-                }
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    "座位凭证拿不到？用网页登录一次（只有这一个目标还需要网页）",
+                    fontSize = 10.sp,
+                    color = UbcmColors.Ash,
+                    modifier = Modifier.clip(RoundedCornerShape(6.dp)).clickable { onWebLoginSeat() }
+                        .padding(vertical = 4.dp),
+                )
 
                 Spacer(Modifier.height(14.dp))
                 Text(
                     "这是测试软件，不是产品：只用来验底层接口和算法，数据只存本机。\n" +
-                        "不代登录、不存密码。账号密码只在学校的登录页里输入。",
-                    fontSize = 10.sp,
-                    color = UbcmColors.Ash,
-                    lineHeight = 15.sp,
+                        "不代登录、不存密码。密码只在内存里用一次。",
+                    fontSize = 10.sp, color = UbcmColors.Ash, lineHeight = 15.sp,
                 )
             }
         }
@@ -181,7 +285,41 @@ fun LoginGateScreen(
 }
 
 @Composable
-private fun CredentialRow(item: CredentialGate.Item, onLoginTarget: (String) -> Unit) {
+private fun StatusCard(audit: CredentialGate.Audit) {
+    val tone = if (audit.allOk) UbcmColors.Jade else UbcmColors.Cinnabar
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(UbcmColors.CardWhite)
+            .border(1.dp, UbcmColors.Line, RoundedCornerShape(14.dp))
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                if (audit.allOk) "凭证齐全" else "缺 ${audit.missingRequired.size} 条必需凭证",
+                fontSize = 16.sp, fontWeight = FontWeight.Bold, color = tone,
+            )
+            Spacer(Modifier.height(3.dp))
+            Text(
+                if (audit.allOk) "可以开始测试"
+                else "缺凭证时跑测试会一片红，分不清是接口坏了还是没登录，所以先挡住",
+                fontSize = 11.sp, color = UbcmColors.InkSoft, lineHeight = 15.sp,
+            )
+        }
+        Spacer(Modifier.width(8.dp))
+        Box(
+            Modifier.clip(RoundedCornerShape(8.dp)).background(tone.copy(alpha = .12f))
+                .padding(horizontal = 10.dp, vertical = 6.dp)
+        ) {
+            Text("${audit.okCount} / ${audit.items.size}", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = tone)
+        }
+    }
+}
+
+@Composable
+private fun CredentialRow(item: CredentialGate.Item, onLoginTarget: () -> Unit) {
     val tone = when {
         item.ok -> UbcmColors.Jade
         item.present && item.problem != null -> UbcmColors.Amber
@@ -203,30 +341,27 @@ private fun CredentialRow(item: CredentialGate.Item, onLoginTarget: (String) -> 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(item.label, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = UbcmColors.Ink)
                 Spacer(Modifier.width(6.dp))
-                if (!item.required) {
-                    Text("可选", fontSize = 9.sp, color = UbcmColors.Ash)
-                }
+                if (!item.required) Text("可选", fontSize = 9.sp, color = UbcmColors.Ash)
             }
             Spacer(Modifier.height(2.dp))
             Text(
                 item.problem ?: item.hint,
                 fontSize = 10.sp,
                 color = if (item.problem != null) UbcmColors.Amber else UbcmColors.InkSoft,
-                lineHeight = 14.sp,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+                lineHeight = 14.sp, maxLines = 2, overflow = TextOverflow.Ellipsis,
             )
         }
         Spacer(Modifier.width(8.dp))
         if (item.ok) {
             Text("有", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = UbcmColors.Jade)
-        } else {
+        } else if (item.id == "seat_cookie") {
+            // 只有座位这一条可能还需要网页（ic-cookie 的 native 路径不稳，见 docs/13）
             Box(
-                Modifier.clip(RoundedCornerShape(8.dp)).background(tone)
-                    .clickable { onLoginTarget(item.targetName) }
-                    .padding(horizontal = 11.dp, vertical = 6.dp)
+                Modifier.clip(RoundedCornerShape(8.dp)).background(tone.copy(alpha = .12f))
+                    .clickable { onLoginTarget() }
+                    .padding(horizontal = 9.dp, vertical = 6.dp)
             ) {
-                Text(if (item.problem != null) "重登" else "去登录", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text("网页补", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = tone)
             }
         }
     }
@@ -244,12 +379,7 @@ private fun BigButton(text: String, filled: Boolean, onClick: () -> Unit) {
             .padding(vertical = 13.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold,
-            color = if (filled) Color.White else UbcmColors.InkSoft,
-        )
+        Text(text, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (filled) Color.White else UbcmColors.InkSoft)
     }
 }
 
@@ -278,14 +408,12 @@ private fun ManualPanel(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text("粘进来的值直接覆盖本机已有的，空着不动", fontSize = 10.sp, color = UbcmColors.Ash)
-
         PasteField("门户 accessToken（JWT）", jwt) { jwt = it }
         PasteField("教务 cookie（JSESSIONID=...; jsxsd=...）", jw) { jw = it }
         PasteField("CASTGC（TGT-...）", castgc) { castgc = it }
         PasteField("一卡通 servicehall cookie", ecard) { ecard = it }
         PasteField("一卡通 openid（数字，可选）", openid) { openid = it }
         PasteField("图书馆 ic-cookie", seat) { seat = it }
-
         Spacer(Modifier.height(2.dp))
         BigButton(text = "保存并重新检查", filled = true) {
             onSave(jwt, jw, castgc, seat, ecard, openid)
