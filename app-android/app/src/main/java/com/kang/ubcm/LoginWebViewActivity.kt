@@ -245,7 +245,16 @@ class LoginWebViewActivity : ComponentActivity() {
                                 ?.let { Session.saveCastgc(ctx, it) }
                         }
                         when (target) {
-                            Target.SEAT -> Session.saveSeatCookie(ctx, hit)
+                            // 座位 cookie 抓到后要**校验真的能用**再存：
+                            // WebView 罐里可能残留上一次登录的失效值，长度一样但服务端不认
+                            Target.SEAT -> if (SeatApi.validCookie(hit)) {
+                                Session.saveSeatCookie(ctx, hit)
+                                statusText.text = "已获取且校验有效（${hit.length} 字节）"
+                            } else {
+                                statusText.text = "抓到了但无效，继续等…"
+                                grabbed = null
+                                return
+                            }
                             Target.PORTAL -> Session.saveToken(ctx, hit)
                             Target.JW -> Session.saveJwSession(ctx, raw.replace(" ", ""))
                             Target.ECARD -> Session.saveEcard(ctx, hit, pendingOpenid)

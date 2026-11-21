@@ -138,10 +138,12 @@ private fun AppRoot() {
                 else if (openid.isNotBlank()) Session.saveEcardOpenid(ctx, openid)
                 gateKey++
             },
-            // 座位这一条：后台不可见 WebView 补齐（用户看不到网页）。
-            // 拿不到再让他走可见的网页登录 —— 那是最后的兜底。
+            // 座位这一条：**必须人工网页登录一次** —— 那个路由有滑块验证码，
+            // 静默页过不去，而红线不允许绕验证码。登录后抓到的 cookie 会经 SeatApi.validCookie 校验。
             onWebLoginSeat = {
-                silentSeatLauncher.launch(SilentSeatLoginActivity.newIntent(ctx))
+                seatLauncher.launch(
+                    LoginWebViewActivity.newIntent(ctx, LoginWebViewActivity.Target.SEAT)
+                )
             },
         )
         return

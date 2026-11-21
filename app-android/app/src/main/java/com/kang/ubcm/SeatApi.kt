@@ -82,6 +82,20 @@ object SeatApi {
     )
 
     /** 当前账号的 accNo（预约接口要它，和学号不是一回事） */
+    /**
+     * 这个 ic-cookie **真的能用吗**。
+     *
+     * 光看 cookie 罐里有没有值是靠不住的：WebView 里可能残留上一次登录留下的
+     * `ic-cookie`，长度一样是 36，但它早就失效了（服务端返回 `code:300 用户未登录`）。
+     * 2026-11-22 真机就是抓到了这种残留值，存下来一用全废。
+     */
+    fun validCookie(cookie: String): Boolean = try {
+        val r = Net.get("$BASE/ic-web/auth/userInfo", cookie = "ic-cookie=$cookie", timeoutMs = 15000)
+        r.body.contains("\"code\":0")
+    } catch (e: Exception) {
+        false
+    }
+
     fun accountAccNo(cookie: String): Int? = try {
         val r = Net.get("$BASE/ic-web/auth/userInfo", cookie = "ic-cookie=$cookie")
         val o = JSONObject(r.body).optJSONObject("data")
