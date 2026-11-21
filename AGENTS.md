@@ -134,7 +134,7 @@ export ANDROID_HOME=$HOME/android-sdk
 | WebView cookie | `getCookie(url)` 要传**真实域 + path**，`accessToken` 的 path 是 `/tp_nup` |
 | 教务 TLS | `jw.bucm.edu.cn` 缺中间证书，Android 会握手失败，已内置补链 |
 | WebView 白屏 | 别把 WebView 放进 Compose `AndroidView`，用传统 `setContentView` |
-| 座位聚类 | 必须按 `roomId` 分组，各区域坐标系独立 |
+| 座位聚类 | 必须按 `roomId` 分组，各区域坐标系独立。**桌界靠座位编号连续性定，不能用距离阈值**（二层北区桌间距 2.15 < 同桌间距 3.73） |
 | 座位接口限流 | 请求间隔 <300ms 会被拒，要 ≥350ms |
 | 图书馆路由 | 移动端 Vue Router **没有** `/ic/` 前缀 |
 | 学校页面 hash | 冷启动不认 URL hash，要加载完延迟 2.5s 再 `$router.push()` |
