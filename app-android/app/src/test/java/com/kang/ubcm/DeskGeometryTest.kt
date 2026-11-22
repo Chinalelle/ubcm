@@ -73,13 +73,14 @@ class DeskGeometryTest {
     }
 
     @Test
-    fun `垂直桌的长度等于座位总长`() {
-        // 八座 = 每边 4 行 → 4×1 + 3×0.5 = 5.5 单位
-        assertEquals(U * 5.5f, placed("3S062–3S069").table!!.height, 0.02f)
-        // 十座 = 每边 5 行 → 5×1 + 4×0.5 = 7 单位
-        assertEquals(U * 7f, placed("2N167–2N176").table!!.height, 0.02f)
-        // 六座 = 每边 3 行 → 3×1 + 2×0.5 = 4 单位（用户举的例子）
-        assertEquals(U * 4f, placed("2N001–2N006").table!!.height, 0.02f)
+    fun `垂直桌的长度由行数和行缝决定`() {
+        // 行缝是 1.5 单位（不是列缝的 0.5）—— 否则桌子会被压得很扁，见 ROW_GAP 注释
+        // 八座 = 4 行 → 4×1 + 3×1.5 = 8.5 单位
+        assertEquals(U * 8.5f, placed("3S062–3S069").table!!.height, 0.02f)
+        // 十座 = 5 行 → 5×1 + 4×1.5 = 11 单位
+        assertEquals(U * 11f, placed("2N167–2N176").table!!.height, 0.02f)
+        // 六座 = 3 行 → 3×1 + 2×1.5 = 6 单位
+        assertEquals(U * 6f, placed("2N001–2N006").table!!.height, 0.02f)
     }
 
     @Test
@@ -89,13 +90,13 @@ class DeskGeometryTest {
     }
 
     @Test
-    fun `同一列上下两个座位的间距是 0_5 单位`() {
+    fun `同一列上下两个座位的间距是 1_5 单位`() {
         val p = placed("3S062–3S069")
         val leftCol = p.seats.filter { it.box.centerX < p.table!!.centerX }.sortedBy { it.box.centerY }
         assertTrue("八座桌左列应有 4 个座位", leftCol.size == 4)
         for (i in 1 until leftCol.size) {
             val gap = leftCol[i].box.top - leftCol[i - 1].box.bottom
-            assertEquals("第 $i 个行间缝", U * 0.5f, gap, 0.01f)
+            assertEquals("第 $i 个行间缝", U * 1.5f, gap, 0.01f)
         }
     }
 

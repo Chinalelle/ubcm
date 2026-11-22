@@ -32,8 +32,20 @@ object DeskGeometry {
     /** 座位边长 = 1 单位 */
     const val SEAT_SIZE = UNIT
 
-    /** 座位与桌子 / 座位与座位之间的缝 = 0.5 单位 */
+    /** 列方向（座位 ↔ 桌子）的缝 = 0.5 单位 */
     const val GAP = UNIT * 0.5f
+
+    /**
+     * 行方向（座位 ↔ 座位）的缝。
+     *
+     * 用户先定的是 0.5，但那会把桌子压得很扁：三层南区真实行距 3.9，
+     * 4 行桌按 0.5 排只有 4.1%，而真实跨度 11.7% —— 桌子只占 35%，看着又短又空。
+     * 所以行缝放大到 1.5 单位，桌长变成 `N + (N-1)×1.5`：
+     * 4 行 = 8.5 单位（原来的 1.55 倍），上下桌间距也随之收紧。
+     *
+     * 列缝仍是 0.5：水平方向一桌总宽已经等于相邻桌中心距（3.73），再放就会互相压住。
+     */
+    const val ROW_GAP = UNIT * 1.5f
 
     /** 桌子圆角半径 = 0.25 单位 */
     const val TABLE_CORNER = UNIT * 0.25f
@@ -158,7 +170,7 @@ object DeskGeometry {
         }
         val rowCount = rows.size
 
-        val tableLen = rowCount * UNIT + (rowCount - 1) * GAP
+        val tableLen = rowCount * UNIT + (rowCount - 1) * ROW_GAP
         val tableTop = cy - tableLen / 2f
         val tableBottom = cy + tableLen / 2f
         val table = Box(cx - TABLE_WIDTH / 2f, tableTop, cx + TABLE_WIDTH / 2f, tableBottom)
@@ -168,7 +180,7 @@ object DeskGeometry {
 
         val placed = ArrayList<PlacedSeat>(seats.size)
         for ((ri, row) in rows.withIndex()) {
-            val y = tableTop + SEAT_SIZE / 2f + ri * (SEAT_SIZE + GAP)
+            val y = tableTop + SEAT_SIZE / 2f + ri * (SEAT_SIZE + ROW_GAP)
             val sortedRow = row.sortedBy { it.x }
             when (sortedRow.size) {
                 1 -> {
@@ -197,7 +209,7 @@ object DeskGeometry {
     ): Placed {
         val sorted = seats.sortedBy { it.x }
         val n = sorted.size
-        val tableLen = n * UNIT + (n - 1) * GAP
+        val tableLen = n * UNIT + (n - 1) * GAP   // 长桌是横向，仍用 0.5 的列缝
         val left = cx - tableLen / 2f
         // 座位行在上，桌面在它下面（间距 0.5）
         val seatY = cy - TABLE_WIDTH / 2f - GAP - SEAT_SIZE / 2f
