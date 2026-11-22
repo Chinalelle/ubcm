@@ -26,11 +26,28 @@ package com.kang.ubcm
  */
 object DeskGeometry {
 
-    /** 座位边长（百分比坐标单位） */
-    const val SEAT_SIZE = 1.65f
+    /**
+     * 座位边长（百分比坐标单位）—— 也就是用户说的「1 单位」。
+     *
+     * 推导（二层北区两列中心距 3.73 为基准）：
+     * 中心距 = 座位半宽 + 间距 + 桌宽 + 间距 + 座位半宽
+     *        = 2 × 座位 + 桌宽
+     * 官方图上「桌宽 ≈ 座位宽」，代入得 `2S + S = 3.73` → **S = 1.24**，桌宽也正好 1.24。
+     * （曾误算成 `3S + 桌宽 = 3.73` 取 S=0.85，结果桌宽被撑到 2.0，比座位宽两倍，明显不像官方图。）
+     */
+    const val SEAT_SIZE = 1.24f
+
+    /** 座位与桌子 / 座位与座位之间的缝隙 = 0.5 单位 */
+    const val GAP = SEAT_SIZE * 0.5f
+
+    /** 桌子矩形圆角半径 = 0.25 单位 */
+    const val TABLE_CORNER = SEAT_SIZE * 0.25f
+
+    /** 高亮框在最小外接矩形之外再扩 0.5 单位 */
+    const val HIGHLIGHT_PAD = SEAT_SIZE * 0.5f
 
     /** 桌子在垂直桌方向上的厚度下限，避免长条桌被压成一条线 */
-    const val MIN_TABLE_THICKNESS = 1.0f
+    const val MIN_TABLE_THICKNESS = 0.6f
 
     enum class Shape {
         /** 单人座：没有独立桌面，只画一个座位方块 */
@@ -97,17 +114,18 @@ object DeskGeometry {
                 // 两列之间夹着桌面
                 val x1 = xs.min()
                 val x2 = xs.max()
-                val left = x1 + half * 0.9f
-                val right = x2 - half * 0.9f
+                // 座位边缘(x1+half) 再往外让 0.5 单位，才是桌子边缘
+                val left = x1 + half + GAP
+                val right = x2 - half - GAP
                 if (right - left < MIN_TABLE_THICKNESS) {
                     // 两列贴太近（数据异常），退化成一条居中细条
                     val cx = (x1 + x2) / 2f
                     DeskShape(
                         shape,
-                        Box(cx - MIN_TABLE_THICKNESS / 2, ys.min() - half * 0.15f, cx + MIN_TABLE_THICKNESS / 2, ys.max() + half * 0.15f),
+                        Box(cx - MIN_TABLE_THICKNESS / 2, ys.min() - half, cx + MIN_TABLE_THICKNESS / 2, ys.max() + half),
                     )
                 } else {
-                    DeskShape(shape, Box(left, ys.min() - half * 0.15f, right, ys.max() + half * 0.15f))
+                    DeskShape(shape, Box(left, ys.min() - half, right, ys.max() + half))
                 }
             }
 
@@ -116,7 +134,7 @@ object DeskGeometry {
                 val y = ys.min()
                 DeskShape(
                     shape,
-                    Box(xs.min() - half, y + half * 0.9f, xs.max() + half, y + half * 0.9f + SEAT_SIZE * 0.95f),
+                    Box(xs.min() - half, y + half + GAP, xs.max() + half, y + half + GAP + SEAT_SIZE),
                 )
             }
 

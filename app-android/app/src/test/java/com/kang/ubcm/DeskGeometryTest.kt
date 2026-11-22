@@ -52,9 +52,9 @@ class DeskGeometryTest {
         val box = DeskGeometry.boxOf(d).table!!
         val xs = d.seats.map { it.x.toFloat() }
         val half = DeskGeometry.SEAT_SIZE / 2f
-        // 左右边界必须落在两列的座位内侧，不能压住座位（留 10% 缝，视觉上才像"座位贴着桌边"）
-        assertEquals(xs.min() + half * 0.9f, box.left, 0.01f)
-        assertEquals(xs.max() - half * 0.9f, box.right, 0.01f)
+        // 座位边缘再让 0.5 单位（GAP）才是桌子边缘
+        assertEquals(xs.min() + half + DeskGeometry.GAP, box.left, 0.01f)
+        assertEquals(xs.max() - half - DeskGeometry.GAP, box.right, 0.01f)
         assertTrue("桌面要有宽度", box.width > 0f)
     }
 
@@ -84,9 +84,9 @@ class DeskGeometryTest {
         val box = DeskGeometry.boxOf(d).table!!
         val xs = d.seats.map { it.x.toFloat() }
         assertEquals(2, d.seats.map { Math.round(it.x * 100) }.toSet().size)
-        // 桌宽 = 列间距 − 两侧各留 10% 座宽的缝
+        // 桌宽 = 列间距 − 两个座位宽 − 两个 0.5 单位的缝
         assertEquals(
-            xs.max() - xs.min() - DeskGeometry.SEAT_SIZE * 0.9f,
+            xs.max() - xs.min() - DeskGeometry.SEAT_SIZE - 2 * DeskGeometry.GAP,
             box.width, 0.05f,
         )
     }
@@ -117,8 +117,9 @@ class DeskGeometryTest {
         val d = deskOf("3S062–3S069")
         val outer = DeskGeometry.outerBoxOf(d)!!
         val table = DeskGeometry.boxOf(d).table!!
-        assertTrue("外接矩形要比桌面宽", outer.width > table.width)
-        assertTrue("外接矩形要比桌面高", outer.height > table.height)
+        assertTrue("外接矩形要比桌面宽（含两侧座位）", outer.width > table.width)
+        // 高度上桌面覆盖到座位外沿，两者相等 —— 这是有意的（座位贴着桌子的上下端）
+        assertTrue("外接矩形至少要和桌面一样高", outer.height >= table.height - 0.01f)
     }
 
     @Test

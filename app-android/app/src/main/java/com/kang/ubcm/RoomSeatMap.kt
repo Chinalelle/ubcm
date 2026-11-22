@@ -59,7 +59,10 @@ fun RoomSeatMap(
     val desks = remember(seats) { DeskFinder.groupAll(seats) }
     val bounds = remember(seats) { DeskGeometry.boundsOf(seats) }
 
-    var scale by remember(seats) { mutableFloatStateOf(1f) }
+    // 初始放大到 1.8x：三层南区 x 跨度 92%（画布约 1080px），若按整图铺满，
+    // 一个座位只有 9px，根本看不清空/占。放大后座位 ≈ 17px，靠拖动看全貌，
+    // 双击回到 1.0 看整图（用户明确要求"像拖地图一样"）。
+    var scale by remember(seats) { mutableFloatStateOf(1.8f) }
     var panX by remember(seats) { mutableFloatStateOf(0f) }
     var panY by remember(seats) { mutableFloatStateOf(0f) }
 
@@ -92,7 +95,7 @@ fun RoomSeatMap(
                 .pointerInput(seats, desks, scale, panX, panY) {
                     detectTapGestures(
                         // 双击重置视图：拖丢之后不用重新加载区域
-                        onDoubleTap = { scale = 1f; panX = 0f; panY = 0f },
+                        onDoubleTap = { scale = 1f; panX = 0f; panY = 0f },   // 双击看全图
                         onTap = { tap ->
                         val hit = hitTest(
                             tap, desks, bounds,
@@ -121,9 +124,10 @@ fun RoomSeatMap(
                     color = UBcmMapColors.table,
                     topLeft = Offset(sx(box.left), sy(box.top)),
                     size = Size(box.width * k, box.height * k),
+                    // 圆角半径 = 0.25 单位（单位 = 座位边长）
                     cornerRadius = CornerRadius(
-                        x = maxOf(3f, box.width * k * 0.18f),
-                        y = maxOf(3f, box.height * k * 0.18f),
+                        x = maxOf(1f, DeskGeometry.TABLE_CORNER * k),
+                        y = maxOf(1f, DeskGeometry.TABLE_CORNER * k),
                     ),
                 )
             }
@@ -134,30 +138,27 @@ fun RoomSeatMap(
                 for (s in d.seats) {
                     val b = DeskGeometry.seatBox(s)
                     val free = SeatFilter.seatFreeAt(s, criteria)
-                    val fill = if (free) UBcmMapColors.seatFreeFill else UBcmMapColors.seatBusyFill
-                    val edge = if (free) UBcmMapColors.seatFreeEdge else UBcmMapColors.seatBusyEdge
+                    val fill = if (free) UBcmMapColors.seatFree else UBcmMapColors.seatBusy
                     val left = sx(b.left)
                     val top = sy(b.top)
                     val w = b.width * k
                     val h = b.height * k
+                    // 实心填充，不描边（用户要求）
                     drawRect(fill, Offset(left, top), Size(w, h))
-                    drawRect(edge, Offset(left, top), Size(w, h), style = Stroke(width = maxOf(1f, k * 0.12f)))
 
-                    // 3) 单人座可用高亮：金框 + 浅蓝填充（大桌在桌面那一层统一高亮）
-                    if (free && d.size == 1) {
-                        val grow = k * 0.3f
-                        drawRoundRect(
-                            color = UBcmMapColors.highlightFill,
-                            topLeft = Offset(left - grow, top - grow),
-                            size = Size(w + grow * 2, h + grow * 2),
-                            cornerRadius = CornerRadius(4f, 4f),
+                    // 3) 单人座可用高亮：只描金框（座位本身已是实心绿），外扩 0.5 单位
+                    if (free && d.size == 1 && d.nameRange !in highlighted) {
+                        val grow = DeskGeometry.HIGHLIGHT_PAD * k
+                        val cr = CornerRadius(
+                            x = maxOf(1f, DeskGeometry.TABLE_CORNER * k),
+                            y = maxOf(1f, DeskGeometry.TABLE_CORNER * k),
                         )
                         drawRoundRect(
                             color = UBcmMapColors.highlightEdge,
                             topLeft = Offset(left - grow, top - grow),
                             size = Size(w + grow * 2, h + grow * 2),
-                            cornerRadius = CornerRadius(4f, 4f),
-                            style = Stroke(width = maxOf(1.5f, k * 0.16f)),
+                            cornerRadius = cr,
+                            style = Stroke(width = maxOf(1.5f, k * 0.12f)),
                         )
                     }
                 }
@@ -165,19 +166,23 @@ fun RoomSeatMap(
 
             // 3.5) 整桌全空的大桌：金框 + 浅蓝填充，**圈住桌子 + 全部座位**
             //      （只圈桌面的话座位露在框外，看着不像"这张桌"）
-            val smallCorner = CornerRadius(x = 3f, y = 3f)
+            // 外扩 0.5 单位（单位 = 座位边长）
+            val padPx = DeskGeometry.HIGHLIGHT_PAD * k
+            val smallCorner = CornerRadius(x = maxOf(1f, DeskGeometry.TABLE_CORNER * k), y = maxOf(1f, DeskGeometry.TABLE_CORNER * k))
             for (d in desks) {
                 if (d.size <= 1) continue
                 if (!d.allFreeDuring(criteria.slot)) continue
+                // 如果这张桌同时被筛选命中，用蓝框就够，不要两个框叠在一起
+                if (d.nameRange in highlighted) continue
                 val outer = DeskGeometry.outerBoxOf(d) ?: continue
-                val grow = k * 0.12f
+                val grow = padPx
                 val tl = Offset(sx(outer.left) - grow, sy(outer.top) - grow)
                 val ts = Size(outer.width * k + grow * 2, outer.height * k + grow * 2)
-                drawRoundRect(UBcmMapColors.highlightFill, tl, ts, smallCorner)
+                // 只描边不填充：座位/桌子都是实心的，填充会盖住颜色
                 drawRoundRect(
                     color = UBcmMapColors.highlightEdge,
                     topLeft = tl, size = ts, cornerRadius = smallCorner,
-                    style = Stroke(width = maxOf(1.8f, k * 0.16f)),
+                    style = Stroke(width = maxOf(1.5f, k * 0.12f)),
                 )
             }
 
@@ -236,17 +241,14 @@ private fun hitTest(
 /** 座位图配色。刻意和主页的暖白风格区分开：这是"图纸"，用中性底色 */
 private object UBcmMapColors {
     val paper = Color(0xFFF7F5F1)
-    /** 桌子：棕色实心 */
-    val table = Color(0xFF9A6B3F)
-    /** 空闲座位：绿边 + 浅绿填充 */
-    val seatFreeEdge = Color(0xFF2E7D32)
-    val seatFreeFill = Color(0xFFA5D6A7)
-    /** 被占座位：红边 + 淡红填充 */
-    val seatBusyEdge = Color(0xFFC62828)
-    val seatBusyFill = Color(0xFFEF9A9A)
-    /** 可用高亮：金色边框 + 浅蓝透明填充 */
+    /** 桌子：深棕实心 */
+    val table = Color(0xFF4F2D0D)
+    /** 空闲座位：#2b9c1c */
+    val seatFree = Color(0xFF2B9C1C)
+    /** 有人座位：#c42727 */
+    val seatBusy = Color(0xFFC42727)
+    /** 可用高亮：金色边框（实心座位本身已经是绿的，框只做标示） */
     val highlightEdge = Color(0xFFD4A017)
-    val highlightFill = Color(0x2A00B0FF)
-    /** 筛选命中：空心深蓝 */
-    val selected = Color(0xFF1565C0)
+    /** 筛选命中边框：#009dff */
+    val selected = Color(0xFF009DFF)
 }
