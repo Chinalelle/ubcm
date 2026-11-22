@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +54,8 @@ fun RoomSeatMap(
     modifier: Modifier = Modifier,
     /** 固定高度；传 null 表示填满父容器（全屏页用） */
     heightDp: Int? = 420,
+    /** 每次递增都会把视图复位成「全图」（父级放一个"全图"按钮用） */
+    resetToken: Int = 0,
     onSeatClick: (SeatApi.Seat) -> Unit = {},
 ) {
     // 先分组再按比例重排：每张桌只保留「中心 + 朝向」来自真实坐标，
@@ -68,6 +71,11 @@ fun RoomSeatMap(
     var scale by remember(seats) { mutableFloatStateOf(1.8f) }
     var panX by remember(seats) { mutableFloatStateOf(0f) }
     var panY by remember(seats) { mutableFloatStateOf(0f) }
+
+    // 外部请求复位（双击在真机上不好触发 —— adb 两次 input tap 间隔就超过双击阈值）
+    LaunchedEffect(resetToken) {
+        if (resetToken > 0) { scale = 1f; panX = 0f; panY = 0f }
+    }
 
     // 嵌在列表里时用固定高度；全屏页用 fillMaxSize（否则 420dp 撑不满，双指缩放也没空间）
     val sizeMod = if (heightDp != null) Modifier.fillMaxWidth().height(heightDp.dp) else Modifier.fillMaxSize()

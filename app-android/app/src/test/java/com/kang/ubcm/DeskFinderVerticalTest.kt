@@ -63,11 +63,25 @@ class DeskFinderVerticalTest {
     }
 
     @Test
-    fun `三层南区十二座是两列六行`() {
-        val d = DeskFinder.findFreeDesks(san, minSize = 12).first { it.nameRange == "3S118–3S129" }
-        assertEquals(12, d.size)
+    fun `三层南区3S118到129其实是三张四人桌`() {
+        // 编号连续（118–129）、2 列 6 行，但官方图上那是**三张紧挨着的四人桌**。
+        // 分界藏在行间距里：5.92 / 3.27 / 5.92 / 3.47 / 6.32 —— 大小两档，
+        // 大的是同一桌两行，小的是桌与桌之间。
+        val all = DeskFinder.findFreeDesks(san, minSize = 1)
+        val hits = all.filter { it.nameRange.contains("3S11") || it.nameRange.contains("3S12") }
+        val fours = hits.filter { it.size == 4 }
+        assertEquals("应该切出 3 张四人桌，实际 ${hits.map { it.size }}", 3, fours.size)
+        // 不能再出现 12 座合并体
+        assertTrue("不该再有 12 座桌", all.none { it.nameRange == "3S118–3S129" })
+    }
+
+    @Test
+    fun `二层北区2N167到176仍然是一张十座大桌`() {
+        // 行间距 4.62/4.82/4.02/5.42 是均匀的（max/min=1.35），不能切
+        val d = DeskFinder.findFreeDesks(er, minSize = 10).first { it.nameRange == "2N167–2N176" }
+        assertEquals(10, d.size)
         assertEquals(2, d.seats.map { it.x }.toSet().size)
-        assertEquals(6, d.seats.map { it.y }.toSet().size)
+        assertEquals(5, d.seats.map { it.y }.toSet().size)
     }
 
     // ---------- 二层北区：六座大桌 ----------

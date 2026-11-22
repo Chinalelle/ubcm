@@ -52,6 +52,12 @@ object DeskFinder {
     const val ROW_TOLERANCE = 1.0
 
     /**
+     * 行间距 max/min 超过这个比值，就认为「存在两档」——要按小间距把小桌切开。
+     * 三层南区 3S118–129 是 1.93（该切），二层北区 2N167–176 是 1.35（不该切）。
+     */
+    private const val GAP_RATIO_SPLIT = 1.5
+
+    /**
      * 水平长桌：相邻座位（同一行）的最大距离。
      *
      * 实测五层南区一排椅子的间距是 1.94–2.17，最长到 2.86；
@@ -214,13 +220,59 @@ object DeskFinder {
             val rows = g.map { it.y }.toSet().size
             val neat = rows == 1 || (cols == 2 && g.size == cols * rows)
             if (neat) {
-                flush(desks, g, minSize, slot, requireFree)
+                // 再按**行间距的两档特征**切一次：有些区域表面连续，其实是好几张紧挨的小桌
+                for (sub in splitByRowGap(g)) flush(desks, sub, minSize, slot, requireFree)
             } else {
                 // 单座列 / 不规整 → 拆回单座，交给 minSize 过滤
                 for (s in g) flush(desks, listOf(s), minSize, slot, requireFree)
             }
         }
         return desks
+    }
+
+    /**
+     * 按「行间距是否存在两档」把一组座位切成多张桌。
+     *
+     * 编号连续、列数规整，**并不代表就是同一张桌** —— 三层南区的 3S118–129
+     * 编号连续、2 列 6 行，但官方图上它是**三张紧挨着的四人桌**。
+     *
+     * 真实坐标里藏了分界：
+     * - 3S118–129 行间距 `5.92 / 3.27 / 5.92 / 3.47 / 6.32` —— 明显两档，
+     *   **大的是同一桌内两行**（桌子高），**小的是两张桌之间**（桌紧挨着），在小处切开 → 3 × 4 座。
+     * - 二层北区 2N167–176 行间距 `4.62 / 4.82 / 4.02 / 5.42` —— 均匀（max/min=1.35），
+     *   是**一张 10 座大桌**，不能切。
+     *
+     * 判据：max/min > [GAP_RATIO_SPLIT] 才认为存在两档；切分用两档中点。
+     */
+    private fun splitByRowGap(group: List<SeatApi.Seat>): List<List<SeatApi.Seat>> {
+        // 先按 y 聚成"行"
+        val rows = ArrayList<ArrayList<SeatApi.Seat>>()
+        for (s in group.sortedBy { it.y }) {
+            val last = rows.lastOrNull()
+            if (last != null && Math.abs(last.first().y - s.y) <= ROW_TOLERANCE) last.add(s)
+            else rows.add(arrayListOf(s))
+        }
+        if (rows.size < 3) return listOf(group)
+
+        val gaps = (1 until rows.size).map { rows[it].first().y - rows[it - 1].first().y }
+        val mn = gaps.min()
+        val mx = gaps.max()
+        if (mn <= 0 || mx / mn <= GAP_RATIO_SPLIT) return listOf(group)
+
+        // 存在两档：小于中点的间距视为「桌与桌之间」，在那里断开
+        val mid = (mn + mx) / 2.0
+        val out = ArrayList<List<SeatApi.Seat>>()
+        var cur = ArrayList<SeatApi.Seat>()
+        cur.addAll(rows[0])
+        for (i in 1 until rows.size) {
+            if (gaps[i - 1] < mid) {
+                out.add(cur)
+                cur = ArrayList()
+            }
+            cur.addAll(rows[i])
+        }
+        out.add(cur)
+        return out
     }
 
     private fun flush(

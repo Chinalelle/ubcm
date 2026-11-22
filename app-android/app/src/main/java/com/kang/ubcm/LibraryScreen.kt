@@ -959,6 +959,7 @@ private fun SeatMapFullScreen(
     onBack: () -> Unit,
 ) {
     var pickedSeat by remember { mutableStateOf<SeatApi.Seat?>(null) }
+    var resetToken by remember { mutableIntStateOf(0) }
 
     // 进来先加载该区域（同一个区域重复进来不重复拉）
     LaunchedEffect(roomId) {
@@ -991,7 +992,20 @@ private fun SeatMapFullScreen(
                         fontSize = 10.sp, color = UbcmColors.Ash, fontFamily = FontFamily.Monospace,
                     )
                 }
-                if (st.mapLoading) Text("加载中…", fontSize = 10.sp, color = UbcmColors.Amber)
+                if (st.mapLoading) {
+                    Text("加载中…", fontSize = 10.sp, color = UbcmColors.Amber)
+                } else {
+                    // 真机上双击不好触发（两次触摸间隔容易超过 300ms），给个明确的按钮
+                    Box(
+                        Modifier.clip(RoundedCornerShape(8.dp))
+                            .background(UbcmColors.Paper)
+                            .border(1.dp, UbcmColors.Line, RoundedCornerShape(8.dp))
+                            .clickable { resetToken++ }
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text("全图", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = UbcmColors.InkSoft)
+                    }
+                }
             }
 
             // 筛选条
@@ -1045,6 +1059,7 @@ private fun SeatMapFullScreen(
                         highlighted = highlighted,
                         modifier = Modifier.fillMaxSize(),
                         heightDp = null,
+                        resetToken = resetToken,
                         onSeatClick = { pickedSeat = it },
                     )
                 }
