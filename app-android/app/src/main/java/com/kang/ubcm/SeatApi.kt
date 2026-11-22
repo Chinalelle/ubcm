@@ -154,6 +154,24 @@ object SeatApi {
         }
     }
 
+    /**
+     * 从响应里取「服务端给的失败原因」。
+     *
+     * 之前解析失败只知道"没数据"，分不清是：
+     * - `code:300` → 会话过期（要重新登录座位页）
+     * - `code:1` + "请求频繁" → 限流（等一会儿再试）
+     * - `code:0` + 空数组 → 真的没座位
+     * 三种的处理方式完全不同，必须能把它们区分开。
+     */
+    fun apiError(json: String): String? = try {
+        val o = JSONObject(json)
+        val code = o.optInt("code", -1)
+        if (code == 0) null
+        else "code=$code ${o.optString("message").ifBlank { "(无 message)" }}"
+    } catch (e: Exception) {
+        "响应不是合法 JSON：${json.take(60)}"
+    }
+
     fun parseSeats(json: String): List<Seat> = try {
         val arr = JSONObject(json).optJSONArray("data") ?: return emptyList()
         (0 until arr.length()).mapNotNull { i ->

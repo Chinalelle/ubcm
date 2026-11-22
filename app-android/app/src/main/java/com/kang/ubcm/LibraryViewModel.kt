@@ -219,10 +219,22 @@ class LibraryViewModel(app: Application) : AndroidViewModel(app) {
                     body = SeatApi.seatMap(cookie, date, roomId).body
                     list = SeatApi.parseSeats(body)
                 }
+                // 空结果要区分原因，否则用户只看到"没取到座位"，没法判断该怎么办
+                val err = if (list.isEmpty()) SeatApi.apiError(body) else null
+                android.util.Log.i(
+                    "UBcmLib",
+                    "seatMap room=$roomId date=$date n=${list.size} err=$err",
+                )
                 _state.value = _state.value.copy(
                     mapSeats = list,
                     mapLoading = false,
-                    mapError = if (list.isEmpty()) "这个区域没有取到座位（可能接口限流，稍后再试）" else null,
+                    mapError = when {
+                        list.isNotEmpty() -> null
+                        err == null -> "这个区域没有座位数据"
+                        err.contains("300") -> "座位会话已过期，点「网页补」重新登录一次"
+                        err.contains("频繁") -> "请求太频繁，等几秒再试"
+                        else -> "接口返回异常：$err"
+                    },
                 )
             } catch (e: Exception) {
                 _state.value = _state.value.copy(
@@ -277,7 +289,13 @@ class LibraryViewModel(app: Application) : AndroidViewModel(app) {
                         body = SeatApi.seatMap(cookie, date, rid).body
                         list = SeatApi.parseSeats(body)
                     }
-                    if (list.isEmpty()) failed++ else all.addAll(list)
+                    if (list.isEmpty()) {
+                        failed++
+                        android.util.Log.i(
+                            "UBcmLib",
+                            "desks room=$rid 空结果 body=${body.take(160)}",
+                        )
+                    } else all.addAll(list)
                 }
                 lastSeats = all
                 val desks = DeskFinder.findFreeDesks(all, minDeskSize, slot)
