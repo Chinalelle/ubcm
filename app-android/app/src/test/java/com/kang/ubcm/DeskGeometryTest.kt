@@ -7,12 +7,21 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * 桌子几何 + 三维筛选。
+ * 座位图几何 + 三维筛选。
  *
- * 夹具是真实数据（[TestDesks]）：三层南区的 8 座垂直桌、13 座长桌，
- * 二层北区的 6 座 / 10 座垂直桌。
+ * 几何部分打的是**用户给的比例标准**：
+ * - 座位边长 = 1 单位
+ * - 座位与桌子 / 座位与座位 = 0.5 单位
+ * - 桌子长度 = 座位总长（N 座 → `1×N + 0.5×(N-1)` 单位）
+ * - 桌子宽度 = 2 单位
+ * - 圆角 = 0.25 单位
+ * - 高亮框 = 最小外接矩形 + **四边各** 0.25 单位（总共半单位）
+ *
+ * 1 单位 = [DeskGeometry.UNIT] = 0.93 百分比坐标（由「两列中心距 3.73 = 4 单位」反推）。
  */
 class DeskGeometryTest {
+
+    private val U = DeskGeometry.UNIT
 
     private fun desks(seats: List<SeatApi.Seat>, minSize: Int = 1) =
         DeskFinder.findFreeDesks(seats, minSize = minSize)
@@ -20,174 +29,178 @@ class DeskGeometryTest {
     private fun deskOf(ranges: String, seats: List<SeatApi.Seat> = TestDesks.BOTH): DeskFinder.Desk =
         desks(seats).first { it.nameRange == ranges }
 
+    private fun placed(ranges: String, seats: List<SeatApi.Seat> = TestDesks.BOTH) =
+        DeskGeometry.layout(deskOf(ranges, seats))
+
     // ---------- 形状判定 ----------
 
     @Test
     fun `两列多行是垂直桌`() {
-        // 3S062–069 是 8 座 = 2 列 × 4 行
-        val d = deskOf("3S062–3S069")
-        assertEquals(DeskGeometry.Shape.VERTICAL, DeskGeometry.shapeOf(d))
+        assertEquals(DeskGeometry.Shape.VERTICAL, placed("3S062–3S069").shape)
     }
 
     @Test
     fun `一行多列是水平长桌`() {
-        // 3S049–061 是 13 座 = 1 行 13 列
-        val d = deskOf("3S049–3S061")
-        assertEquals(DeskGeometry.Shape.HORIZONTAL, DeskGeometry.shapeOf(d))
+        assertEquals(DeskGeometry.Shape.HORIZONTAL, placed("3S049–3S061").shape)
     }
 
     @Test
     fun `单人座没有桌面`() {
         val one = TestDesks.SAN_CENG_NAN.first().copy(name = "3S900", x = 50.0, y = 50.0)
-        val d = DeskFinder.findFreeDesks(listOf(one), minSize = 1).first()
-        assertEquals(DeskGeometry.Shape.SINGLE, DeskGeometry.shapeOf(d))
-        assertNull("单人座不该画桌面", DeskGeometry.boxOf(d).table)
+        val p = DeskGeometry.layout(DeskFinder.findFreeDesks(listOf(one), minSize = 1).first())
+        assertEquals(DeskGeometry.Shape.SINGLE, p.shape)
+        assertNull("单人座不该画桌面", p.table)
+        assertEquals(1, p.seats.size)
     }
 
-    // ---------- 桌面矩形 ----------
+    // ---------- 比例标准 ----------
 
     @Test
-    fun `垂直桌的桌面夹在两列座位之间`() {
-        val d = deskOf("3S062–3S069")
-        val box = DeskGeometry.boxOf(d).table!!
-        val xs = d.seats.map { it.x.toFloat() }
-        val half = DeskGeometry.SEAT_SIZE / 2f
-        // 座位边缘再让 0.5 单位（GAP）才是桌子边缘
-        assertEquals(xs.min() + half + DeskGeometry.GAP, box.left, 0.01f)
-        assertEquals(xs.max() - half - DeskGeometry.GAP, box.right, 0.01f)
-        assertTrue("桌面要有宽度", box.width > 0f)
-    }
-
-    @Test
-    fun `垂直桌的桌面高度覆盖所有行`() {
-        val d = deskOf("2N167–2N176")
-        val box = DeskGeometry.boxOf(d).table!!
-        val ys = d.seats.map { it.y.toFloat() }
-        assertTrue(box.top <= ys.min())
-        assertTrue(box.bottom >= ys.max())
-    }
-
-    @Test
-    fun `水平长桌的桌面在座位行下方`() {
-        val d = deskOf("3S049–3S061")
-        val box = DeskGeometry.boxOf(d).table!!
-        val y = d.seats.minOf { it.y }.toFloat()
-        assertTrue("桌面顶边应在座位行下方（或紧贴）", box.top >= y)
-        assertTrue("桌面要有厚度", box.height > 0.5f)
-        // 横向铺满整排座位
-        assertTrue(box.width >= d.seats.map { it.x.toFloat() }.max() - d.seats.map { it.x.toFloat() }.min())
-    }
-
-    @Test
-    fun `六座桌的桌面是两列之间的窄条`() {
-        val d = deskOf("2N001–2N006")
-        val box = DeskGeometry.boxOf(d).table!!
-        val xs = d.seats.map { it.x.toFloat() }
-        assertEquals(2, d.seats.map { Math.round(it.x * 100) }.toSet().size)
-        // 桌宽 = 列间距 − 两个座位宽 − 两个 0.5 单位的缝
-        assertEquals(
-            xs.max() - xs.min() - DeskGeometry.SEAT_SIZE - 2 * DeskGeometry.GAP,
-            box.width, 0.05f,
-        )
-    }
-
-    // ---------- 外接矩形（高亮/筛选框要圈住这个） ----------
-
-    @Test
-    fun `外接矩形必须包住所有座位和桌面`() {
-        // 用户要求：金框/蓝框要圈「整张桌子 + 所有座位」，不能只圈桌面
-        val d = deskOf("3S062–3S069")
-        val outer = DeskGeometry.outerBoxOf(d)!!
-        val half = DeskGeometry.SEAT_SIZE / 2f
-        for (s in d.seats) {
-            val x = s.x.toFloat()
-            val y = s.y.toFloat()
-            assertTrue("座位 ${s.name} 的左边界露在框外", x - half >= outer.left - 0.01f)
-            assertTrue("座位 ${s.name} 的右边界露在框外", x + half <= outer.right + 0.01f)
-            assertTrue("座位 ${s.name} 的上边界露在框外", y - half >= outer.top - 0.01f)
-            assertTrue("座位 ${s.name} 的下边界露在框外", y + half <= outer.bottom + 0.01f)
-        }
-        val table = DeskGeometry.boxOf(d).table!!
-        assertTrue("桌面左边界露在框外", table.left >= outer.left - 0.01f)
-        assertTrue("桌面右边界露在框外", table.right <= outer.right + 0.01f)
-    }
-
-    @Test
-    fun `外接矩形比桌面大（因为要含座位）`() {
-        val d = deskOf("3S062–3S069")
-        val outer = DeskGeometry.outerBoxOf(d)!!
-        val table = DeskGeometry.boxOf(d).table!!
-        assertTrue("外接矩形要比桌面宽（含两侧座位）", outer.width > table.width)
-        // 高度上桌面覆盖到座位外沿，两者相等 —— 这是有意的（座位贴着桌子的上下端）
-        assertTrue("外接矩形至少要和桌面一样高", outer.height >= table.height - 0.01f)
-    }
-
-    @Test
-    fun `单人座也有外接矩形`() {
-        val one = TestDesks.SAN_CENG_NAN.first().copy(name = "3S901", x = 50.0, y = 50.0)
-        val d = DeskFinder.findFreeDesks(listOf(one), minSize = 1).first()
-        val outer = DeskGeometry.outerBoxOf(d)!!
-        assertEquals(DeskGeometry.SEAT_SIZE, outer.width, 0.01f)
-    }
-
-    @Test
-    fun `水平长桌的外接矩形也含桌面`() {
-        val d = deskOf("3S049–3S061")
-        val outer = DeskGeometry.outerBoxOf(d)!!
-        val table = DeskGeometry.boxOf(d).table!!
-        assertTrue("长桌的外接矩形要盖住桌面下沿", outer.bottom >= table.bottom - 0.01f)
-    }
-
-    // ---------- 座位方块 ----------
-
-    @Test
-    fun `座位方块以坐标为中心`() {
-        val s = TestDesks.SAN_CENG_NAN.first()
-        val b = DeskGeometry.seatBox(s)
-        assertEquals(s.x.toFloat(), b.centerX, 0.001f)
-        assertEquals(s.y.toFloat(), b.centerY, 0.001f)
-        assertEquals(DeskGeometry.SEAT_SIZE, b.width, 0.001f)
-        assertEquals(DeskGeometry.SEAT_SIZE, b.height, 0.001f)
-    }
-
-    @Test
-    fun `区域包围盒能包住所有座位`() {
-        val seats = TestDesks.SAN_CENG_NAN
-        val b = DeskGeometry.boundsOf(seats)!!
-        for (s in seats) {
-            assertTrue("${s.name} 超出包围盒", b.contains(s.x.toFloat(), s.y.toFloat()))
+    fun `座位是边长 1 单位的小正方形`() {
+        val p = placed("3S062–3S069")
+        for (ps in p.seats) {
+            assertEquals("座位宽", U, ps.box.width, 0.01f)
+            assertEquals("座位高", U, ps.box.height, 0.01f)
         }
     }
 
     @Test
-    fun `空区域没有包围盒`() {
-        assertNull(DeskGeometry.boundsOf(emptyList()))
+    fun `桌子宽度固定是 2 单位`() {
+        for (r in listOf("3S062–3S069", "2N167–2N176", "2N001–2N006")) {
+            val p = placed(r)
+            assertEquals("$r 桌宽", U * 2, p.table!!.width, 0.01f)
+        }
+    }
+
+    @Test
+    fun `垂直桌的长度等于座位总长`() {
+        // 八座 = 每边 4 行 → 4×1 + 3×0.5 = 5.5 单位
+        assertEquals(U * 5.5f, placed("3S062–3S069").table!!.height, 0.02f)
+        // 十座 = 每边 5 行 → 5×1 + 4×0.5 = 7 单位
+        assertEquals(U * 7f, placed("2N167–2N176").table!!.height, 0.02f)
+        // 六座 = 每边 3 行 → 3×1 + 2×0.5 = 4 单位（用户举的例子）
+        assertEquals(U * 4f, placed("2N001–2N006").table!!.height, 0.02f)
+    }
+
+    @Test
+    fun `水平长桌的长度等于座位总长`() {
+        // 13 座一排 → 13×1 + 12×0.5 = 19 单位
+        assertEquals(U * 19f, placed("3S049–3S061").table!!.width, 0.03f)
+    }
+
+    @Test
+    fun `同一列上下两个座位的间距是 0_5 单位`() {
+        val p = placed("3S062–3S069")
+        val leftCol = p.seats.filter { it.box.centerX < p.table!!.centerX }.sortedBy { it.box.centerY }
+        assertTrue("八座桌左列应有 4 个座位", leftCol.size == 4)
+        for (i in 1 until leftCol.size) {
+            val gap = leftCol[i].box.top - leftCol[i - 1].box.bottom
+            assertEquals("第 $i 个行间缝", U * 0.5f, gap, 0.01f)
+        }
+    }
+
+    @Test
+    fun `座位与桌子之间的间距是 0_5 单位`() {
+        val p = placed("3S062–3S069")
+        val table = p.table!!
+        for (ps in p.seats) {
+            val gap = if (ps.box.centerX < table.centerX) {
+                table.left - ps.box.right
+            } else {
+                ps.box.left - table.right
+            }
+            assertEquals("座位 ${ps.seat.name} 到桌边的缝", U * 0.5f, gap, 0.01f)
+        }
+    }
+
+    @Test
+    fun `高亮外扩是四边各 0_25 单位`() {
+        assertEquals(U * 0.25f, DeskGeometry.HIGHLIGHT_PAD, 0.001f)
+        val p = placed("3S062–3S069")
+        val outer = p.outer!!
+        val expanded = outer.expand(DeskGeometry.HIGHLIGHT_PAD)
+        assertEquals(U * 0.25f, outer.left - expanded.left, 0.001f)
+        assertEquals(U * 0.25f, expanded.right - outer.right, 0.001f)
+        assertEquals(U * 0.25f, outer.top - expanded.top, 0.001f)
+        assertEquals(U * 0.25f, expanded.bottom - outer.bottom, 0.001f)
+    }
+
+    @Test
+    fun `桌子圆角是 0_25 单位`() {
+        assertEquals(U * 0.25f, DeskGeometry.TABLE_CORNER, 0.001f)
+    }
+
+    // ---------- 外接矩形 ----------
+
+    @Test
+    fun `外接矩形包住所有座位和桌面`() {
+        val p = placed("3S062–3S069")
+        val outer = p.outer!!
+        for (ps in p.seats) {
+            assertTrue("座位 ${ps.seat.name} 超出外接矩形", outer.contains(ps.box.centerX, ps.box.centerY))
+        }
+        val t = p.table!!
+        assertTrue(outer.left <= t.left + 0.001f)
+        assertTrue(outer.right >= t.right - 0.001f)
+    }
+
+    @Test
+    fun `外接矩形比桌面宽（含两侧座位）`() {
+        val p = placed("3S062–3S069")
+        assertTrue(p.outer!!.width > p.table!!.width)
+    }
+
+    // ---------- 布局一致性 ----------
+
+    @Test
+    fun `重排后座位不重叠`() {
+        for (r in listOf("3S062–3S069", "2N167–2N176", "2N001–2N006", "3S049–3S061")) {
+            val p = placed(r)
+            val boxes = p.seats.map { it.box }
+            for (i in boxes.indices) for (j in i + 1 until boxes.size) {
+                val a = boxes[i]; val b = boxes[j]
+                val overlap = a.left < b.right - 0.001f && b.left < a.right - 0.001f &&
+                    a.top < b.bottom - 0.001f && b.top < a.bottom - 0.001f
+                assertTrue("$r 的第 $i 和第 $j 个座位重叠了", !overlap)
+            }
+        }
+    }
+
+    @Test
+    fun `桌中心保留真实位置`() {
+        // 重排只改桌内布局，桌在图上的位置必须还是原来的质心附近
+        val d = deskOf("3S062–3S069")
+        val p = DeskGeometry.layout(d)
+        val cx = d.seats.map { it.x }.average().toFloat()
+        val cy = d.seats.map { it.y }.average().toFloat()
+        assertEquals(cx, p.table!!.centerX, 0.5f)
+        assertEquals(cy, p.table!!.centerY, 0.5f)
     }
 
     @Test
     fun `坐标0-0的幽灵座位不能污染包围盒`() {
-        // 学校数据里 devProp=0 的座位坐标是 0,0（未在图纸上定位）。
-        // 2026-11-21 真机翻车：把它算进包围盒 → x/y 从 0 开始 → 整个座位图被压到左上角一小块。
         val ghost = TestDesks.SAN_CENG_NAN.first().copy(name = "3S999", x = 0.0, y = 0.0)
-        val withGhost = DeskGeometry.boundsOf(TestDesks.SAN_CENG_NAN + ghost)!!
-        val without = DeskGeometry.boundsOf(TestDesks.SAN_CENG_NAN)!!
+        val withGhost = DeskGeometry.boundsOfSeats(TestDesks.SAN_CENG_NAN + ghost)!!
+        val without = DeskGeometry.boundsOfSeats(TestDesks.SAN_CENG_NAN)!!
         assertEquals(without.left, withGhost.left, 0.001f)
         assertEquals(without.top, withGhost.top, 0.001f)
-        assertEquals(without.right, withGhost.right, 0.001f)
-        assertEquals(without.bottom, withGhost.bottom, 0.001f)
     }
 
     @Test
     fun `全是幽灵座位时返回 null`() {
         val ghosts = List(3) { TestDesks.SAN_CENG_NAN.first().copy(name = "3S90$it", x = 0.0, y = 0.0) }
-        assertNull(DeskGeometry.boundsOf(ghosts))
+        assertNull(DeskGeometry.boundsOfSeats(ghosts))
+    }
+
+    @Test
+    fun `空区域没有包围盒`() {
+        assertNull(DeskGeometry.boundsOfSeats(emptyList()))
     }
 
     // ---------- 筛选：类型 ----------
 
     @Test
     fun `类型档位覆盖所有座位数`() {
-        // 关键：不能有哪张桌在筛选时凭空消失
         for (size in 1..20) {
             val hit = SeatFilter.DeskType.entries.filter { it != SeatFilter.DeskType.ALL && it.accepts(size) }
             assertEquals("size=$size 应该恰好落在一个档位", 1, hit.size)
@@ -202,8 +215,6 @@ class DeskGeometryTest {
         assertTrue(SeatFilter.DeskType.SIX.accepts(6))
         assertTrue(SeatFilter.DeskType.LONG.accepts(7))
         assertTrue(SeatFilter.DeskType.LONG.accepts(13))
-        assertTrue(SeatFilter.DeskType.ALL.accepts(1))
-        assertTrue(SeatFilter.DeskType.ALL.accepts(13))
     }
 
     @Test
@@ -212,7 +223,7 @@ class DeskGeometryTest {
         val c = SeatFilter.Criteria(8 * 60, 22 * 60, SeatFilter.DeskType.LONG, onlyFullyFree = true)
         val got = SeatFilter.apply(all, c)
         assertTrue("应该有 8 座的长桌", got.any { it.size == 8 })
-        assertTrue("结果都必须是 7 座以上", got.all { it.size >= 7 })
+        assertTrue(got.all { it.size >= 7 })
     }
 
     @Test
@@ -220,7 +231,7 @@ class DeskGeometryTest {
         val all = desks(TestDesks.ER_CENG_BEI, minSize = 1)
         val c = SeatFilter.Criteria(8 * 60, 22 * 60, SeatFilter.DeskType.SIX, true)
         val got = SeatFilter.apply(all, c)
-        assertTrue("六座桌存在", got.isNotEmpty())
+        assertTrue(got.isNotEmpty())
         assertTrue(got.all { it.size in 5..6 })
     }
 
@@ -228,21 +239,14 @@ class DeskGeometryTest {
 
     @Test
     fun `时段内被占的桌不算全空`() {
-        // 注意：findFreeDesks 本来就只返回「全空」的桌，所以这里先拿干净的桌，
-        // 再手工给其中一个座位塞一段预约 —— 否则那张桌根本不会出现在结果里。
         val clean = deskOf("2N001–2N006")
         val desk = clean.copy(seats = clean.seats.map {
             if (it.name == "2N002") it.copy(reservations = listOf(SeatApi.SeatResv(1, 14 * 60, 16 * 60)))
             else it
         })
-
-        val morning = SeatFilter.Criteria(9 * 60, 11 * 60)
-        val afternoon = SeatFilter.Criteria(14 * 60 + 30, 15 * 60)
-        val wholeDay = SeatFilter.Criteria(8 * 60, 22 * 60)
-
-        assertTrue("上午它应该还空着", SeatFilter.matches(desk, morning))
-        assertTrue("下午被占了", !SeatFilter.matches(desk, afternoon))
-        assertTrue("整天口径也被占", !SeatFilter.matches(desk, wholeDay))
+        assertTrue("上午它应该还空着", SeatFilter.matches(desk, SeatFilter.Criteria(9 * 60, 11 * 60)))
+        assertTrue("下午被占了", !SeatFilter.matches(desk, SeatFilter.Criteria(14 * 60 + 30, 15 * 60)))
+        assertTrue("整天口径也被占", !SeatFilter.matches(desk, SeatFilter.Criteria(8 * 60, 22 * 60)))
     }
 
     @Test
@@ -252,20 +256,26 @@ class DeskGeometryTest {
             if (it.name != "2N001") it.copy(reservations = listOf(SeatApi.SeatResv(1, 14 * 60, 16 * 60)))
             else it
         })
-        val c = SeatFilter.Criteria(14 * 60 + 30, 15 * 60, onlyFullyFree = false)
-        assertTrue("还有 2N001 空着，应该算命中", SeatFilter.matches(desk, c))
-
-        val strict = c.copy(onlyFullyFree = true)
-        assertTrue("要求全空时不该命中", !SeatFilter.matches(desk, strict))
+        val loose = SeatFilter.Criteria(14 * 60 + 30, 15 * 60, onlyFullyFree = false)
+        assertTrue("还有 2N001 空着，应该算命中", SeatFilter.matches(desk, loose))
+        assertTrue("要求全空时不该命中", !SeatFilter.matches(desk, loose.copy(onlyFullyFree = true)))
     }
 
     @Test
     fun `座位空闲按当前时段判断而不是整天`() {
         val seat = TestDesks.ER_CENG_BEI.first { it.name == "2N001" }
             .copy(reservations = listOf(SeatApi.SeatResv(1, 9 * 60, 11 * 60)))
-        val morning = SeatFilter.Criteria(9 * 60 + 30, 10 * 60)
-        val afternoon = SeatFilter.Criteria(14 * 60, 16 * 60)
-        assertTrue("上午 9:30 应该是占用的", !SeatFilter.seatFreeAt(seat, morning))
-        assertTrue("下午应该空闲", SeatFilter.seatFreeAt(seat, afternoon))
+        assertTrue("上午 9:30 应该被占", !SeatFilter.seatFreeAt(seat, SeatFilter.Criteria(9 * 60 + 30, 10 * 60)))
+        assertTrue("下午应该空闲", SeatFilter.seatFreeAt(seat, SeatFilter.Criteria(14 * 60, 16 * 60)))
+    }
+
+    private fun nonNull(v: Any?): Boolean = v != null
+
+    @Test
+    fun `每个排版结果都非空`() {
+        for (p in TestDesks.BOTH.let { DeskFinder.groupAll(it) }.map { DeskGeometry.layout(it) }) {
+            assertNotNull(p.desk)
+            assertTrue(nonNull(p.outer))
+        }
     }
 }

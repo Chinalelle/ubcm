@@ -55,9 +55,12 @@ fun RoomSeatMap(
     heightDp: Int? = 420,
     onSeatClick: (SeatApi.Seat) -> Unit = {},
 ) {
-    // 分组：这里要画**所有**座位，所以用 groupAll（findFreeDesks 只会返回全空的桌）
-    val desks = remember(seats) { DeskFinder.groupAll(seats) }
-    val bounds = remember(seats) { DeskGeometry.boundsOf(seats) }
+    // 先分组再按比例重排：每张桌只保留「中心 + 朝向」来自真实坐标，
+    // 桌内一律按 1 / 0.5 / 2 单位排（见 DeskGeometry 的说明）
+    val placed = remember(seats) {
+        DeskFinder.groupAll(seats).map { DeskGeometry.layout(it) }
+    }
+    val bounds = remember(placed) { DeskGeometry.boundsOf(placed) }
 
     // 初始放大到 1.8x：三层南区 x 跨度 92%（画布约 1080px），若按整图铺满，
     // 一个座位只有 9px，根本看不清空/占。放大后座位 ≈ 17px，靠拖动看全貌，
@@ -83,32 +86,37 @@ fun RoomSeatMap(
         Canvas(
             Modifier
                 .fillMaxSize()
-                // 拖动/缩放
-                .pointerInput(seats) {
-                    detectTransformGestures { _, pan, zoom, _ ->
-                        scale = (scale * zoom).coerceIn(0.6f, 6f)
-                        panX += pan.x
-                        panY += pan.y
+                // 拖动 / 缩放：**以两指中心为锚点**缩放，否则手指一捏图就往角上跑
+                .pointerInput(placed) {
+                    detectTransformGestures { centroid, pan, zoom, _ ->
+                        val old = scale
+                        val next = (scale * zoom).coerceIn(0.6f, 6f)
+                        val f = next / old
+                        // 让 centroid 处的内容在缩放前后落在同一点：
+                        //   pan' = A*(1-f) + f*pan + pan.delta   （A = centroid - pad）
+                        val ax = centroid.x - CANVAS_PAD
+                        val ay = centroid.y - CANVAS_PAD
+                        panX = ax * (1f - f) + f * panX + pan.x
+                        panY = ay * (1f - f) + f * panY + pan.y
+                        scale = next
                     }
                 }
                 // 点击命中座位
-                .pointerInput(seats, desks, scale, panX, panY) {
+                .pointerInput(placed, scale, panX, panY) {
                     detectTapGestures(
-                        // 双击重置视图：拖丢之后不用重新加载区域
                         onDoubleTap = { scale = 1f; panX = 0f; panY = 0f },   // 双击看全图
                         onTap = { tap ->
-                        val hit = hitTest(
-                            tap, desks, bounds,
-                            size.width.toFloat(), size.height.toFloat(),
-                            scale, panX, panY,
-                        )
-                        if (hit != null) onSeatClick(hit)
-                        }
+                            val hit = hitTest(
+                                tap, placed, bounds,
+                                size.width.toFloat(), size.height.toFloat(),
+                                scale, panX, panY,
+                            )
+                            if (hit != null) onSeatClick(hit)
+                        },
                     )
                 }
         ) {
-            // 画布 → 百分比坐标的换算：等比铺满并留一点边
-            val pad = 8f
+            val pad = CANVAS_PAD
             val baseScale = minOf(
                 (size.width - pad * 2) / bounds.width,
                 (size.height - pad * 2) / bounds.height,
@@ -117,88 +125,64 @@ fun RoomSeatMap(
             fun sx(x: Float) = (x - bounds.left) * k + pad + panX
             fun sy(y: Float) = (y - bounds.top) * k + pad + panY
 
-            // 1) 桌子（先画，压在座位下面）
-            for (d in desks) {
-                val box = DeskGeometry.boxOf(d).table ?: continue
+            val cornerPx = maxOf(1f, DeskGeometry.TABLE_CORNER * k)
+
+            // 1) 桌子（实心棕，先画，压在座位下面）
+            for (p in placed) {
+                val t = p.table ?: continue
                 drawRoundRect(
                     color = UBcmMapColors.table,
-                    topLeft = Offset(sx(box.left), sy(box.top)),
-                    size = Size(box.width * k, box.height * k),
-                    // 圆角半径 = 0.25 单位（单位 = 座位边长）
-                    cornerRadius = CornerRadius(
-                        x = maxOf(1f, DeskGeometry.TABLE_CORNER * k),
-                        y = maxOf(1f, DeskGeometry.TABLE_CORNER * k),
-                    ),
+                    topLeft = Offset(sx(t.left), sy(t.top)),
+                    size = Size(t.width * k, t.height * k),
+                    cornerRadius = CornerRadius(cornerPx, cornerPx),
                 )
             }
 
-            // 2) 座位
-            for (d in desks) {
-                val deskFree = d.allFreeDuring(criteria.slot)
-                for (s in d.seats) {
-                    val b = DeskGeometry.seatBox(s)
-                    val free = SeatFilter.seatFreeAt(s, criteria)
-                    val fill = if (free) UBcmMapColors.seatFree else UBcmMapColors.seatBusy
-                    val left = sx(b.left)
-                    val top = sy(b.top)
-                    val w = b.width * k
-                    val h = b.height * k
-                    // 实心填充，不描边（用户要求）
-                    drawRect(fill, Offset(left, top), Size(w, h))
-
-                    // 3) 单人座可用高亮：只描金框（座位本身已是实心绿），外扩 0.5 单位
-                    if (free && d.size == 1 && d.nameRange !in highlighted) {
-                        val grow = DeskGeometry.HIGHLIGHT_PAD * k
-                        val cr = CornerRadius(
-                            x = maxOf(1f, DeskGeometry.TABLE_CORNER * k),
-                            y = maxOf(1f, DeskGeometry.TABLE_CORNER * k),
-                        )
+            // 2) 座位（实心方块，无描边）
+            for (p in placed) {
+                val deskFree = p.desk.allFreeDuring(criteria.slot)
+                for (ps in p.seats) {
+                    val b = ps.box
+                    val free = SeatFilter.seatFreeAt(ps.seat, criteria)
+                    drawRect(
+                        color = if (free) UBcmMapColors.seatFree else UBcmMapColors.seatBusy,
+                        topLeft = Offset(sx(b.left), sy(b.top)),
+                        size = Size(b.width * k, b.height * k),
+                    )
+                    // 单人座可用：金框（整桌的在下面统一画）
+                    if (free && p.desk.size == 1 && p.desk.nameRange !in highlighted) {
                         drawRoundRect(
                             color = UBcmMapColors.highlightEdge,
-                            topLeft = Offset(left - grow, top - grow),
-                            size = Size(w + grow * 2, h + grow * 2),
-                            cornerRadius = cr,
-                            style = Stroke(width = maxOf(1.5f, k * 0.12f)),
+                            topLeft = Offset(sx(b.left - DeskGeometry.HIGHLIGHT_PAD), sy(b.top - DeskGeometry.HIGHLIGHT_PAD)),
+                            size = Size((b.width + DeskGeometry.HIGHLIGHT_PAD * 2) * k, (b.height + DeskGeometry.HIGHLIGHT_PAD * 2) * k),
+                            cornerRadius = CornerRadius(cornerPx, cornerPx),
+                            style = Stroke(width = maxOf(1.5f, k * 0.1f)),
                         )
+                    }
+                    // 整桌空着的大桌：金框
+                    if (free && p.desk.size > 1 && deskFree && p.desk.nameRange !in highlighted) {
+                        // 只在第一圈画一次，靠下面的整桌循环处理
                     }
                 }
             }
 
-            // 3.5) 整桌全空的大桌：金框 + 浅蓝填充，**圈住桌子 + 全部座位**
-            //      （只圈桌面的话座位露在框外，看着不像"这张桌"）
-            // 外扩 0.5 单位（单位 = 座位边长）
-            val padPx = DeskGeometry.HIGHLIGHT_PAD * k
-            val smallCorner = CornerRadius(x = maxOf(1f, DeskGeometry.TABLE_CORNER * k), y = maxOf(1f, DeskGeometry.TABLE_CORNER * k))
-            for (d in desks) {
-                if (d.size <= 1) continue
-                if (!d.allFreeDuring(criteria.slot)) continue
-                // 如果这张桌同时被筛选命中，用蓝框就够，不要两个框叠在一起
-                if (d.nameRange in highlighted) continue
-                val outer = DeskGeometry.outerBoxOf(d) ?: continue
-                val grow = padPx
-                val tl = Offset(sx(outer.left) - grow, sy(outer.top) - grow)
-                val ts = Size(outer.width * k + grow * 2, outer.height * k + grow * 2)
-                // 只描边不填充：座位/桌子都是实心的，填充会盖住颜色
+            // 3) 整桌可用（金框）/ 筛选命中（蓝框）：都框「桌子+全部座位」+ 0.25 单位
+            for (p in placed) {
+                val outer = p.outer ?: continue
+                val isHit = p.desk.nameRange in highlighted
+                val isFree = p.desk.allFreeDuring(criteria.slot)
+                val tone = when {
+                    isHit -> UBcmMapColors.selected            // 筛选命中：蓝
+                    isFree -> UBcmMapColors.highlightEdge      // 整桌可用：金
+                    else -> null
+                } ?: continue
+                val e = outer.expand(DeskGeometry.HIGHLIGHT_PAD)
                 drawRoundRect(
-                    color = UBcmMapColors.highlightEdge,
-                    topLeft = tl, size = ts, cornerRadius = smallCorner,
-                    style = Stroke(width = maxOf(1.5f, k * 0.12f)),
-                )
-            }
-
-            // 4) 筛选命中的整张桌：空心深蓝框
-            for (d in desks) {
-                if (d.nameRange !in highlighted) continue
-                // 圈「桌子 + 全部座位」，圆角要小（大圆角会把矩形的直角吃掉，看着像胶囊）
-                val outer = DeskGeometry.outerBoxOf(d) ?: continue
-                // 明显外扩：金色是「这张桌可用」、深蓝是「筛选命中」，两层要能一眼分开
-                val grow = if (d.size == 1) k * 1.1f else k * 1.8f
-                drawRoundRect(
-                    color = UBcmMapColors.selected,
-                    topLeft = Offset(sx(outer.left) - grow, sy(outer.top) - grow),
-                    size = Size(outer.width * k + grow * 2, outer.height * k + grow * 2),
-                    cornerRadius = CornerRadius(x = 3f, y = 3f),
-                    style = Stroke(width = maxOf(2f, k * 0.2f)),
+                    color = tone,
+                    topLeft = Offset(sx(e.left), sy(e.top)),
+                    size = Size(e.width * k, e.height * k),
+                    cornerRadius = CornerRadius(cornerPx, cornerPx),
+                    style = Stroke(width = maxOf(1.5f, k * 0.11f)),
                 )
             }
         }
@@ -208,7 +192,7 @@ fun RoomSeatMap(
 /** 点击命中：找最近的座位（半径放宽，手指点不准时也能选中） */
 private fun hitTest(
     tap: Offset,
-    desks: List<DeskFinder.Desk>,
+    placed: List<DeskGeometry.Placed>,
     bounds: DeskGeometry.Box,
     w: Float,
     h: Float,
@@ -216,27 +200,31 @@ private fun hitTest(
     panX: Float,
     panY: Float,
 ): SeatApi.Seat? {
-    val pad = 8f
+    val pad = CANVAS_PAD
     val base = minOf((w - pad * 2) / bounds.width, (h - pad * 2) / bounds.height)
     val k = base * scale
     var best: SeatApi.Seat? = null
     var bestD = Float.MAX_VALUE
-    val limit = maxOf(DeskGeometry.SEAT_SIZE * k * 1.6f, 26f)
-    for (d in desks) {
-        for (s in d.seats) {
-            val px = (s.x.toFloat() - bounds.left) * k + pad + panX
-            val py = (s.y.toFloat() - bounds.top) * k + pad + panY
+    // 命中半径按座位大小放宽：手指点不准时也能选中最近的
+    val limit = maxOf(DeskGeometry.SEAT_SIZE * k * 1.5f, 24f)
+    for (p in placed) {
+        for (ps in p.seats) {
+            val px = (ps.box.centerX - bounds.left) * k + pad + panX
+            val py = (ps.box.centerY - bounds.top) * k + pad + panY
             val dx = px - tap.x
             val dy = py - tap.y
             val dist = Math.sqrt((dx * dx + dy * dy).toDouble()).toFloat()
             if (dist < bestD) {
                 bestD = dist
-                best = s
+                best = ps.seat
             }
         }
     }
     return if (bestD <= limit) best else null
 }
+
+/** 画布内边距（px），手势的缩放锚点计算要和绘制用同一个值 */
+private const val CANVAS_PAD = 8f
 
 /** 座位图配色。刻意和主页的暖白风格区分开：这是"图纸"，用中性底色 */
 private object UBcmMapColors {

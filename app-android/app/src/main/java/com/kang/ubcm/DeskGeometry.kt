@@ -1,199 +1,230 @@
 package com.kang.ubcm
 
 /**
- * 座位 → 「桌子矩形」的几何推导。
+ * 座位图几何：把「一张桌的真实座位坐标」重新排成**规整的几何**。
  *
- * ## 为什么需要它
+ * ## 为什么要重排，而不是直接用真实坐标
  *
- * 学校接口只返回**座位点**（`coordinate` 是百分比坐标），**不返回桌子**：
- * `pointProperty` / `msideCoordinate` 全空，`devProp=0` 那几条只是「未在图纸上定位的座位」。
- * 但用户看的是官方座位图——图上画着棕色的桌子，座位是围着桌子的圆点。
- * 所以桌子位置只能从座位反推。
+ * 学校返回的 `coordinate` 是**画图用的百分比**，间距很不规整：同一个区域里
+ * 行距可能是 4.02 也可能是 5.42，列距 3.73 但不同桌还不一样。
+ * 直接映射出来会出现「座位大小不一、桌子被撑得歪七扭八」。
  *
- * ## 判定规则（对齐官方图）
+ * 用户给了一套**比例标准**：
+ * - 座位小正方形 = 1 单位
+ * - 座位与桌子 / 座位与座位之间 = 0.5 单位
+ * - 桌子长度 = 座位总长（六座桌每边 3 座 → `1×3 + 0.5×2 = 4` 单位）
+ * - 桌子宽度 = 2 单位
+ * - 圆角半径 = 0.25 单位
  *
- * 座位图有两种摆法（见 [DeskFinder] 的说明）：
- * - **垂直桌**：座位分左右两列，桌子夹在中间 → 矩形 x 取两列之间
- * - **水平长桌**：座位排成一行，桌子贴在座位行的下方
+ * 所以这里**只保留真实坐标的「桌中心」和「朝向」**，桌内一律按比例排。
+ * 这样每张桌都规整，桌与桌的相对位置仍然和官方图一致。
  *
- * ## 参数是估的，但估得有依据
+ * ## 单位换算
  *
- * `SEAT_SIZE` 取 1.2（百分比）。依据：二层北区两列间距 3.73，而官方图上座位点直径
- * 约占两列间距的三分之一，即 ~1.2；桌宽 = 3.73 − 1.2 ≈ 2.5，与图上比例一致。
- *
- * ⚠️ **水平长桌的桌子画在座位下方**是推断的（数据里看不出在上一侧还是下一侧）。
- * 官方图上大多数长桌确实在座位下方，个别在上的会偏一格，肉眼能认出是桌子。
+ * 两列座位中心距 = 桌半宽(1) + 间距(0.5) + 座位半宽(0.5) = 2 单位，两列共 **4 单位**。
+ * 实测二层北区两列中心距 3.73 → **1 单位 = 3.73 / 4 ≈ 0.93**（百分比坐标）。
  */
 object DeskGeometry {
 
-    /**
-     * 座位边长（百分比坐标单位）—— 也就是用户说的「1 单位」。
-     *
-     * 推导（二层北区两列中心距 3.73 为基准）：
-     * 中心距 = 座位半宽 + 间距 + 桌宽 + 间距 + 座位半宽
-     *        = 2 × 座位 + 桌宽
-     * 官方图上「桌宽 ≈ 座位宽」，代入得 `2S + S = 3.73` → **S = 1.24**，桌宽也正好 1.24。
-     * （曾误算成 `3S + 桌宽 = 3.73` 取 S=0.85，结果桌宽被撑到 2.0，比座位宽两倍，明显不像官方图。）
-     */
-    const val SEAT_SIZE = 1.24f
+    /** 1 单位 ≈ 0.746 百分比坐标（由「一桌总宽 5 单位 = 相邻桌中心距 3.73」反推） */
+    const val UNIT = 0.746f
 
-    /** 座位与桌子 / 座位与座位之间的缝隙 = 0.5 单位 */
-    const val GAP = SEAT_SIZE * 0.5f
+    /** 座位边长 = 1 单位 */
+    const val SEAT_SIZE = UNIT
 
-    /** 桌子矩形圆角半径 = 0.25 单位 */
-    const val TABLE_CORNER = SEAT_SIZE * 0.25f
+    /** 座位与桌子 / 座位与座位之间的缝 = 0.5 单位 */
+    const val GAP = UNIT * 0.5f
 
-    /** 高亮框在最小外接矩形之外再扩 0.5 单位 */
-    const val HIGHLIGHT_PAD = SEAT_SIZE * 0.5f
+    /** 桌子圆角半径 = 0.25 单位 */
+    const val TABLE_CORNER = UNIT * 0.25f
 
-    /** 桌子在垂直桌方向上的厚度下限，避免长条桌被压成一条线 */
-    const val MIN_TABLE_THICKNESS = 0.6f
+    /** 高亮框在最小外接矩形之外，**四边各扩展 0.25 单位**（即总共半单位） */
+    const val HIGHLIGHT_PAD = UNIT * 0.25f
+
+    /** 桌子宽度 = 2 单位 */
+    const val TABLE_WIDTH = UNIT * 2f
 
     enum class Shape {
-        /** 单人座：没有独立桌面，只画一个座位方块 */
+        /** 单人座：没有独立桌面 */
         SINGLE,
-
-        /** 垂直桌：座位左右两列，桌子在中间（2 列 × N 行） */
+        /** 垂直桌：座位左右两列，桌子在中间 */
         VERTICAL,
-
-        /** 水平长桌：座位一排，桌子在下方（1 行 × N 列） */
+        /** 水平长桌：座位一排，桌子在下面 */
         HORIZONTAL,
     }
 
-    /** 一个矩形（百分比坐标，左上 + 右下） */
-    data class Box(
-        val left: Float,
-        val top: Float,
-        val right: Float,
-        val bottom: Float,
-    ) {
+    /** 一个矩形（百分比坐标） */
+    data class Box(val left: Float, val top: Float, val right: Float, val bottom: Float) {
         val width: Float get() = right - left
         val height: Float get() = bottom - top
         val centerX: Float get() = (left + right) / 2f
         val centerY: Float get() = (top + bottom) / 2f
         fun contains(x: Float, y: Float): Boolean =
             x >= left && x <= right && y >= top && y <= bottom
+        fun union(o: Box): Box = Box(
+            minOf(left, o.left), minOf(top, o.top),
+            maxOf(right, o.right), maxOf(bottom, o.bottom),
+        )
+        fun expand(p: Float): Box = Box(left - p, top - p, right + p, bottom + p)
     }
 
-    /** 一张桌的几何信息：形状 + 桌面矩形（SINGLE 时为 null） */
-    data class DeskShape(val shape: Shape, val table: Box?)
+    /** 排好位置的座位 */
+    data class PlacedSeat(val seat: SeatApi.Seat, val box: Box)
 
-    /** 判断形状：1 座 = 单人；1 行多列 = 水平长桌；2 列多行 = 垂直桌 */
+    /** 排好的一张桌 */
+    data class Placed(
+        val desk: DeskFinder.Desk,
+        val shape: Shape,
+        /** 桌面矩形；单人座为 null */
+        val table: Box?,
+        /** 每个座位（位置已按规则重排） */
+        val seats: List<PlacedSeat>,
+    ) {
+        /** 桌子 + 全部座位的**最小外接矩形**（高亮/筛选框的基准） */
+        val outer: Box?
+            get() {
+                var box: Box? = table
+                for (s in seats) box = box?.union(s.box) ?: s.box
+                return box
+            }
+    }
+
     fun shapeOf(desk: DeskFinder.Desk): Shape {
-        val seats = desk.seats
-        if (seats.size <= 1) return Shape.SINGLE
-        val cols = seats.map { r100(it.x) }.toSet().size
-        val rows = seats.map { r100(it.y) }.toSet().size
+        val n = desk.seats.size
+        if (n <= 1) return Shape.SINGLE
+        val cols = desk.seats.map { Math.round(it.x * 100) }.toSet().size
+        val rows = desk.seats.map { Math.round(it.y * 100) }.toSet().size
         return when {
             rows == 1 && cols >= 2 -> Shape.HORIZONTAL
-            cols == 2 && rows >= 2 -> Shape.VERTICAL
-            // 不规整的组（不该出现，DeskFinder 已过滤）按座位数的形状给个兜底
-            cols >= 2 && rows >= 2 -> Shape.VERTICAL
-            else -> Shape.SINGLE
+            cols == 2 -> Shape.VERTICAL
+            // 不规整的（数据里少见）：座位多的按垂直桌处理
+            n >= 2 && rows >= cols -> Shape.VERTICAL
+            else -> Shape.HORIZONTAL
         }
     }
 
-    private fun r100(v: Double): Int = Math.round(v * 100).toInt()
-
     /**
-     * 算出一张桌的矩形。
+     * 把一张桌重新排成规整几何。
      *
-     * @return 单人座返回 `table = null`（没有桌面可画）
+     * 桌中心取真实座位坐标的质心（保留「这张桌在图上的位置」），
+     * 桌内一切按 [UNIT] / [GAP] / [TABLE_WIDTH] 计算。
      */
-    fun boxOf(desk: DeskFinder.Desk): DeskShape {
-        val seats = desk.seats
-        val shape = shapeOf(desk)
-        if (shape == Shape.SINGLE || seats.isEmpty()) return DeskShape(shape, null)
+    fun layout(desk: DeskFinder.Desk): Placed {
+        val seats = desk.seats.filter { !(it.x == 0.0 && it.y == 0.0) }
+        if (seats.isEmpty()) return Placed(desk, Shape.SINGLE, null, emptyList())
 
-        val xs = seats.map { it.x.toFloat() }
-        val ys = seats.map { it.y.toFloat() }
-        val half = SEAT_SIZE / 2f
+        val shape = shapeOf(desk)
+        if (shape == Shape.SINGLE) {
+            val s = seats.first()
+            val box = seatAround(s.x.toFloat(), s.y.toFloat())
+            return Placed(desk, shape, null, listOf(PlacedSeat(s, box)))
+        }
+
+        val cx = seats.map { it.x }.average().toFloat()
+        val cy = seats.map { it.y }.average().toFloat()
 
         return when (shape) {
-            Shape.VERTICAL -> {
-                // 两列之间夹着桌面
-                val x1 = xs.min()
-                val x2 = xs.max()
-                // 座位边缘(x1+half) 再往外让 0.5 单位，才是桌子边缘
-                val left = x1 + half + GAP
-                val right = x2 - half - GAP
-                if (right - left < MIN_TABLE_THICKNESS) {
-                    // 两列贴太近（数据异常），退化成一条居中细条
-                    val cx = (x1 + x2) / 2f
-                    DeskShape(
-                        shape,
-                        Box(cx - MIN_TABLE_THICKNESS / 2, ys.min() - half, cx + MIN_TABLE_THICKNESS / 2, ys.max() + half),
-                    )
-                } else {
-                    DeskShape(shape, Box(left, ys.min() - half, right, ys.max() + half))
+            Shape.VERTICAL -> layoutVertical(desk, seats, cx, cy)
+            Shape.HORIZONTAL -> layoutHorizontal(desk, seats, cx, cy)
+            Shape.SINGLE -> Placed(desk, Shape.SINGLE, null, emptyList())
+        }
+    }
+
+    /** 以 (x,y) 为中心、边长为 1 单位的座位方块 */
+    private fun seatAround(x: Float, y: Float): Box {
+        val h = SEAT_SIZE / 2f
+        return Box(x - h, y - h, x + h, y + h)
+    }
+
+    /**
+     * 垂直桌：座位分左右两列，桌面夹在中间。
+     *
+     * 尺寸（单位）：宽 2（桌）+ 0.5 + 1（座位）两侧 = 总宽 5 单位；
+     * 长度 = 行数 × 1 + (行数-1) × 0.5。
+     */
+    private fun layoutVertical(
+        desk: DeskFinder.Desk,
+        seats: List<SeatApi.Seat>,
+        cx: Float,
+        cy: Float,
+    ): Placed {
+        // 按 y 分行（真实坐标只用来决定「分几行、每行谁在左谁在右」）
+        val sortedByY = seats.sortedBy { it.y }
+        val rows = ArrayList<ArrayList<SeatApi.Seat>>()
+        for (s in sortedByY) {
+            val last = rows.lastOrNull()
+            if (last != null && Math.abs(last.first().y - s.y) <= 1.5) last.add(s)
+            else rows.add(arrayListOf(s))
+        }
+        val rowCount = rows.size
+
+        val tableLen = rowCount * UNIT + (rowCount - 1) * GAP
+        val tableTop = cy - tableLen / 2f
+        val tableBottom = cy + tableLen / 2f
+        val table = Box(cx - TABLE_WIDTH / 2f, tableTop, cx + TABLE_WIDTH / 2f, tableBottom)
+
+        // 座位中心到桌中心的横向距离 = 桌半宽(1) + 间距(0.5) + 座位半宽(0.5) = 2 单位
+        val dx = TABLE_WIDTH / 2f + GAP + SEAT_SIZE / 2f
+
+        val placed = ArrayList<PlacedSeat>(seats.size)
+        for ((ri, row) in rows.withIndex()) {
+            val y = tableTop + SEAT_SIZE / 2f + ri * (SEAT_SIZE + GAP)
+            val sortedRow = row.sortedBy { it.x }
+            when (sortedRow.size) {
+                1 -> {
+                    // 单座的行（数据里偶有）：放左边
+                    placed += PlacedSeat(sortedRow[0], seatAround(cx - dx, y))
+                }
+                else -> {
+                    placed += PlacedSeat(sortedRow[0], seatAround(cx - dx, y))
+                    placed += PlacedSeat(sortedRow[1], seatAround(cx + dx, y))
+                    // 极少数超过 2 列的，多余的忽略（不该出现）
                 }
             }
-
-            Shape.HORIZONTAL -> {
-                // 座位排成一行，桌面画在这行下方
-                val y = ys.min()
-                DeskShape(
-                    shape,
-                    Box(xs.min() - half, y + half + GAP, xs.max() + half, y + half + GAP + SEAT_SIZE),
-                )
-            }
-
-            Shape.SINGLE -> DeskShape(shape, null)
         }
+        return Placed(desk, Shape.VERTICAL, table, placed)
     }
 
     /**
-     * **整张桌的外接矩形：桌子 + 所有座位**。
-     *
-     * 高亮框和筛选框都要框住这个范围，而不是只框桌面 ——
-     * 只框桌面的话，座位会露在框外面，看起来像「框住的不是这张桌」。
+     * 水平长桌：座位排成一行，桌面在下面。
+     * 长度 = 座位数 × 1 + (座位数-1) × 0.5，宽 2。
      */
-    fun outerBoxOf(desk: DeskFinder.Desk): Box? {
-        if (desk.seats.isEmpty()) return null
-        val table = boxOf(desk).table
-        val xs = desk.seats.map { it.x.toFloat() }
-        val ys = desk.seats.map { it.y.toFloat() }
-        val half = SEAT_SIZE / 2f
-        var left = xs.min() - half
-        var top = ys.min() - half
-        var right = xs.max() + half
-        var bottom = ys.max() + half
-        if (table != null) {
-            left = minOf(left, table.left)
-            top = minOf(top, table.top)
-            right = maxOf(right, table.right)
-            bottom = maxOf(bottom, table.bottom)
+    private fun layoutHorizontal(
+        desk: DeskFinder.Desk,
+        seats: List<SeatApi.Seat>,
+        cx: Float,
+        cy: Float,
+    ): Placed {
+        val sorted = seats.sortedBy { it.x }
+        val n = sorted.size
+        val tableLen = n * UNIT + (n - 1) * GAP
+        val left = cx - tableLen / 2f
+        // 座位行在上，桌面在它下面（间距 0.5）
+        val seatY = cy - TABLE_WIDTH / 2f - GAP - SEAT_SIZE / 2f
+        val table = Box(left, cy - TABLE_WIDTH / 2f, left + tableLen, cy + TABLE_WIDTH / 2f)
+
+        val placed = ArrayList<PlacedSeat>(n)
+        for ((i, s) in sorted.withIndex()) {
+            val x = left + SEAT_SIZE / 2f + i * (SEAT_SIZE + GAP)
+            placed += PlacedSeat(s, seatAround(x, seatY))
         }
-        return Box(left, top, right, bottom)
+        return Placed(desk, Shape.HORIZONTAL, table, placed)
     }
 
-    /** 座位方块（百分比坐标） */
-    fun seatBox(seat: SeatApi.Seat): Box {
-        val half = SEAT_SIZE / 2f
-        val x = seat.x.toFloat()
-        val y = seat.y.toFloat()
-        return Box(x - half, y - half, x + half, y + half)
+    /** 整个区域的包围盒（渲染时定画布比例） */
+    fun boundsOf(placed: List<Placed>): Box? {
+        var box: Box? = null
+        for (p in placed) {
+            val o = p.outer ?: continue
+            box = box?.union(o) ?: o
+        }
+        return box?.expand(SEAT_SIZE * 2)
     }
 
-    /**
-     * 整个区域的包围盒（渲染时用来定画布比例）。
-     *
-     * ⚠️ **必须剔除坐标 (0,0) 的幽灵座位**：学校数据里 `devProp=0` 的那几条座位
-     * 是「未在图纸上定位」的，坐标就是 0,0。如果把它们算进包围盒，
-     * 整个区域的 x/y 范围会被拉成从 0 开始 —— 结果所有座位被压到画布左上角一小块。
-     * （2026-11-21 真机上就是这么翻车的：座位图只看得见底部一条。）
-     *
-     * 没有任何有效座位时返回 null。
-     */
-    fun boundsOf(seats: List<SeatApi.Seat>): Box? {
+    /** 从原始座位列表算包围盒（会先按房间分组 + 排版），给测试和外部调用用 */
+    fun boundsOfSeats(seats: List<SeatApi.Seat>): Box? {
         val valid = seats.filter { !(it.x == 0.0 && it.y == 0.0) }
         if (valid.isEmpty()) return null
-        val xs = valid.map { it.x.toFloat() }
-        val ys = valid.map { it.y.toFloat() }
-        val pad = SEAT_SIZE * 2
-        return Box(
-            xs.min() - pad, ys.min() - pad,
-            xs.max() + pad, ys.max() + pad,
-        )
+        return boundsOf(DeskFinder.groupAll(valid).map { layout(it) })
     }
 }
