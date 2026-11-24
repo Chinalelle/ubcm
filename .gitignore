@@ -3,6 +3,10 @@ app-android/app/build/
 app-android/build/
 app-android/.gradle/
 app-android/.kotlin/
+app-prod/app/build/
+app-prod/build/
+app-prod/.gradle/
+app-prod/.kotlin/
 *.apk
 *.aab
 *.iml
