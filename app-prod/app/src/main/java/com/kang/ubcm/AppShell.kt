@@ -336,7 +336,8 @@ private fun TabRoot(
                 backLabel = "‹  我的",
             )
 
-            else -> MeHome(
+            else -> MeScreen(
+                homeVm = homeVm,
                 audit = audit,
                 onOpenAuth = { onNav(MainTab.ME, "auth") },
                 onOpenProbe = { onNav(MainTab.ME, "probe") },
@@ -458,129 +459,6 @@ private fun WarnBar(onLogin: () -> Unit, onClose: () -> Unit) {
                     .padding(horizontal = 6.dp, vertical = 2.dp),
             )
         }
-    }
-}
-
-// ---------------- 我的（P1 占位） ----------------
-
-/**
- * 「我的」根页：P1 只放占位 + 两个真实入口（凭证与登录、数据体检）。
- * 完整版（头像/设置三分组/DDL 滚轮）在 P6。
- */
-@Composable
-private fun MeHome(
-    audit: CredentialGate.Audit,
-    onOpenAuth: () -> Unit,
-    onOpenProbe: () -> Unit,
-    onLogout: () -> Unit,
-) {
-    val ready = audit.requiredCount - audit.missingRequired.size
-    var confirmingLogout by remember { mutableStateOf(false) }
-
-    Surface(color = UbcmColors.Paper, modifier = Modifier.fillMaxSize()) {
-        Box(
-            Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
-            contentAlignment = Alignment.TopCenter,
-        ) {
-            LazyColumn(
-                Modifier.fillMaxHeight().widthIn(max = 640.dp),
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                item {
-                    Text("我的", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = UbcmColors.Ink)
-                    Text("凭证与设置", fontSize = 12.sp, color = UbcmColors.InkSoft)
-                }
-
-                item {
-                    MeRow(
-                        title = "凭证与登录",
-                        sub = if (audit.allOk) "5 条凭证已就绪" else "$ready/${audit.requiredCount} 条可用，点这里补齐",
-                        tone = if (audit.allOk) UbcmColors.Jade else UbcmColors.Danger,
-                        onClick = onOpenAuth,
-                    )
-                }
-
-                item {
-                    MeRow(
-                        title = "数据体检",
-                        sub = "18 个探针，查接口通不通",
-                        tone = UbcmColors.InkSoft,
-                        onClick = onOpenProbe,
-                    )
-                }
-
-                item {
-                    MeRow(
-                        title = "设置",
-                        sub = "周次锚点、座位 cookie、版本信息 · 建设中",
-                        tone = UbcmColors.Ash,
-                        onClick = {},
-                    )
-                }
-
-                item {
-                    Spacer(Modifier.height(8.dp))
-                    if (!confirmingLogout) {
-                        Text(
-                            "退出登录",
-                            fontSize = 14.sp,
-                            color = UbcmColors.Danger,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { confirmingLogout = true }
-                                .padding(horizontal = 10.dp, vertical = 8.dp),
-                        )
-                    } else {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("清空所有凭证？", fontSize = 13.sp, color = UbcmColors.InkSoft)
-                            Spacer(Modifier.width(10.dp))
-                            Text(
-                                "确认退出",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(UbcmColors.Danger)
-                                    .clickable { onLogout() }
-                                    .padding(horizontal = 12.dp, vertical = 6.dp),
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                "取消",
-                                fontSize = 13.sp,
-                                color = UbcmColors.Ash,
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .clickable { confirmingLogout = false }
-                                    .padding(horizontal = 8.dp, vertical = 6.dp),
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun MeRow(title: String, sub: String, tone: Color, onClick: () -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(UbcmColors.CardWhite)
-            .clickable(onClick = onClick)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(title, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = UbcmColors.Ink)
-            Spacer(Modifier.height(2.dp))
-            Text(sub, fontSize = 13.sp, color = tone)
-        }
-        Text("›", fontSize = 18.sp, color = UbcmColors.Ash)
     }
 }
 
