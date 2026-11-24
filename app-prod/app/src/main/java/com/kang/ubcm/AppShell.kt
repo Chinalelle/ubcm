@@ -92,6 +92,7 @@ fun MainShell(
     val probeVm: ProbeViewModel = viewModel()
     val libVm: LibraryViewModel = viewModel()
     val loginVm: LoginViewModel = viewModel()
+    val campusVm: CampusViewModel = viewModel()
     val loginState by loginVm.state.collectAsStateWithLifecycle()
 
     var tab by remember { mutableStateOf(MainTab.HOME) }
@@ -123,6 +124,7 @@ fun MainShell(
                             homeVm = homeVm,
                             libVm = libVm,
                             probeVm = probeVm,
+                            campusVm = campusVm,
                             audit = audit,
                             loginState = loginState,
                             onLoadLoginPage = { loginVm.loadLoginPage() },
@@ -146,6 +148,7 @@ fun MainShell(
                     homeVm = homeVm,
                     libVm = libVm,
                     probeVm = probeVm,
+                    campusVm = campusVm,
                     audit = audit,
                     loginState = loginState,
                     onLoadLoginPage = { loginVm.loadLoginPage() },
@@ -178,6 +181,7 @@ private fun TabRoot(
     homeVm: HomeViewModel,
     libVm: LibraryViewModel,
     probeVm: ProbeViewModel,
+    campusVm: CampusViewModel,
     audit: CredentialGate.Audit,
     loginState: LoginViewModel.UiState,
     onLoadLoginPage: () -> Unit,
@@ -209,7 +213,7 @@ private fun TabRoot(
                 actions = HomeActions(
                     openCampus = { onNav(MainTab.CAMPUS, null) },
                     openWeek = { onNav(MainTab.STUDY, null) },
-                    openLibrary = { onNav(MainTab.CAMPUS, null) },
+                    openLibrary = { onNav(MainTab.CAMPUS, "library") },
                     openEmptyRoom = { onNav(MainTab.HOME, "empty_room") },
                     // 通知列表页未做，先落到校园 Tab（lead 允许的临时落点）
                     openNotice = { onNav(MainTab.CAMPUS, null) },
@@ -251,27 +255,66 @@ private fun TabRoot(
             )
         }
 
-        MainTab.CAMPUS -> LibraryScreen(
-            vm = libVm,
-            onBack = { onNav(MainTab.HOME, null) },
-            onOpenLogin = { onNav(MainTab.ME, "auth") },
-            onOpenSchoolPage = {
-                SchoolWebActivity.start(
-                    ctx,
-                    "https://kjyy.bucm.edu.cn/mobile.html",
-                    "图书馆座位预约",
-                    hashAfterLoad = "#/seatReserve",
-                )
-            },
-            onOpenRoom = { roomId, roomName ->
-                SchoolWebActivity.start(
-                    ctx,
-                    "https://kjyy.bucm.edu.cn/mobile.html",
-                    roomName,
-                    hashAfterLoad = "#/seatReserve?roomId=$roomId",
-                )
-            },
-        )
+        MainTab.CAMPUS -> when (sub) {
+            "library" -> LibraryScreen(
+                vm = libVm,
+                onBack = onPop,
+                onOpenLogin = { onNav(MainTab.ME, "auth") },
+                onOpenSchoolPage = {
+                    SchoolWebActivity.start(
+                        ctx,
+                        "https://kjyy.bucm.edu.cn/mobile.html",
+                        "图书馆座位预约",
+                        hashAfterLoad = "#/seatReserve",
+                    )
+                },
+                onOpenRoom = { roomId, roomName ->
+                    SchoolWebActivity.start(
+                        ctx,
+                        "https://kjyy.bucm.edu.cn/mobile.html",
+                        roomName,
+                        hashAfterLoad = "#/seatReserve?roomId=$roomId",
+                    )
+                },
+            )
+
+            "empty_room" -> EmptyRoomScreen(onBack = onPop)
+
+            "more" -> PlaceholderPage(
+                title = "更多服务",
+                note = "服务清单以学校门户为准，V1 先开这两个入口",
+                onBack = onPop,
+            )
+
+            else -> CampusScreen(
+                vm = campusVm,
+                actions = CampusActions(
+                    openEcard = { EcardActivity.start(ctx) },
+                    openLogistics = {
+                        SchoolWebActivity.start(
+                            ctx,
+                            "https://zhhq.bucm.edu.cn/wx/#/basicHome",
+                            "智慧后勤",
+                        )
+                    },
+                    openJw = {
+                        SchoolWebActivity.start(
+                            ctx,
+                            Net.JW_BASE + "/jsxsd/framework/xsMain_bzy.html",
+                            "智慧教务",
+                        )
+                    },
+                    openLibrary = { onNav(MainTab.CAMPUS, "library") },
+                    openSpace = { onNav(MainTab.STUDY, "space") },
+                    openPortal = {
+                        SchoolWebActivity.start(ctx, "https://i.bucm.edu.cn", "数智北中医")
+                    },
+                    openEmptyRoom = { onNav(MainTab.CAMPUS, "empty_room") },
+                    // "更多"V1 先弹一个说明（不引弹窗组件，这里用占位子页更统一）
+                    openMore = { onNav(MainTab.CAMPUS, "more") },
+                ),
+            )
+        }
 
         MainTab.ME -> when (sub) {
             "auth" -> LoginGateScreen(
