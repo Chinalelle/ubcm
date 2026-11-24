@@ -41,6 +41,36 @@ private val Jade = UbcmColors.Jade
 private val Amber = UbcmColors.Amber
 private val Ash = UbcmColors.Ash
 
+/** 仅 debug：造一条内存里的假预约，给学习页三态截图用。 */
+private fun demoReservation(using: Boolean): SeatApi.Resv {
+    val now = java.time.LocalDateTime.now()
+    return if (using) {
+        SeatApi.Resv(
+            resvId = 1,
+            date = "",
+            beginAt = now.minusMinutes(20),
+            endAt = now.plusMinutes(40),
+            checkAt = "auto",
+            seatName = "A-12",
+            roomName = "三层南区",
+            labName = "",
+            statusCode = 1217,
+        )
+    } else {
+        SeatApi.Resv(
+            resvId = 2,
+            date = "",
+            beginAt = now.plusMinutes(30),
+            endAt = now.plusMinutes(150),
+            checkAt = null,
+            seatName = "B-07",
+            roomName = "二层东区",
+            labName = "",
+            statusCode = 1217,
+        )
+    }
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +85,16 @@ class MainActivity : ComponentActivity() {
         readB64("seat_b64")?.let { Session.saveSeatCookie(this, it) }
         // 兼容没有分号的短值
         intent?.getStringExtra("jwt")?.let { Session.saveToken(this, it) }
+        // 仅 debug：学习页图书馆卡的预约态截图注入（using / pending）
+        val debuggable = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        if (debuggable) {
+            DebugInjection.enabled = true
+            DebugInjection.demoReservation = when (intent?.getStringExtra("demo_resv")) {
+                "using" -> demoReservation(using = true)
+                "pending" -> demoReservation(using = false)
+                else -> null
+            }
+        }
         setContent { AppRoot() }
     }
 

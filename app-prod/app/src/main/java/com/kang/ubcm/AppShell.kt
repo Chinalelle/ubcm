@@ -40,6 +40,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
  * 图标用 Material Icons（Google 官方 `material-icons-extended`，已在依赖里）——
  * **没有引入新的第三方运行时依赖**。
  */
+/**
+ * 本机调试注入（仅 `BuildConfig.DEBUG` 生效，正常启动恒为 null）。
+ *
+ * 用途：学习页的图书馆卡有「无预约 / 已预约 / 使用中」三态，其中后两态依赖真实座位预约，
+ * 而预约是**写操作**（红线：App 不代用户预约），截图验证时用 adb 传一个假数据进去。
+ * 它只影响 UI 渲染，不碰网络层、不写盘。
+ */
+object DebugInjection {
+    /** 由 MainActivity 按 APK 的 debuggable 标志置位（AGP 8 默认不生成 BuildConfig） */
+    var enabled: Boolean = false
+    var demoReservation: SeatApi.Resv? = null
+}
+
 enum class MainTab(val label: String, val icon: ImageVector) {
     HOME("首页", Icons.Filled.Home),
     STUDY("学习", Icons.Filled.DateRange),
@@ -219,10 +232,14 @@ private fun TabRoot(
             )
         }
 
-        MainTab.STUDY -> WeekScreen(
-            vm = homeVm,
-            onBack = { onNav(MainTab.HOME, null) },
-            onOpenProbe = { onNav(MainTab.ME, "probe") },
+        MainTab.STUDY -> StudyScreen(
+            homeVm = homeVm,
+            libVm = libVm,
+            actions = StudyActions(
+                // P4 之前先落到现有图书馆页（楼层折叠 / 空间网格接上后再换）
+                openSeatReserve = { onNav(MainTab.CAMPUS, null) },
+                openSpaceReserve = { onNav(MainTab.CAMPUS, null) },
+            ),
         )
 
         MainTab.CAMPUS -> LibraryScreen(
