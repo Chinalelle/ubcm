@@ -1,6 +1,13 @@
 # HANDOFF · 接手指令
 
-> 把这一整段复制给下一个接手的 Agent 即可。更新时间：2026-11-21 晚。
+> 把这一整段复制给下一个接手的 Agent 即可。更新时间：2026-11-24。
+
+> **⚠️ 先分清你的角色**
+>
+> | 你是 | 读这个 |
+> |---|---|
+> | **写代码的 Agent**（要改仓库） | 本文件 ↓ |
+> | **需求分析师 / 提示词工程师**（不改代码，只把需求翻译成提示词） | **`docs/17-工程师交接.md`** |
 
 ---
 
@@ -26,7 +33,12 @@
 | 一卡通 ykt.bucm.edu.cn | ✅ | CAS → servicehall cookie → `POST /business/thirdQuerSelfTrade` |
 | 图书馆 kjyy.bucm.edu.cn | ✅ | `GET /ic-web/reserve?resvDates=&roomIds=&sysKind=8`（座位+坐标+预约时段） |
 
-已完成的功能：首页四卡（下一节课/余额/今日消费/未读待办）、平板适配、登录器四目标（一次登录拿全 5 条凭证）、图书馆空位/我的预约、**找空桌聚类 + 座位缩略图 + App 内预约（三段式）**。
+已完成的功能：首页四卡（下一节课/余额/今日消费/未读待办）、课表周视图、登录器四目标（一次登录拿全 5 条凭证）、图书馆空位/我的预约、**找空桌聚类（21 桌与官方图逐块对上）+ 按比例绘制的区域座位图 + 三维筛选 + App 内预约（三段式）**。
+
+**2026-11-22 之后的变更**（这轮把座位图定型了）：
+- 座位图渲染规范固化在 `docs/13` §十二（单位制 1/0.5/1.5/2/0.25、配色、交互）
+- 桌界判定从「编号连续」升级为「编号连续 + 行间距两档」，修掉了三层南区最右侧 3 张四人桌被并成 12 座的问题（`docs/13` §十三）
+- 座位凭证的两个真 bug 已修（残留 cookie 冒充有效、主线程网络校验），结论更正见 `docs/16` §九
 
 ## 四个必须知道的实现细节
 - **一卡通响应 AES 加密**：`{"data":"<前16位是key><密文>"}`，AES/ECB/PKCS5
@@ -38,6 +50,9 @@
 - 周次必须 `Math.floorDiv`，`/` 会向零取整
 - `CookieManager.getCookie(url)` 要传**真实域 + path**（`accessToken` 的 path 是 `/tp_nup`）
 - 座位聚类**必须按 `roomId` 分组**，各区域坐标系独立
+- 座位数据里 `devProp=0` 的是**未定位幽灵座位**（坐标 0,0），聚类和包围盒都要剔除，否则整张图被压到左上角
+- 桌界**不能只靠编号连续性**：三层南区 118–129 编号连着但是 3 张四人桌，要看**行间距是否两档**（max/min>1.5 就在小间距处切开）
+- `Net.get` 是同步的，**在主线程调用会抛 `NetworkOnMainThreadException`**（被 catch 吞掉后表现为"永远失败"）
 - 座位接口**限流**：间隔 <300ms 被拒，≥350ms
 - 图书馆移动端路由**没有** `/ic/` 前缀（是 `#/seatReserve`）
 - 学校页面**冷启动不认 URL hash**，要加载完延迟 2.5s 再 `$router.push()`
@@ -51,14 +66,14 @@ export ANDROID_HOME=$HOME/android-sdk
 ./gradlew :app:assembleDebug        # 首次 ~3 分，增量 ~10 秒
 ./gradlew :app:testDebugUnitTest    # 纯逻辑单测，秒级，改逻辑必跑
 ```
-平板（USB，50MB/s）：`adb -s 098A2C60099C3540 install -r app/build/outputs/apk/debug/app-debug.apk`
+手机（USB）：`adb -s 4f07233f install -r app/build/outputs/apk/debug/app-debug.apk`
 模拟器：`$ANDROID_HOME/emulator/emulator -avd duedo -no-snapshot-load -no-boot-anim -gpu host &`
 
 ## 下一步优先级
 1. **凭证加密存储**（P1）— 现在明文 SharedPreferences。换 `EncryptedSharedPreferences` 需引入 androidx.security，**会破坏"零依赖"，先做决策**
 2. **课表周视图**（P0）— `Timetable.kt` 数据够画了。3–5 节的课不能按"两节一组"分组，要按节次高度绝对排版
 3. **周次锚点自动化**（P1）— `Timetable.DEFAULT_FIRST_WEEK_MONDAY` 是常量，**换学期不改进度会静默算错**
-4. **图书馆补完**（P1）— 只扫五层（全馆 16 区约 8–10 秒）、日期固定明天、缩略图每桌归一化看不出真实长度比、研讨间/静音仓没做
+4. **图书馆收尾**（P2）— 日期固定"明天"、只扫五层、研讨间/静音仓没做；座位图有 3 项未验证（红色座位视觉、双指缩放、App 内预约未真跑）
 5. **成绩/考试**（P2）— 等期末有数据
 
 ## 红线（动写操作前必读 docs/05）
