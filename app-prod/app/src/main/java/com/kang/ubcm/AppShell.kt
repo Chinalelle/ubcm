@@ -174,14 +174,50 @@ private fun TabRoot(
     val sub = stack.lastOrNull()
 
     when (tab) {
-        MainTab.HOME -> HomeScreen(
-            vm = homeVm,
-            onOpenProbe = { onNav(MainTab.ME, "probe") },
-            onOpenLogin = onOpenGate,
-            onOpenLibrary = { onNav(MainTab.CAMPUS, null) },
-            onOpenWeek = { onNav(MainTab.STUDY, null) },
-            onLogout = onLogout,
-        )
+        MainTab.HOME -> when (sub) {
+            "empty_room" -> PlaceholderPage(
+                title = "空教室",
+                note = "查询教学楼的空闲教室 · 非实时 · P4 接入",
+                onBack = onPop,
+            )
+
+            "todo" -> PlaceholderPage(
+                title = "待办",
+                note = "完整待办页（新增 / 编辑 / 已完成）· P7 接入",
+                onBack = onPop,
+            )
+
+            else -> HomeScreen(
+                vm = homeVm,
+                actions = HomeActions(
+                    openCampus = { onNav(MainTab.CAMPUS, null) },
+                    openWeek = { onNav(MainTab.STUDY, null) },
+                    openLibrary = { onNav(MainTab.CAMPUS, null) },
+                    openEmptyRoom = { onNav(MainTab.HOME, "empty_room") },
+                    // 通知列表页未做，先落到校园 Tab（lead 允许的临时落点）
+                    openNotice = { onNav(MainTab.CAMPUS, null) },
+                    openTodoAll = { onNav(MainTab.HOME, "todo") },
+                    openLogin = onOpenGate,
+                    openProbe = { onNav(MainTab.ME, "probe") },
+                    openLogistics = {
+                        SchoolWebActivity.start(
+                            ctx,
+                            "https://zhhq.bucm.edu.cn/wx/#/basicHome",
+                            "智慧后勤",
+                        )
+                    },
+                    openJw = {
+                        SchoolWebActivity.start(
+                            ctx,
+                            Net.JW_BASE + "/jsxsd/framework/xsMain_bzy.html",
+                            "智慧教务",
+                        )
+                    },
+                    openEcrad = { onNav(MainTab.CAMPUS, null) },
+                    logout = onLogout,
+                ),
+            )
+        }
 
         MainTab.STUDY -> WeekScreen(
             vm = homeVm,
@@ -237,6 +273,36 @@ private fun TabRoot(
                 onOpenProbe = { onNav(MainTab.ME, "probe") },
                 onLogout = onLogout,
             )
+        }
+    }
+}
+
+/** 未实现页面的统一占位（标题 + 一句「谁的活」+ 返回）。 */
+@Composable
+private fun PlaceholderPage(title: String, note: String, onBack: () -> Unit) {
+    Surface(color = UbcmColors.Paper, modifier = Modifier.fillMaxSize()) {
+        Box(
+            Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            Column(Modifier.fillMaxSize().widthIn(max = 640.dp).padding(20.dp)) {
+                Text(
+                    "‹  返回",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = UbcmColors.InkSoft,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(onClick = onBack)
+                        .padding(vertical = 5.dp, horizontal = 3.dp),
+                )
+                Spacer(Modifier.height(10.dp))
+                Text(title, fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = UbcmColors.Ink)
+                Spacer(Modifier.height(8.dp))
+                Text("建设中", fontSize = 13.sp, color = UbcmColors.Ash)
+                Spacer(Modifier.height(4.dp))
+                Text(note, fontSize = 12.sp, color = UbcmColors.InkSoft)
+            }
         }
     }
 }

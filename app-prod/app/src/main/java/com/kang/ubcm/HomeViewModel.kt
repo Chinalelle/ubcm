@@ -3,6 +3,7 @@ package com.kang.ubcm
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import org.json.JSONObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,16 @@ data class HomeState(
     val todaySpendYuan: String? = null,
     val todaySpendCount: Int = 0,
     val cardError: String? = null,
+    /** 门户里的姓名（取不到显示"同学"） */
+    val userName: String? = null,
+    /** 近 7 天消费（小组件副文用） */
+    val weekSpendYuan: String? = null,
+    /** 门户通知：最近几条标题（首页通知条左右滑切换）+ 系统提醒未读数 */
+    val noticeTitles: List<String> = emptyList(),
+    val noticeUnread: Int? = null,
+    val noticeError: String? = null,
+    /** 本地待办（TodoStore，P7 编辑；首页只读前三条） */
+    val todos: List<TodoItem> = emptyList(),
     /** 待办 */
     val todoUnread: Int? = null,
     val todoTotal: Int? = null,
@@ -126,6 +137,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
             hasJwt = token != null && !expired,
             jwtExpired = expired,
             hasCastgc = !castgc.isNullOrBlank(),
+            userName = id?.name?.takeIf { it.isNotBlank() },
         )
     }
 
@@ -207,6 +219,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
                 if (needTimetable) refreshTimetable()
                 recomputeTime()
                 refreshCard(force)
+                refreshNotice(force)
                 refreshTodo(force)
             } finally {
                 val s = _state.value
@@ -328,10 +341,20 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
             }
             val balance = page.trades.firstOrNull()?.balanceYuan
 
+            val weekStart = today.minusDays(6)
+            val weekSpendCents = page.trades.filter { t ->
+                val d = Instant.ofEpochMilli(t.timeMs).atZone(zone).toLocalDate()
+                !d.isBefore(weekStart) && !d.isAfter(today)
+            }.sumOf { t ->
+                val v = t.amountYuan.toBigDecimalOrNull() ?: java.math.BigDecimal.ZERO
+                if (v.signum() < 0) v.abs() else java.math.BigDecimal.ZERO
+            }
+
             _state.value = _state.value.copy(
                 balanceYuan = balance,
                 todaySpendYuan = spendCents.setScale(2, java.math.RoundingMode.HALF_UP).toPlainString(),
                 todaySpendCount = todayTrades.count { it.amountYuan.startsWith("-") },
+                weekSpendYuan = weekSpendCents.setScale(2, java.math.RoundingMode.HALF_UP).toPlainString(),
                 cardError = null,
             )
         } catch (e: Exception) {
@@ -341,11 +364,65 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    // ---------- 通知 ----------
+
+    /**
+     * 首页通知条：最新一条校园通知标题 + 系统提醒未读数。
+     * 失败只写 noticeError，不影响其它区块（单源失败隔离）。
+     */
+    private fun refreshNotice(force: Boolean) {
+        val ctx = getApplication<Application>()
+        val token = Session.loadToken(ctx)
+        if (token.isNullOrBlank()) return
+        try {
+            val r = PortalApi.campusInfo(token, 1, 5)
+            if (!r.ok) {
+                _state.value = _state.value.copy(
+                    noticeError = if (r.noAuth) "登录已过期" else r.msg,
+                )
+                return
+            }
+            val list = (r.data as? JSONObject)?.optJSONArray("list")
+            val titles = buildList {
+                if (list != null) {
+                    for (i in 0 until list.length()) {
+                        val o = list.optJSONObject(i) ?: continue
+                        val a = cleanFieldText(o.optString("PIM_TITLE"))
+                        val t = if (a.isNotBlank()) a else cleanFieldText(o.optString("TITLE"))
+                        if (t.isNotBlank()) add(t)
+                    }
+                }
+            }
+
+            val unreadR = PortalApi.unreadCount(token, "3")
+            val unread = (unreadR.data as? JSONObject)?.optInt("CNT", -1)?.takeIf { it >= 0 }
+
+            _state.value = _state.value.copy(
+                noticeTitles = titles,
+                noticeUnread = unread,
+                noticeError = null,
+            )
+        } catch (e: Exception) {
+            _state.value = _state.value.copy(
+                noticeError = "${e.javaClass.simpleName}: ${e.message}",
+            )
+        }
+    }
+
     // ---------- 待办 ----------
+
+    /** 重新读本地待办（P7 编辑页返回时调用；首页刷新也会走这里）。 */
+    fun reloadTodos() {
+        val local = TodoStore.load(getApplication())
+        _state.value = _state.value.copy(todos = local)
+    }
 
     /**
      * 未读待办。走门户消息接口的「待办提醒」页签。
      * 注意：这个数字是**待办/提醒**，不是邮箱未读（邮箱另走 /bucm/oaemail/haveRedPoint）。
+     *
+     * 同时把本地待办读出来给首页列表；本地为空时**从门户同步一次**（门户待办没有 DDL/子待办，
+     * 导入后 dueAt 为空，落在"无 DDL"那一组）。
      */
     private fun refreshTodo(force: Boolean) {
         val ctx = getApplication<Application>()
@@ -368,6 +445,47 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
             )
         } catch (e: Exception) {
             _state.value = _state.value.copy(todoError = "${e.javaClass.simpleName}: ${e.message}")
+        }
+
+        // 本地待办（首页列表数据源）
+        var local = TodoStore.load(ctx)
+        if (local.isEmpty() && !token.isNullOrBlank()) {
+            local = importPortalTodos(token)
+        }
+        _state.value = _state.value.copy(todos = local)
+    }
+
+    /**
+     * 把门户待受理待办导入本地一次。
+     *
+     * 门户条目没有 DDL、没有子待办，所以 dueAt 留空（落在"无 DDL"组），
+     * 用户在 P7 的编辑页可以自己补 DDL。解析字段用防御式（缺字段就跳过这一条）。
+     */
+    private fun importPortalTodos(token: String): List<TodoItem> {
+        return try {
+            val r = PortalApi.todoList(token, tabType = "1", page = 1, size = 10)
+            if (!r.ok) return emptyList()
+            val arr = (r.data as? JSONObject)?.optJSONArray("list") ?: return emptyList()
+            val now = System.currentTimeMillis()
+            val out = mutableListOf<TodoItem>()
+            for (i in 0 until arr.length()) {
+                val o = arr.optJSONObject(i) ?: continue
+                val title = cleanFieldText(o.optString("MSG_TITLE"))
+                if (title.isBlank()) continue
+                out += TodoItem(
+                    id = "portal-$i-${title.hashCode()}",
+                    title = title,
+                    note = null,
+                    dueAt = null,
+                    done = false,
+                    subs = emptyList(),
+                    createdAt = now - i,
+                )
+            }
+            if (out.isNotEmpty()) TodoStore.save(getApplication(), out)
+            out
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 

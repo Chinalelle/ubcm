@@ -59,6 +59,7 @@
 | 43 | 2026-11-24 19:48 | **补登录页设计 + 门禁改非强制（docs/28）** | 见本节 |
 | 44 | 2026-11-24 19:55 | **P0 主题层落地：app-prod 换蓝白金（只换皮）** | 见本节 |
 | 45 | 2026-11-24 20:00 | **P1 登录页 + 四 Tab 骨架（门禁改非强制）** | 见本节 |
+| 46 | 2026-11-24 20:05 | **P2 首页重做：五块 + 小组件网格 + 日程三态 + 待办分级** | 见本节 |
 
 ---
 
@@ -2078,3 +2079,92 @@ ic-cookie 服务端校验仍是 `code:0`（凌晨拿的那个还活着）。
 - 新增：`app-prod/.../LoginScreen.kt`、`app-prod/.../AppShell.kt`
 - 改：`app-prod/.../MainActivity.kt`、`LoginGateScreen.kt`
 - 截图：`~/Desktop/data/截屏/ubcm-prod-P1-0{1..6}*.png`
+
+---
+
+## 轮次 46 · 2026-11-24 20:05 → 20:25 · P2 首页重做（五块）
+
+**用户需求**：按 `docs/21` 重做首页：问候 → 通知条 → 4×2 可编辑小组件 → 日程（三态/秒级倒计时）→ 待办（DDL 分级/子待办进度条）。只改 `app-prod`。
+
+**做了什么（分两次提交）**
+
+### 提交 1 · 纯逻辑层（`f3ad6fb`）
+- **`Widgets.kt`**：`WidgetSize/WidgetType/HomeWidget` + `WidgetLayout`
+  越界/重叠校验、`moveOrSwap`（落点被占则交换，多组件压住就拒绝）、`add` 行优先找空位、
+  `isValid`（盘上数据被改坏时回退默认）、`freeCells`
+- **`Agenda.kt`**：`AgendaItem/AgendaSource/AgendaPhase`
+  `fromTimetable`（课表实时派生，不持久化）+ `merge` + `nearest`（进行中金 / 最早未来蓝 / 其余白）
+  + `progressPercent`（floor）+ `countdown`（HH:mm:ss，不为负）
+- **`TodoRules.kt`**：`DueLevel` / `TodoItem` / `SubTodo`
+  `levelOf`（≤24h 含过期 → URGENT；≤3 天 → NEAR）、`sorted`（24h内→无DDL→其余→已完成）、
+  `topOpen`、`countdown`（仅 24h 内）、`dueAtOf`（只填日期 → 当日 23:59:59）
+- **`HomeWidgetStore` / `AgendaStore` / `TodoStore`**：SharedPreferences JSON；
+  解析失败一律回退（布局回默认、日程/待办回空），不让本地数据把首页搞崩
+- **新增 29 个单测**：布局 11 + 日程 11 + 待办 7 → 总计 **206 全绿**
+
+### 提交 2 · 首页 UI
+- **`HomeScreen.kt` 重写**（原 612 行四卡全换）：
+  1. 问候区：`Hi，` 20sp text-2 + 名字 25sp SemiBold + 日期 13sp
+  2. 通知条：52dp、白底 1dp line、铃铛 18dp（未读 6dp 红点）、单行省略、
+     未读胶囊 + `›`、**左右滑切换多条**、失败显示"通知获取失败 · 点这里重试"、无通知整条隐藏
+  3. 小组件：4 列 × 2 行正方形网格（gap 8dp）、`1×1 / 2×1 / 2×2`
+     - 默认：左 2×2 余额（brand-50 底，¥ 小一号 + 31sp 数字 + 近 7 天消费）+ 右 4 个 1×1
+     - 编辑：2dp brand-300 虚线描边 + 右上 × 删除 + **长按拖拽交换**（真机已验）
+       + 底部"＋ 添加小组件"（位置满时红字提示先删）+ "恢复默认"
+     - 持久化：编辑即写盘；重启保留（真机已验）
+  4. 日程：卡片式近 3 条；进行中（gold-500 1.5dp 框 + gold-100 40% 底 + 距结束 + 百分比 + 3dp 金进度条）；
+     即将（brand-500 蓝框 + brand-100 40% 底 + 距开始，**≤10 分钟转 danger 红**）；普通白卡；
+     倒水滴 pin（Icons.Filled.Place）+ `[课]/[自建]` 胶囊
+  5. 待办：前 3 条；22dp 方勾选框；标题 + 子待办进度条；DDL 固定宽 64dp（MM/DD + HH:mm）；
+     ≤24h 橙底 + 红色 HH:mm:ss、3 天内浅黄底、其余白底
+- **整页共用一个秒级 now**，日程倒计时/进度、待办倒计时都从它算
+- **`HomeViewModel` 扩展**：`userName`（JWT 姓名）、`weekSpendYuan`（近 7 天消费）、
+  `noticeTitles + noticeUnread + noticeError`、`todos`（本地待办；本地为空时从门户 `todoList` 导入一次）
+- **`AppShell`**：HomeScreen 改收 `HomeActions`（跳转打包）；
+  新增 HOME 子页占位「空教室」「待办」（P4/P7 接入）；后勤/教务入口走 `SchoolWebActivity`
+
+**验收结果**
+
+- [x] 五块从上到下齐全（截图 `ubcm-prod-P2-01首页整页.png`，对照 previews/01）
+- [x] 小组件可编辑：虚线 + × 删除、**长按拖拽交换 succeeded**（截图验证 图书馆↔后勤 换位）
+- [x] 重启保留（真机重启后"成绩"仍在原位）、"恢复默认"可回到默认布局
+- [x] 日程三态与倒计时正确、每秒刷新（截图中 00:31:50 → 00:30:38 → 00:28:07 连续变化）
+- [x] 待办 DDL 三档正确（橙 / 浅黄 / 白）、排序 24h内→无DDL→3天内、进度条**纯蓝 + 节点断轨**
+- [x] `assembleDebug` 通过；**206 单测全绿**（177 原有 + 29 新增）
+- [x] 截图 3 张：`P2-01首页整页` / `P2-02日程三态与待办三档` / `P2-03小组件编辑态`
+
+**关键发现**
+
+- 现有 `HomeScreen` 里有两个**被 `WeekScreen` 引用的顶层函数**（`periodLabel`/`clock`），
+  重写时不能顺手删——编译错误会直接指出来（这次就撞了）
+- `buildList` 的 receiver 是 `MutableList`，在 `HomeWidget.cellKeys()` 里写 `size.rows`
+  会被解析成"列表长度"，必须写 `type.size.rows`（已踩）
+- `cellKey` 用 1 起算 + `freeCells` 的 `1..COLS*ROWS` 必须一致；4 列 × 2 行 = **8 格**，
+  默认布局（2×2 + 4×1×1）正好占满，所以"添加组件"前必须先删一个（已加红字提示）
+- 日程在 20:14 时把明天的课作为 UPCOMING 是**正确**的：第 12 周周二的课到 17:00 全结束
+  （真实课表 `weeks` 里周二只有高数/思政/正常人体学Ⅰ，人工智能概论是周一）
+
+**坑**
+
+- 🔴 `HomeViewModel.noticeTitle` 初版写成单条字符串，UI 要"左右滑多条"→ 改成 `noticeTitles` 列表
+- 🔴 "恢复默认"初版只折叠面板、没真正重置布局 —— 真机点完没反应才发现；已绑定 `onReset`
+- `input swipe` 触发不了 `detectDragGesturesAfterLongPress`（它第一帧就开始移动）→
+  改用 `input motionevent DOWN/MOVE/UP` + 800ms 停顿才验证成功
+
+**没做的 / 未验证**
+
+- 日程"+ 添加"按钮**没有表单**（点击无动作，占位）；自建日程目前只能通过 AgendaStore 写入 → P3/P7 补表单
+- 通知条点击暂时落到「校园」Tab（通知列表页未做，lead 已允许）
+- 待办"查看全部"落到占位页（P7）
+- 完成动画、子待办勾选、展开看备注：均未做（P7）
+- **单源失败隔离没有做故障注入实测**：代码路径是各区块独立错误位，但没有人为断网/断凭证逐个验证
+- 门户待办导入只在"本地待办为空"时跑一次；导入条目没有 DDL（门户不给），因此首页三档演示用了
+  本机临时注入的 TodoStore 数据（截完已清除）
+- 平板横屏未验证；小组件在超窄屏（<320dp）未验证
+
+**产出**
+
+- 新增：`Widgets.kt`、`Agenda.kt`、`TodoRules.kt`、`HomeWidgetStore.kt`、`AgendaStore.kt`、`TodoStore.kt`
+- 新增测试：`WidgetLayoutTest.kt`、`AgendaTest.kt`、`TodoRulesTest.kt`
+- 重写：`HomeScreen.kt`；改：`HomeViewModel.kt`、`AppShell.kt`
+- 截图：`~/Desktop/data/截屏/ubcm-prod-P2-0{1,2,3}*.png`
