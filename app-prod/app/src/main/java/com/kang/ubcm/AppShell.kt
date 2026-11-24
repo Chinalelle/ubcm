@@ -200,12 +200,23 @@ private fun TabRoot(
 
     when (tab) {
         MainTab.HOME -> when (sub) {
-            "empty_room" -> EmptyRoomScreen(onBack = onPop)
+            "empty_room" -> EmptyRoomScreen(onBack = onPop, onOpenAuth = { onNav(MainTab.ME, "auth") })
 
             "todo" -> TodoListScreen(
                 onBack = onPop,
                 onChanged = { homeVm.reloadTodos() },
             )
+
+            "notice" -> {
+                val hs by homeVm.state.collectAsStateWithLifecycle()
+                NoticeListScreen(
+                    items = hs.noticeItems,
+                    error = hs.noticeError,
+                    loading = hs.refreshing,
+                    onBack = onPop,
+                    onRetry = { homeVm.reloadNotices() },
+                )
+            }
 
             else -> HomeScreen(
                 vm = homeVm,
@@ -214,22 +225,17 @@ private fun TabRoot(
                     openWeek = { onNav(MainTab.STUDY, null) },
                     openLibrary = { onNav(MainTab.CAMPUS, "library") },
                     openEmptyRoom = { onNav(MainTab.HOME, "empty_room") },
-                    // 通知列表页未做，先落到校园 Tab（lead 允许的临时落点）
-                    openNotice = { onNav(MainTab.CAMPUS, null) },
+                    openNotice = { onNav(MainTab.HOME, "notice") },
                     openTodoAll = { onNav(MainTab.HOME, "todo") },
                     openLogin = onOpenGate,
                     openProbe = { onNav(MainTab.ME, "probe") },
-                    openLogistics = {
-                        SchoolWebActivity.start(
-                            ctx,
-                            "https://zhhq.bucm.edu.cn/wx/#/basicHome",
-                            "智慧后勤",
-                        )
-                    },
+                    openLogistics = { WeworkLauncher.open(ctx) },
                     openJw = {
                         SchoolWebActivity.start(
                             ctx,
-                            Net.JW_BASE + "/jsxsd/framework/xsMain_bzy.html",
+                            // 直接开 xsMain_bzy.html 时，会话失效会显示一段裸 JSON；
+                            // 从 /jsxsd/ 入口进会走站点自己的登录跳转
+                            Net.JW_BASE + "/jsxsd/",
                             "智慧教务",
                         )
                     },
@@ -277,7 +283,7 @@ private fun TabRoot(
                 },
             )
 
-            "empty_room" -> EmptyRoomScreen(onBack = onPop)
+            "empty_room" -> EmptyRoomScreen(onBack = onPop, onOpenAuth = { onNav(MainTab.ME, "auth") })
 
             "more" -> PlaceholderPage(
                 title = "更多服务",
@@ -289,17 +295,13 @@ private fun TabRoot(
                 vm = campusVm,
                 actions = CampusActions(
                     openEcard = { EcardActivity.start(ctx) },
-                    openLogistics = {
-                        SchoolWebActivity.start(
-                            ctx,
-                            "https://zhhq.bucm.edu.cn/wx/#/basicHome",
-                            "智慧后勤",
-                        )
-                    },
+                    openLogistics = { WeworkLauncher.open(ctx) },
                     openJw = {
                         SchoolWebActivity.start(
                             ctx,
-                            Net.JW_BASE + "/jsxsd/framework/xsMain_bzy.html",
+                            // 直接开 xsMain_bzy.html 时，会话失效会显示一段裸 JSON；
+                            // 从 /jsxsd/ 入口进会走站点自己的登录跳转
+                            Net.JW_BASE + "/jsxsd/",
                             "智慧教务",
                         )
                     },

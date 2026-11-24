@@ -1,5 +1,12 @@
 package com.kang.ubcm
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -133,17 +140,36 @@ fun StudyScreen(
                             item { EmptyTimetable() }
                         } else if (mode == TimetableMode.WEEK) {
                             item {
-                                WeekView(
-                                    grid = grid,
-                                    st = st,
-                                    now = now,
-                                    nowMillis = nowMillis,
-                                    pickedName = picked?.let { slotKey(it) },
-                                    onPick = { s ->
-                                        picked = if (picked != null && slotKey(picked!!) == slotKey(s)) null else s
+                                // 切周动画：方向跟随「前进/后退」（P8 用户反馈"切周太生硬"）
+                                val prevWeek = remember { mutableStateOf(st.shownWeek) }
+                                val direction = remember(st.shownWeek) {
+                                    if (st.shownWeek >= prevWeek.value) 1 else -1
+                                }
+                                LaunchedEffect(st.shownWeek) { prevWeek.value = st.shownWeek }
+
+                                AnimatedContent(
+                                    targetState = st.shownWeek,
+                                    transitionSpec = {
+                                        (slideInHorizontally(tween(230)) { full -> full * direction } +
+                                            fadeIn(tween(230))) togetherWith
+                                            (slideOutHorizontally(tween(230)) { full -> -full * direction } +
+                                                fadeOut(tween(230)))
                                     },
-                                    onSwipeWeek = { dir -> homeVm.shiftWeek(dir) },
-                                )
+                                    label = "week-switch",
+                                ) { week ->
+                                    val wg = remember(st.sessions, week) { WeekGrid.build(st.sessions, week) }
+                                    WeekView(
+                                        grid = wg,
+                                        st = st,
+                                        now = now,
+                                        nowMillis = nowMillis,
+                                        pickedName = picked?.let { slotKey(it) },
+                                        onPick = { s ->
+                                            picked = if (picked != null && slotKey(picked!!) == slotKey(s)) null else s
+                                        },
+                                        onSwipeWeek = { dir -> homeVm.shiftWeek(dir) },
+                                    )
+                                }
                             }
                             item {
                                 AnchorBar(firstMonday = st.firstWeekMonday, onSave = { homeVm.setFirstWeekMonday(it) })

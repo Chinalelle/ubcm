@@ -80,6 +80,20 @@ class SchoolWebActivity : ComponentActivity() {
             Session.loadCastgc(this@SchoolWebActivity)?.let { setCookie("https://cas.bucm.edu.cn", "CASTGC=$it") }
             Session.loadSeatCookie(this@SchoolWebActivity)?.let { setCookie("https://kjyy.bucm.edu.cn", "ic-cookie=$it") }
             Session.loadEcardSession(this@SchoolWebActivity)?.let { setCookie("https://ykt.bucm.edu.cn", "servicehall=$it") }
+
+            // 教务：存的是整串 "JSESSIONID=...; SERVERID_jwxt=...; jsxsd=..."，
+            // 必须拆成逐条 cookie 注入，否则整串会被当成一个非法 key（P8 修复：原来完全没注入）
+            Session.loadJwSession(this@SchoolWebActivity)?.let { raw ->
+                raw.split(";").map { it.trim() }.filter { it.contains("=") }.forEach { kv ->
+                    setCookie("https://jw.bucm.edu.cn", kv)
+                }
+            }
+
+            // 门户：accessToken 的 cookie path 是 /tp_nup（不是 /），必须显式带 path，
+            // 否则 i.bucm.edu.cn 页面读不到（P8 修复：原来没注入，所以数智北中医是登录页）
+            Session.loadToken(this@SchoolWebActivity)?.let {
+                setCookie("https://i.bucm.edu.cn", "accessToken=$it; path=/tp_nup")
+            }
         }
 
         setContentView(buildLayout(url, title, hashAfterLoad))

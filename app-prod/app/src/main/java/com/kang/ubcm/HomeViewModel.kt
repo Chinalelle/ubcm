@@ -15,6 +15,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
+/** 一条校园通知（列表页用；首页通知条只取标题）。 */
+data class NoticeItem(
+    val title: String,
+    val source: String,
+    val time: String,
+)
+
 /**
  * 首页聚合状态。四张卡各有独立错误位，互不牵连：
  * 余额挂了不该让「下一节课」也不显示。
@@ -36,6 +43,8 @@ data class HomeState(
     val weekSpendYuan: String? = null,
     /** 门户通知：最近几条标题（首页通知条左右滑切换）+ 系统提醒未读数 */
     val noticeTitles: List<String> = emptyList(),
+    /** 通知列表页用（标题 + 来源 + 时间） */
+    val noticeItems: List<NoticeItem> = emptyList(),
     val noticeUnread: Int? = null,
     val noticeError: String? = null,
     /** 本地待办（TodoStore，P7 编辑；首页只读前三条） */
@@ -364,6 +373,19 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** 通知列表页的「刷新」（也用于失败重试）。 */
+    fun reloadNotices() {
+        if (_state.value.refreshing) return
+        viewModelScope.launch(Dispatchers.IO) {
+            _state.value = _state.value.copy(refreshing = true)
+            try {
+                refreshNotice(true)
+            } finally {
+                _state.value = _state.value.copy(refreshing = false)
+            }
+        }
+    }
+
     // ---------- 通知 ----------
 
     /**
@@ -383,13 +405,20 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
                 return
             }
             val list = (r.data as? JSONObject)?.optJSONArray("list")
-            val titles = buildList {
+            val items = buildList {
                 if (list != null) {
                     for (i in 0 until list.length()) {
                         val o = list.optJSONObject(i) ?: continue
                         val a = cleanFieldText(o.optString("PIM_TITLE"))
                         val t = if (a.isNotBlank()) a else cleanFieldText(o.optString("TITLE"))
-                        if (t.isNotBlank()) add(t)
+                        if (t.isBlank()) continue
+                        add(
+                            NoticeItem(
+                                title = t,
+                                source = cleanFieldText(o.optString("BELONG_UNIT_NAME")),
+                                time = cleanFieldText(o.optString("TIME")),
+                            )
+                        )
                     }
                 }
             }
@@ -398,7 +427,8 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
             val unread = (unreadR.data as? JSONObject)?.optInt("CNT", -1)?.takeIf { it >= 0 }
 
             _state.value = _state.value.copy(
-                noticeTitles = titles,
+                noticeTitles = items.map { it.title },
+                noticeItems = items,
                 noticeUnread = unread,
                 noticeError = null,
             )

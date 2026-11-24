@@ -94,38 +94,68 @@ object SpaceApi {
         emptyList()
     }
 
+    /**
+     * 解析房间列表。
+     *
+     * ⚠️ 真实结构（2026-11-24 用手机真实 cookie 实测）是**按类型分组**的：
+     * ```json
+     * {"code":0,"data":[
+     *    {"kindId":1,"kindName":"研讨间","roomInfos":[{devId,devName,...}, ...]},
+     *    {"kindId":2,"kindName":"静音仓","roomInfos":[...]},
+     *    {"kindId":3,"kindName":"朗读亭","roomInfos":[...]}
+     * ]}
+     * ```
+     * 房间对象自己**不带 kindId**，所以必须从分组层继承 —— 早期版本按扁平数组解析，
+     * 结果一条都读不出来（这就是 P4 空间页"拿不到房间数据"的根因）。
+     * 同时保留扁平结构的兜底（房间自带 kindId）。
+     */
     fun parseRooms(json: String): List<Room> = try {
         val o = JSONObject(json)
         val arr = arrOf(o) ?: return emptyList()
-        (0 until arr.length()).mapNotNull { i ->
-            val r = arr.optJSONObject(i) ?: return@mapNotNull null
-            val name = r.optString("devName").ifBlank { r.optString("dev_name") }.let(::clean)
-            if (name.isBlank()) return@mapNotNull null
-            val opens = r.optJSONArray("openTimes")
-            val openTimes = if (opens == null) emptyList() else (0 until opens.length()).mapNotNull { j ->
-                val t = opens.optJSONObject(j) ?: return@mapNotNull null
-                OpenTime(t.optString("openStartTime"), t.optString("openEndTime"))
+        val out = mutableListOf<Room>()
+        for (i in 0 until arr.length()) {
+            val item = arr.optJSONObject(i) ?: continue
+            val groupRooms = item.optJSONArray("roomInfos")
+            if (groupRooms != null) {
+                val kindId = item.optInt("kindId", item.optInt("kind_id", -1))
+                for (j in 0 until groupRooms.length()) {
+                    parseRoom(groupRooms.optJSONObject(j), kindId)?.let { out += it }
+                }
+            } else {
+                parseRoom(item, item.optInt("kindId", item.optInt("kind_id", -1)))?.let { out += it }
             }
-            val infos = r.optJSONArray("resvInfos")
-            val resvInfos = if (infos == null) emptyList() else (0 until infos.length()).mapNotNull { j ->
-                val t = infos.optJSONObject(j) ?: return@mapNotNull null
-                ResvInfo(
-                    begin = parseDateTime(t.optString("resvBeginTime")),
-                    end = parseDateTime(t.optString("resvEndTime")),
-                    status = t.optInt("resvStatus", -1),
-                )
-            }
-            Room(
-                devId = r.optInt("devId", r.optInt("dev_id", -1)),
-                name = name,
-                minResvTime = r.optInt("minResvTime", 60),
-                openTimes = openTimes,
-                resvInfos = resvInfos,
-                kindId = r.optInt("kindId", r.optInt("kind_id", r.optInt("sysKind", -1))),
-            )
         }
+        out
     } catch (e: Exception) {
         emptyList()
+    }
+
+    private fun parseRoom(r: JSONObject?, inheritedKindId: Int): Room? {
+        r ?: return null
+        val name = r.optString("devName").ifBlank { r.optString("dev_name") }.let(::clean)
+        if (name.isBlank()) return null
+        val opens = r.optJSONArray("openTimes")
+        val openTimes = if (opens == null) emptyList() else (0 until opens.length()).mapNotNull { j ->
+            val t = opens.optJSONObject(j) ?: return@mapNotNull null
+            OpenTime(t.optString("openStartTime"), t.optString("openEndTime"))
+        }
+        val infos = r.optJSONArray("resvInfos")
+        val resvInfos = if (infos == null) emptyList() else (0 until infos.length()).mapNotNull { j ->
+            val t = infos.optJSONObject(j) ?: return@mapNotNull null
+            ResvInfo(
+                begin = parseDateTime(t.optString("resvBeginTime")),
+                end = parseDateTime(t.optString("resvEndTime")),
+                status = t.optInt("resvStatus", -1),
+            )
+        }
+        return Room(
+            devId = r.optInt("devId", r.optInt("dev_id", -1)),
+            name = name,
+            minResvTime = r.optInt("minResvTime", 60),
+            openTimes = openTimes,
+            resvInfos = resvInfos,
+            kindId = r.optInt("kindId", r.optInt("kind_id", inheritedKindId)),
+        )
     }
 
     private val FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")

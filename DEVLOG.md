@@ -65,6 +65,7 @@
 | 49 | 2026-11-24 20:55 | **P5 校园页：校园卡 + 自绘折线/环形图 + 服务宫格** | 见本节 |
 | 50 | 2026-11-24 21:00 | **P6 我的页：信息卡 + 头像上传 + 设置三分组** | 见本节 |
 | 51 | 2026-11-24 21:10 | **P7 待办完整页 + 编辑页 + DDL 滚轮 + 四阶段动画** | 见本节 |
+| 52 | 2026-11-24 21:25 | **P8 用户首次实机反馈 7 项修复（真实凭证验证）** | 见本节 |
 
 ---
 
@@ -2549,3 +2550,66 @@ ic-cookie 服务端校验仍是 `code:0`（凌晨拿的那个还活着）。
   `AppShell.kt`（HOME `todo` 子页接真页面）
 - 新增测试：`TodoRulesTest.kt` +6 用例
 - 截图：`~/Desktop/data/截屏/ubcm-prod-P7-0{1..5}*.png`
+
+---
+
+## 轮次 52 · 2026-11-24 21:25 → 22:00 · P8 首次实机反馈 7 项修复
+
+**用户需求**：用户第一次真机测试发现 7 个问题。lead 已查明 4 个接口类问题的方向，
+本轮按 lead 指令修，**必须用真实凭证验证，不许 demo 数据冒充修好**。
+
+**设备与凭证**：手机 M610BB（`4f07233f`，用户本人的正式包），凭证直接从手机 prefs 读取使用。
+
+### 逐项结果
+
+| # | 问题 | 根因 | 处理 | 真机验证 |
+|---|---|---|---|---|
+| 1 | 通知点击落错地方 | AppShell 里写着"通知列表页未做，先落校园 Tab" | 新增 `NoticeListScreen`（标题/来源/时间 + 详情弹层 + 失败只显示重试）；首页通知条 → HOME `notice` 子页；时间从 ISO 格式化成 `MM-dd HH:mm`（UTC→北京） | ✅ **真实 5 条通知**，时间显示 `11-24 16:38` |
+| 2 | 空间预约拿不到数据 | `roomInfos` 返回的是**类型分组**结构 `data:[{kindId,kindName,roomInfos:[...]}]`，旧 `parseRooms` 按扁平数组解析 → 一条都读不出 | `parseRooms` 支持分组结构（房间继承分组 `kindId`）+ 保留扁平兜底 | ✅ **真实数据**：研讨间 24 / 静音仓 4 / 朗读亭 3，房间网格 301–414 全部渲染 |
+| 3 | 空教室拿不到数据 | ① `llsykb_frm.jsp` 是壳页，真内容是**三层 iframe**：`llsykb_frm.jsp` → `/Logon.do?method=toFinGlKbCx` → `/tkglAction.do?method=llsykbFind`；② 第三层在会话失效时返回一张只有「用户没有登录」的表格，旧 `isLoginPage` 识别不出 | `emptyRoomPage` 递归跟 iframe（最多 3 层）；`isLoginPage` 补 `loginForm/LoginToXk/userAccount/用户没有登录`；页面新增「教务会话已过期」提示 + **用 CAS 刷新会话** + **去登录** | ⚠️ **会话过期提示正确显示**；但 CASTGC 也已过期，CAS 刷新未恢复 → **真实空教室数据未拿到** |
+| 4 | 智慧教务打不开 | `SchoolWebActivity` 只注入了 CAS/座位/一卡通三个域的 cookie，**没注入 jw** | 注入 `jw_jsessionid`（整串按 `;` 拆成逐条 cookie）；入口从 `xsMain_bzy.html` 改为 `/jsxsd/`（避免会话失效时显示裸 JSON） | ⚠️ WebView **能正常打开教务域并渲染登录页**（不再是白屏/裸 JSON），但 jw 会话已过期 → **首页未验证** |
+| 5 | 智慧后勤打不开 | 企业微信 H5 依赖微信 JS-SDK，塞进 WebView 必然失败 | 新增 `WeworkLauncher`：唤起企业微信（标准 intent + 显式 `LaunchSplashEduActivity` 兜底）→ Toast 提示「工作台 → 智慧后勤」；无企业微信则复制链接 + 提示。**manifest 补 `<queries>` 包可见性**（Android 11+ 否则恒 null） | ✅ **企业微信被成功唤起**（进入学校工作台）；未装时走复制分支 |
+| 6 | 切周生硬 | 无动画 | `AnimatedContent` + 水平 slide + fade，230ms；方向跟随前进/后退 | ✅ 抓到中间帧（第 12 周滑出 + 第 13 周滑入同屏） |
+| 7 | 数智北中医打不开 | 没注入门户 token | 注入 `accessToken` 并带 `path=/tp_nup` | ✅ **打开即为已登录门户首页**（右上角用户名、通知公告、新闻资讯全部真实） |
+
+### 顺手修
+
+- 通知列表时间格式化（ISO `2026-11-24T08:38:28.000+0000` → 北京 `11-24 16:38`）
+- 学习页图书馆卡总座口径生效：真机显示 `2351/2622`（P4 的修正终于在真实数据上看到）
+
+### 验收
+
+- [x] `assembleDebug` 通过；**234 单测全绿**
+- [x] 截图 7 张：`P8-01通知列表` / `02空间预约真实数据` / `03空教室会话过期` / `04数智北中医` /
+      `05智慧教务`（登录页）/ `06智慧后勤`（企业微信）/ `07周视图切换动画`
+- [x] DEVLOG、中文提交
+- [ ] **未完成**：空教室真实数据、智慧教务首页 —— 卡在**教务会话与 CASTGC 都已过期**，
+      需要用户本人重新登录一次才能验证
+
+### 关键发现
+
+- 🔴 **空间预约根因就是嵌套结构**：`data` 是类型分组，房间在 `roomInfos` 里且**不带 kindId**。
+  之前 P4 用示例数据截图掩盖了这个 bug，这次用真实 cookie 才暴露 —— 教训：接口类修复必须真机真数据
+- 🔴 **空教室是三层 iframe 套娃 + 半登录提示**：HTTP 200、`<title>各类课表查询</title>`、
+  内容却是一张写着「用户没有登录，请重新登录！」的表。只判 `title == "登录"` 会漏
+- 🔴 **Android 11+ 包可见性**：不声明 `<queries><package android:name="com.tencent.wework"/></queries>`，
+  `getLaunchIntentForPackage` 恒为 null（明明装了也会走"未安装"分支）
+- `accessToken` 的 path 是 `/tp_nup`，`setCookie` 必须显式带上，否则 i 域页面读不到
+
+### 没做的 / 未验证
+
+- **空教室真实数据**：教务会话 + CASTGC 都过期，需要用户重新登录后复验（解析器已按真实三层结构写好）
+- **智慧教务首页**：同上；现在能打开登录页，登录后应可直接进（cookie 注入已就位）
+- 企业微信唤起后**不会自动跳到"智慧后勤"**（企业微信没有可用的 deep link），只给 Toast 引导
+- 空间预约的"占用"判定依赖 `resvInfos`，本次真实数据里 `resvInfos` 全为 null（当天该时段无预约），
+  **"占用"渲染没有在真实数据上看到**
+- 周视图动画只截到一帧中间态，没有逐帧核对缓动曲线
+
+**产出**
+
+- 新增：`NoticeListScreen.kt`、`WeworkLauncher.kt`
+- 改：`SpaceApi.kt`（parseRooms 分组结构）、`JwApi.kt`（emptyRoomPage 递归 iframe、isLoginPage）、
+  `SchoolWebActivity.kt`（jw + accessToken 注入）、`ReserveScreens.kt`（会话过期提示 + CAS 刷新）、
+  `HomeViewModel.kt`（NoticeItem）、`StudyScreen.kt`（切周动画）、`AppShell.kt`（通知子页 / 后勤 / 教务入口）、
+  `AndroidManifest.xml`（queries）
+- 截图：`~/Desktop/data/截屏/ubcm-prod-P8-0{1..7}*.png`

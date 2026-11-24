@@ -133,15 +133,30 @@ object JwApi {
         day: String? = null,
         period: String? = null,
     ): Net.Resp {
-        val query = buildList {
-            if (!week.isNullOrBlank()) add("zc=$week")
-            if (!day.isNullOrBlank()) add("xq=$day")
-            if (!period.isNullOrBlank()) add("jc=$period")
-        }.joinToString("&")
-        val url = "${Net.JW_BASE}/jsxsd/view/kbxx/kbcx/llsykb_frm.jsp" +
-            if (query.isEmpty()) "" else "?$query"
-        return Net.get(url, cookie = jsessionCookie)
+        // 实测（P8，真实响应）这是一个**两层 iframe 套娃**：
+        //   ① llsykb_frm.jsp                      → iframe: /Logon.do?method=toFinGlKbCx&token=...
+        //   ② Logon.do?...                        → iframe: /tkglAction.do?method=llsykbFind&xnxq01id=2026-2027-1...
+        //   ③ tkglAction.do?method=llsykbFind     → 真正的教室表格
+        // 直接拿 ① 去解析永远拿不到数据（这就是"空教室一直空白"的根因）。
+        var resp = Net.get("${Net.JW_BASE}/jsxsd/view/kbxx/kbcx/llsykb_frm.jsp", cookie = jsessionCookie)
+        repeat(3) {
+            if (resp.body.contains("<table", ignoreCase = true)) return resp
+            val src = iframeSrc(resp.body) ?: return resp
+            val next = when {
+                src.startsWith("http") -> src
+                src.startsWith("//") -> "https:$src"
+                src.startsWith("/") -> Net.JW_BASE + src
+                else -> Net.JW_BASE + "/" + src
+            }
+            resp = Net.get(next.replace("&amp;", "&"), cookie = jsessionCookie)
+        }
+        // 日期/节次参数服务端不认（实测传了也不生效），这里只把本次响应当数据页返回
+        return resp
     }
+
+    private fun iframeSrc(html: String): String? =
+        Regex("""<iframe[^>]*\ssrc=["']([^"']+)["']""", RegexOption.IGNORE_CASE)
+            .find(html)?.groupValues?.get(1)?.replace("&amp;", "&")?.takeIf { it.isNotBlank() }
 
     data class EmptyRoom(val building: String, val room: String, val free: Boolean, val note: String = "")
 
@@ -197,6 +212,13 @@ object JwApi {
         return title == "登录" ||
             html.contains("请先登录系统") ||
             html.contains("userLogin") ||
+            // 强智登录页的三个稳定标志（P8 用真实响应确认过）
+            html.contains("loginForm") ||
+            html.contains("LoginToXk") ||
+            html.contains("name=\"userAccount\"") ||
+            // 强智的"半登录"提示页：HTTP 200 + 一张表格里只有这句话（P8 实测）
+            html.contains("用户没有登录") ||
+            html.contains("没有登录，请重新登录") ||
             (html.contains("用户登录") && !html.contains("个人课表"))
     }
 

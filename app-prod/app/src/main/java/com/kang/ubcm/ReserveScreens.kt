@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -672,7 +673,7 @@ fun SpaceReserveScreen(onBack: () -> Unit) {
  * 接口参数未实测（docs/27 §5），拿不到就显示"暂无数据"，不崩。
  */
 @Composable
-fun EmptyRoomScreen(onBack: () -> Unit) {
+fun EmptyRoomScreen(onBack: () -> Unit, onOpenAuth: () -> Unit = {}) {
     val ctx = androidx.compose.ui.platform.LocalContext.current
     var date by remember { mutableStateOf(LocalDate.now()) }
     var periodStart by remember { mutableStateOf(currentPeriod().first) }
@@ -683,10 +684,14 @@ fun EmptyRoomScreen(onBack: () -> Unit) {
     var error by remember { mutableStateOf<String?>(null) }
     var updatedAt by remember { mutableStateOf(0L) }
     var reload by remember { mutableStateOf(0) }
+    var sessionExpired by remember { mutableStateOf(false) }
+    var refreshingJw by remember { mutableStateOf(false) }
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
 
     LaunchedEffect(reload, date, periodStart, periodEnd) {
         loading = true
         error = null
+        sessionExpired = false
         val jw = Session.loadJwSession(ctx)
         kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
             if (jw.isNullOrBlank()) {
@@ -709,13 +714,20 @@ fun EmptyRoomScreen(onBack: () -> Unit) {
                 loading = false
                 return@withContext
             }
+            // 先判登录页：教务会话失效时返回的是登录表单，绝不能当数据页解析
+            if (JwApi.isLoginPage(resp.body)) {
+                rooms = emptyList()
+                sessionExpired = true
+                updatedAt = 0L
+                loading = false
+                return@withContext
+            }
             val parsed = JwApi.parseEmptyRooms(resp.body)
             rooms = parsed
             updatedAt = System.currentTimeMillis()
             error = when {
                 parsed.isNotEmpty() -> null
-                JwApi.isLoggedIn(resp.body) -> null
-                else -> "当前时段没有可用数据（教务可能未登录或接口参数需调整）"
+                else -> "当前时段没有可用空教室数据（接口参数可能需调整）"
             }
             loading = false
         }
@@ -807,6 +819,65 @@ fun EmptyRoomScreen(onBack: () -> Unit) {
 
                     when {
                         loading -> HintCard("正在查询空教室…", "")
+                        sessionExpired -> {
+                            Column(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(UbcmColors.CardWhite)
+                                    .border(1.dp, UbcmColors.Line, RoundedCornerShape(16.dp))
+                                    .padding(16.dp),
+                            ) {
+                                Text("教务会话已过期", fontSize = 15.sp, color = UbcmColors.Ink)
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    "空教室要读教务数据，当前返回的是登录页。可以先用 CAS 刷新一次会话，或去「我的 → 凭证与登录」重新登录。",
+                                    fontSize = 12.sp,
+                                    color = UbcmColors.Ash,
+                                    lineHeight = 17.sp,
+                                )
+                                Spacer(Modifier.height(10.dp))
+                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    Text(
+                                        if (refreshingJw) "刷新中…" else "用 CAS 刷新会话",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White,
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .background(if (refreshingJw) UbcmColors.Ash else UbcmColors.Cinnabar)
+                                            .clickable(enabled = !refreshingJw) {
+                                                refreshingJw = true
+                                                scope.launch {
+                                                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                                                        val castgc = Session.loadCastgc(ctx)
+                                                        if (!castgc.isNullOrBlank()) {
+                                                            runCatching {
+                                                                NativeLogin.jwCookie(castgc)?.let {
+                                                                    Session.saveJwSession(ctx, it)
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    refreshingJw = false
+                                                    reload++
+                                                }
+                                            }
+                                            .padding(horizontal = 14.dp, vertical = 8.dp),
+                                    )
+                                    Text(
+                                        "去登录",
+                                        fontSize = 13.sp,
+                                        color = UbcmTheme.Brand700,
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(10.dp))
+                                            .background(UbcmTheme.Brand50)
+                                            .clickable(onClick = onOpenAuth)
+                                            .padding(horizontal = 14.dp, vertical = 8.dp),
+                                    )
+                                }
+                            }
+                        }
                         shown.isEmpty() -> HintCard(
                             if (error != null) "暂时拿不到空教室数据" else "当前时段没有可用数据",
                             error ?: "教务接口参数可能需调整，稍后再试",
