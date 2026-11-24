@@ -233,14 +233,14 @@ fun LoginGateScreen(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Box(
                                         Modifier.size(6.dp).clip(CircleShape)
-                                            .background(if (st.ok) UbcmColors.Jade else UbcmColors.Amber)
+                                            .background(if (st.ok) UbcmColors.Jade else UbcmColors.Warning)
                                     )
                                     Spacer(Modifier.width(7.dp))
                                     Text(st.label, fontSize = 11.sp, color = UbcmColors.Ink, modifier = Modifier.width(110.dp))
                                     Text(
                                         st.detail,
                                         fontSize = 10.sp,
-                                        color = if (st.ok) UbcmColors.InkSoft else UbcmColors.Amber,
+                                        color = if (st.ok) UbcmColors.InkSoft else UbcmColors.Warning,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                     )
@@ -340,7 +340,7 @@ private fun StatusCard(audit: CredentialGate.Audit) {
 private fun CredentialRow(item: CredentialGate.Item, onLoginTarget: () -> Unit) {
     val tone = when {
         item.ok -> UbcmColors.Jade
-        item.present && item.problem != null -> UbcmColors.Amber
+        item.present && item.problem != null -> UbcmColors.Warning
         !item.required -> UbcmColors.Ash
         else -> UbcmColors.Danger
     }
@@ -365,7 +365,7 @@ private fun CredentialRow(item: CredentialGate.Item, onLoginTarget: () -> Unit) 
             Text(
                 item.problem ?: item.hint,
                 fontSize = 10.sp,
-                color = if (item.problem != null) UbcmColors.Amber else UbcmColors.InkSoft,
+                color = if (item.problem != null) UbcmColors.Warning else UbcmColors.InkSoft,
                 lineHeight = 14.sp, maxLines = 2, overflow = TextOverflow.Ellipsis,
             )
         }

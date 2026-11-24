@@ -352,6 +352,13 @@ object SeatApi {
         emptyList()
     }
 
+    fun message(json: String): String = try {
+        val o = JSONObject(json)
+        o.optString("message").ifBlank { o.optString("msg") }
+    } catch (e: Exception) {
+        ""
+    }
+
     fun code(json: String): Int = try {
         JSONObject(json).optInt("code", -1)
     } catch (e: Exception) {

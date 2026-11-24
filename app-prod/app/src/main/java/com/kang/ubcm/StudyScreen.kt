@@ -199,9 +199,18 @@ private fun LibraryCard(
     onSeatReserve: () -> Unit,
     onSpaceReserve: () -> Unit,
 ) {
-    val free = st.available
-    val used = st.used
-    val total = if (free != null && used != null) free + used else st.totalSeats.takeIf { it > 0 }
+    // 口径（用户已定）：分母 = 所有支持预约的座位 = seatMenu 各楼层 totalCount 之和（实测 2622），
+    // 分子 = 各层 remainCount 之和。两者同口径，不会出现"空座 > 总座"。
+    // seatMenu 失败（floors 空）时退回 resvStatus 的"全馆口径"，并在下面标出来。
+    val menuFree = st.floors.sumOf { it.remain }
+    val menuTotal = st.floors.sumOf { it.total }
+    val useMenu = menuTotal > 0
+    val free = if (useMenu) menuFree else st.available
+    val total = if (useMenu) menuTotal else {
+        val a = st.available
+        val u = st.used
+        if (a != null && u != null) a + u else st.totalSeats.takeIf { it > 0 }
+    }
 
     // 当前生效的预约：优先"使用中"，其次"待签到/已预约"
     // 仅 debug：`adb shell am start ... --es demo_resv using|pending` 注入一条假预约，
@@ -239,7 +248,11 @@ private fun LibraryCard(
                         modifier = Modifier.padding(bottom = 4.dp),
                     )
                 }
-                Text("当前空座 / 总座", fontSize = 11.sp, color = UbcmColors.Ash)
+                Text(
+                    if (useMenu) "当前空座 / 总座（可预约）" else "当前空座 / 总座（全馆口径）",
+                    fontSize = 11.sp,
+                    color = UbcmColors.Ash,
+                )
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SmallPrimaryButton("座位预约", onSeatReserve)

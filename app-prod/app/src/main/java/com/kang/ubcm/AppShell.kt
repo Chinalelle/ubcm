@@ -51,6 +51,14 @@ object DebugInjection {
     /** 由 MainActivity 按 APK 的 debuggable 标志置位（AGP 8 默认不生成 BuildConfig） */
     var enabled: Boolean = false
     var demoReservation: SeatApi.Resv? = null
+
+    // 以下只在 `--es demo_data 1` 时填充：座位 ic-cookie / 教务会话过期时，
+    // 用它们把"楼层折叠 / 房间网格 / 教室网格"的结构画出来做视觉验收。
+    // 页面里会同时显示"示例数据"字样，不冒充真实数据。
+    var demoFloors: List<LibraryState.Floor> = emptyList()
+    var demoKinds: List<SpaceApi.Kind> = emptyList()
+    var demoRooms: List<SpaceApi.Room> = emptyList()
+    var demoEmptyRooms: List<JwApi.EmptyRoom> = emptyList()
 }
 
 enum class MainTab(val label: String, val icon: ImageVector) {
@@ -188,11 +196,7 @@ private fun TabRoot(
 
     when (tab) {
         MainTab.HOME -> when (sub) {
-            "empty_room" -> PlaceholderPage(
-                title = "空教室",
-                note = "查询教学楼的空闲教室 · 非实时 · P4 接入",
-                onBack = onPop,
-            )
+            "empty_room" -> EmptyRoomScreen(onBack = onPop)
 
             "todo" -> PlaceholderPage(
                 title = "待办",
@@ -232,15 +236,20 @@ private fun TabRoot(
             )
         }
 
-        MainTab.STUDY -> StudyScreen(
-            homeVm = homeVm,
-            libVm = libVm,
-            actions = StudyActions(
-                // P4 之前先落到现有图书馆页（楼层折叠 / 空间网格接上后再换）
-                openSeatReserve = { onNav(MainTab.CAMPUS, null) },
-                openSpaceReserve = { onNav(MainTab.CAMPUS, null) },
-            ),
-        )
+        MainTab.STUDY -> when (sub) {
+            "seat" -> SeatReserveScreen(vm = libVm, onBack = onPop)
+
+            "space" -> SpaceReserveScreen(onBack = onPop)
+
+            else -> StudyScreen(
+                homeVm = homeVm,
+                libVm = libVm,
+                actions = StudyActions(
+                    openSeatReserve = { onNav(MainTab.STUDY, "seat") },
+                    openSpaceReserve = { onNav(MainTab.STUDY, "space") },
+                ),
+            )
+        }
 
         MainTab.CAMPUS -> LibraryScreen(
             vm = libVm,

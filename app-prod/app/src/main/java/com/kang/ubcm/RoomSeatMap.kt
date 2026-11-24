@@ -246,8 +246,8 @@ private object UBcmMapColors {
     val table = UbcmTheme.Brand800
     /** 可选座位：brand-500 */
     val seatFree = UbcmTheme.Brand500
-    /** 占用座位：text-3（降饱和，红色只留给校徽） */
-    val seatBusy = UbcmTheme.Text3
+    /** 占用座位：danger 淡红（P0 时按 §9.3 用了 text-3 灰，真机复核发现会被误认成"不可点"，改回红色系） */
+    val seatBusy = UbcmTheme.Danger.copy(alpha = 0.55f)
     /** 整桌可用 / 我预约的：gold-500 */
     val highlightEdge = UbcmTheme.Gold500
     /** 筛选命中边框：brand-700（比可选座位的 brand-500 更深，避免撞色） */

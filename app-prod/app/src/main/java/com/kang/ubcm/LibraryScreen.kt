@@ -198,7 +198,7 @@ private fun OverviewCard(st: LibraryState) {
         val tone = when {
             !st.hasData -> UbcmColors.Ash
             (st.available ?: 0) > 200 -> UbcmColors.Jade
-            (st.available ?: 0) > 50 -> UbcmColors.Amber
+            (st.available ?: 0) > 50 -> UbcmColors.Warning
             else -> UbcmColors.Danger
         }
         Box(Modifier.width(5.dp).fillMaxHeight().background(tone))
@@ -275,7 +275,7 @@ private fun FreeDeskSection(
                 Text(mdText(st.desksDate), fontSize = 11.sp, color = UbcmColors.Ash, fontFamily = FontFamily.Monospace)
             }
             Spacer(Modifier.weight(1f))
-            if (st.desksLoading) Text("扫描中…", fontSize = 11.sp, color = UbcmColors.Amber)
+            if (st.desksLoading) Text("扫描中…", fontSize = 11.sp, color = UbcmColors.Warning)
         }
 
         Spacer(Modifier.height(10.dp))
@@ -314,7 +314,7 @@ private fun FreeDeskSection(
         st.reserveMessage?.let { msg ->
             Spacer(Modifier.height(9.dp))
             val tone = when {
-                st.reserving -> UbcmColors.Amber
+                st.reserving -> UbcmColors.Warning
                 st.reserveOk -> UbcmColors.Jade
                 else -> UbcmColors.Danger
             }
@@ -559,7 +559,7 @@ private fun ResvCard(r: SeatApi.Resv, highlight: Boolean) {
     val status = r.statusText()
     val tone = when (status) {
         "使用中" -> UbcmColors.Jade
-        "待签到", "已签到", "已预约" -> UbcmColors.Amber
+        "待签到", "已签到", "已预约" -> UbcmColors.Warning
         else -> UbcmColors.Ash
     }
     Row(
@@ -617,7 +617,7 @@ private fun FloorCard(
     // 有座=绿，紧张=琥珀，满=朱砂
     val tone = when {
         floor.remain <= 0 -> UbcmColors.Danger
-        floor.freeRatio < .15f -> UbcmColors.Amber
+        floor.freeRatio < .15f -> UbcmColors.Warning
         else -> UbcmColors.Jade
     }
     Column(
@@ -827,7 +827,7 @@ private fun SeatMapSection(
             Spacer(Modifier.width(8.dp))
             Text("按官方布局 · 可拖动缩放", fontSize = 10.sp, color = UbcmColors.Ash)
             Spacer(Modifier.weight(1f))
-            if (st.mapLoading) Text("加载中…", fontSize = 10.sp, color = UbcmColors.Amber)
+            if (st.mapLoading) Text("加载中…", fontSize = 10.sp, color = UbcmColors.Warning)
         }
         Spacer(Modifier.height(8.dp))
         Text("点一个区域，进入全屏座位图（桌子按官方图还原，可筛选、可点座位预约）",
@@ -879,7 +879,7 @@ private fun ReserveConfirmPanel(
             Text(
                 m,
                 fontSize = 11.sp,
-                color = if (st.reserveOk) UbcmColors.Jade else UbcmColors.Amber,
+                color = if (st.reserveOk) UbcmColors.Jade else UbcmColors.Danger,
                 lineHeight = 15.sp,
             )
             Spacer(Modifier.height(6.dp))
@@ -993,7 +993,7 @@ private fun SeatMapFullScreen(
                     )
                 }
                 if (st.mapLoading) {
-                    Text("加载中…", fontSize = 10.sp, color = UbcmColors.Amber)
+                    Text("加载中…", fontSize = 10.sp, color = UbcmColors.Warning)
                 } else {
                     // 真机上双击不好触发（两次触摸间隔容易超过 300ms），给个明确的按钮
                     Box(

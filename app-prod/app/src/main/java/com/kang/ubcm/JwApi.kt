@@ -119,6 +119,65 @@ object JwApi {
     fun examPage(jsessionCookie: String): Net.Resp =
         Net.get("${Net.JW_BASE}/jsxsd/xsks/xsksap_query", cookie = jsessionCookie)
 
+    // ---------- 空教室（只读查询，非实时） ----------
+
+    /**
+     * 空教室查询页。**参数未实测**（docs/27 §5 明说），先按强智常见形态探测；
+     * 拿不到有效表格时 UI 显示"暂无数据"，不崩。
+     *
+     * 教务只提供"查空闲教室"，没有预约接口 —— 这是只读页，红线里也不该有写操作。
+     */
+    fun emptyRoomPage(
+        jsessionCookie: String,
+        week: String? = null,
+        day: String? = null,
+        period: String? = null,
+    ): Net.Resp {
+        val query = buildList {
+            if (!week.isNullOrBlank()) add("zc=$week")
+            if (!day.isNullOrBlank()) add("xq=$day")
+            if (!period.isNullOrBlank()) add("jc=$period")
+        }.joinToString("&")
+        val url = "${Net.JW_BASE}/jsxsd/view/kbxx/kbcx/llsykb_frm.jsp" +
+            if (query.isEmpty()) "" else "?$query"
+        return Net.get(url, cookie = jsessionCookie)
+    }
+
+    data class EmptyRoom(val building: String, val room: String, val free: Boolean, val note: String = "")
+
+    /** 教室名：`良东101` / `西院302` / `教101` 之类（汉字前缀 + 3~4 位数字）。 */
+    private val ROOM_RE = Regex("""^[\u4e00-\u9fa5A-Za-z]{0,6}\d{3,4}$""")
+
+    /**
+     * 解析空教室表格（宽松模式，HTML 结构未实测）。
+     *
+     * 兼容两种常见排布：
+     *  A. 一行一个教室：第一格是教室名，行内出现"空闲/可借/无课"→空闲；否则有内容→占用
+     *  B. 表头式：第一行是节次，行列交叉处空 = 空闲
+     * 解析不出来就返回空列表（页面显示"暂无数据"），绝不抛异常。
+     */
+    fun parseEmptyRooms(html: String): List<EmptyRoom> {
+        val out = LinkedHashMap<String, EmptyRoom>()
+        for (table in tables(html)) {
+            for (row in table) {
+                if (row.size < 2) continue
+                val first = row.first()
+                if (!ROOM_RE.matches(first)) continue
+                val building = first.replace(Regex("""\d+$"""), "")
+                val rest = row.drop(1).joinToString(" ")
+                val free = rest.contains("空闲") || rest.contains("可借") || rest.contains("无课") ||
+                    rest.isBlank()
+                out[first] = EmptyRoom(
+                    building = building,
+                    room = first,
+                    free = free,
+                    note = if (free) "" else rest.take(24),
+                )
+            }
+        }
+        return out.values.sortedBy { it.room }
+    }
+
     /** 首页（用来判断登录态是否有效） */
     fun home(jsessionCookie: String): Net.Resp =
         Net.get("${Net.JW_BASE}/jsxsd/framework/xsMain_bzy.html", cookie = jsessionCookie)

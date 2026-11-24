@@ -61,6 +61,7 @@
 | 45 | 2026-11-24 20:00 | **P1 登录页 + 四 Tab 骨架（门禁改非强制）** | 见本节 |
 | 46 | 2026-11-24 20:05 | **P2 首页重做：五块 + 小组件网格 + 日程三态 + 待办分级** | 见本节 |
 | 47 | 2026-11-24 20:10 | **P3 学习页：图书馆卡三态 + 日/周课表 + 课程 Sheet** | 见本节 |
+| 48 | 2026-11-24 20:35 | **P4 座位预约 / 空间预约 / 空教室 + 两处复核** | 见本节 |
 
 ---
 
@@ -2245,3 +2246,85 @@ ic-cookie 服务端校验仍是 `code:0`（凌晨拿的那个还活着）。
 - 新增：`StudyScreen.kt`；删除：`WeekScreen.kt`
 - 改：`AppShell.kt`（STUDY 指向新页 + `DebugInjection`）、`MainActivity.kt`（debug 注入读取）
 - 截图：`~/Desktop/data/截屏/ubcm-prod-P3-0{1..6}*.png`
+
+---
+
+## 轮次 48 · 2026-11-24 20:35 → 20:55 · P4 三个预约/查询页 + 两处复核
+
+**用户需求**：按 `docs/25`、`docs/27` 做座位预约页、空间预约页、空教室页；
+顺带复核两处 P0 遗留（座位图占用色、Amber→Warning）；并把图书馆卡总座口径改成 2622。
+
+**做了什么**
+
+1. **总座口径修正**：学习页图书馆卡改为
+   `seatMenu` 各楼层 `totalCount` 求和（=2622）/ `remainCount` 求和，两者同口径；
+   `seatMenu` 拿不到时退回 `resvStatus` 的 2685 并标「全馆口径」
+2. **`SpaceApi.kt`（新）**：`roomMenu` 类型 + `roomDevice/roomInfos` 房间（防御式解析）
+   + `isOccupied`（预约段与所选时段重叠即占用）+ `isOpen`；
+   `resvStatus` 1093/1027/1029 统一按占用（后两个语义未确认，代码注释写明）
+3. **`JwApi` 空教室**：`emptyRoomPage`（参数按强智常见形态探测）+ `parseEmptyRooms`
+   （宽松解析：一行一个教室 + 行内"空闲/无课/空白"判定），解析不出来返回空、不抛异常
+4. **`ReserveScreens.kt`（新，三页共用组件）**：
+   - 共用：日期条（`‹ 11月24日 周二 ›`）+ 时段选择（7 个 2 小时档）+ 每排 4 格网格 + 返回标题
+   - **座位预约**：楼层折叠（同一时间只展开一层）、`空座/可预约`、4dp 进度条三档
+     （≥50% brand-500 / <15% warning / 0 danger，0 时轨道染淡红让"满"可见）、
+     区域行 → 全屏 `RoomSeatMap`（只读）
+   - **空间预约**：类型分段（研讨间24/静音仓4/朗读亭3）+ 房间网格；
+     空闲 brand-100 + "空闲"，占用 danger 描边 + 淡红底 + "占用"
+   - **空教室**：只读、默认当前日期+当前节次（含课间顺延）、教学楼分段、教室网格、
+     底部固定「非实时 · 更新于 xx:xx · 仅作参考，不提供预约」
+5. **接线**：学习页两个按钮 → STUDY 子页 `seat` / `space`；首页"空教室"组件 → HOME 子页
+6. **两处复核**：
+   - `RoomSeatMap` 占用座位 `text-3` 灰 → **danger 淡红**（真机复核确实像"不可点"）
+   - `Amber` 逐处甄别：楼层紧张/扫描中/加载中/待签到/凭证异常 → **Warning**；
+     预约失败 → **Danger**（原来是 Amber，语义就不对）
+7. **新增 9 个单测**：空间占用重叠 6（完全/部分/不重叠/首尾相接/多段/无预约）+ 空教室解析 3 → **215 全绿**
+
+**验收结果**
+
+- [x] 楼层折叠、一次只展开一层、进度条三档颜色（截图 01/02）
+- [x] 空间按类型分段、房间网格、占用标红（截图 03）
+- [x] 空教室只读、默认当前、底部标注非实时（截图 04）
+- [x] 座位图占用色复核完成（danger 淡红）
+- [x] `assembleDebug` 通过；**215 单测全绿**
+- [x] 截图 4 张：`P4-01座位预约楼层` / `02楼层展开` / `03空间研讨间` / `04空教室`
+
+**关键发现（重要，下一棒必读）**
+
+- 🔴 **本轮所有截图用的是 `--es demo_data 1` 注入的示例数据**，不是真实学校数据：
+  - 座位 `ic-cookie` 已过期：`seatMenu` 返回 `code:300 用户未登录`
+  - 教务 `JSESSIONID` 也已过期：`llsykb_frm.jsp` 返回的是**登录表单**（`/jsxsd/xk/LoginToXk`）
+  - 图书馆座位系统网页登录**只有扫码/账号两种**，没有 CAS 自动 SSO；代用户登录触红线，没做
+  - 所以三个页面的真实取数路径本轮**未能端到端验证**
+- 示例数据在页面顶部用橙字明确标注「示例数据 · 凭证已过期…」，不冒充真实
+- 空教室真实结构未拿到：页面需要先登录教务；`parseEmptyRooms` 按"一行一个教室"的常见排布写，
+  真机拿到登录页时返回空并显示"暂无数据"（符合 docs/27 "取不到就显示暂无数据"的要求）
+- `SpaceApi.parseKinds/parseRooms` 走 `org.json`，而 JVM 单测里 org.json 是 Android stub
+  （直接抛异常），所以**解析逻辑不在单测里断言**，只测纯判定 `isOccupied`
+
+**坑**
+
+- `WeekGridTest.kt:50/343` 钉死了"周末无课只画 5 天"，产品页要 7 列只能在 UI 层渲染 `1..7`（P3 已处理）
+- `LazyColumn` 在 `Column` 里用 `fillMaxHeight` 会把底部标注挤出屏幕 → 改 `weight(1f)`
+- 楼层 0 空座时进度条宽度为 0，danger 色根本看不见 → 把轨道本身染成淡红
+- `am start` 直接起 `LoginWebViewActivity` 被拒（`exported=false`），只能从 UI 点进去
+
+**没做的 / 未验证**
+
+- **真实数据未验证**（见上）：需用户本人重新登录座位系统（扫码/账号）与教务，才能确认
+  `seatMenu`/`roomInfos`/`llsykb` 的真实字段与解析是否匹配
+- 空间 `resvStatus` 1027/1029 的确切语义仍未确认
+- 空教室请求参数（周次/星期/节次怎么传）仍未实测，解析器按常见排布猜的
+- **写操作一律没做**：座位预约提交、空间预约提交都要先抓真实请求 + 三段式，本轮只读
+- 楼层页的空座是"当前实时"（`seatMenu` 无日期参数），改日期时段只重新拉一次，
+  页面上已写明"接口不支持按未来时段查询"
+- `DebugInjection` 演示数据（floors/kinds/rooms/classrooms）是调试通道，release 恒空
+
+**产出**
+
+- 新增：`SpaceApi.kt`、`ReserveScreens.kt`
+- 新增测试：`SpaceApiTest.kt`、`EmptyRoomParseTest.kt`
+- 改：`JwApi.kt`（空教室）、`SeatApi.kt`（message()）、`StudyScreen.kt`（总座口径）、
+  `AppShell.kt`（子页路由 + 调试数据）、`MainActivity.kt`（demo_data/sso_seat 通道）、
+  `RoomSeatMap.kt`（占用色）、`LibraryScreen.kt`/`LoginGateScreen.kt`（Amber→Warning）
+- 截图：`~/Desktop/data/截屏/ubcm-prod-P4-0{1..4}*.png`

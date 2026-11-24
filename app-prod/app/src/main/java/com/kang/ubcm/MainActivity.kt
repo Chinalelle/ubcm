@@ -71,6 +71,82 @@ private fun demoReservation(using: Boolean): SeatApi.Resv {
     }
 }
 
+/** 仅 debug：楼层折叠页的示例数据（结构与 seatMenu 一致）。 */
+private fun demoFloors(): List<LibraryState.Floor> {
+    fun area(id: Int, name: String, total: Int, remain: Int) =
+        LibraryState.Area(id, name, total, remain)
+    return listOf(
+        LibraryState.Floor(1, "图书馆二层", 282, 282, listOf(
+            area(11, "二层南区", 120, 120), area(12, "二层北区", 162, 162),
+        )),
+        LibraryState.Floor(2, "图书馆三层", 778, 412, listOf(
+            area(21, "三层南区", 145, 100), area(22, "三层西A区", 48, 30),
+            area(23, "三层西B区", 304, 240), area(24, "三层西C区", 64, 50),
+            area(25, "三层北区", 217, 92),
+        )),
+        LibraryState.Floor(3, "图书馆四层", 782, 98, listOf(
+            area(31, "四层南区", 400, 60), area(32, "四层北区", 382, 38),
+        )),
+        LibraryState.Floor(4, "图书馆五层", 780, 0, listOf(
+            area(41, "五层南区", 390, 0), area(42, "五层北区", 390, 0),
+        )),
+    )
+}
+
+/** 仅 debug：空间房间的示例数据（研讨间 24 / 静音仓 4 / 朗读亭 3）。 */
+private fun demoRooms(): List<SpaceApi.Room> {
+    val now = java.time.LocalDate.now()
+    fun resv(fromH: Int, toH: Int) = SpaceApi.ResvInfo(
+        begin = now.atTime(fromH, 30), end = now.atTime(toH, 30), status = 1093,
+    )
+    val out = mutableListOf<SpaceApi.Room>()
+    var id = 1
+    // 研讨间 301–310、401–414（部分占用）
+    val seminar = listOf("301", "302", "303", "304", "305", "306", "307", "308",
+        "309", "310", "401", "402", "403", "404", "405", "406",
+        "407", "408", "409", "410", "411", "412", "413", "414")
+    seminar.forEachIndexed { i, n ->
+        val occupied = i % 3 == 2
+        out += SpaceApi.Room(
+            devId = id++, name = n, minResvTime = 60,
+            openTimes = listOf(SpaceApi.OpenTime("08:30", "22:00")),
+            resvInfos = if (occupied) listOf(resv(14, 16)) else emptyList(),
+            kindId = 1,
+        )
+    }
+    // 静音仓 01–04
+    listOf("静音仓 01", "静音仓 02", "静音仓 03", "静音仓 04").forEachIndexed { i, n ->
+        out += SpaceApi.Room(
+            devId = id++, name = n, minResvTime = 60,
+            openTimes = listOf(SpaceApi.OpenTime("08:30", "22:00")),
+            resvInfos = if (i == 1) listOf(resv(14, 16)) else emptyList(),
+            kindId = 2,
+        )
+    }
+    // 朗读亭 01–03
+    listOf("朗读亭 01", "朗读亭 02", "朗读亭 03").forEachIndexed { i, n ->
+        out += SpaceApi.Room(
+            devId = id++, name = n, minResvTime = 60,
+            openTimes = listOf(SpaceApi.OpenTime("08:30", "22:00")),
+            resvInfos = if (i == 2) listOf(resv(14, 16)) else emptyList(),
+            kindId = 3,
+        )
+    }
+    return out
+}
+
+/** 仅 debug：空教室的示例数据。 */
+private fun demoEmptyRooms(): List<JwApi.EmptyRoom> {
+    val out = mutableListOf<JwApi.EmptyRoom>()
+    listOf("良东", "良西").forEach { b ->
+        for (i in 1..24) {
+            val free = i % 3 != 0
+            out += JwApi.EmptyRoom(b, "$b${100 + i}", free, if (free) "" else "课")
+        }
+    }
+    return out
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,6 +169,28 @@ class MainActivity : ComponentActivity() {
                 "using" -> demoReservation(using = true)
                 "pending" -> demoReservation(using = false)
                 else -> null
+            }
+            if (intent?.getStringExtra("demo_data") == "1") {
+                DebugInjection.demoFloors = demoFloors()
+                DebugInjection.demoKinds = listOf(
+                    SpaceApi.Kind(1, "研讨间"), SpaceApi.Kind(2, "静音仓"), SpaceApi.Kind(3, "朗读亭"),
+                )
+                DebugInjection.demoRooms = demoRooms()
+                DebugInjection.demoEmptyRooms = demoEmptyRooms()
+            }
+            // 仅 debug：本机截图时重新 SSO 一次座位 ic-cookie（后台线程，不阻塞首屏）
+            if (intent?.getBooleanExtra("sso_seat", false) == true) {
+                val castgc = Session.loadCastgc(this)
+                if (!castgc.isNullOrBlank()) {
+                    Thread {
+                        runCatching {
+                            val lr = SeatApi.login(castgc)
+                            if (lr.ok && lr.cookie != null) {
+                                Session.saveSeatCookie(this.applicationContext, lr.cookie!!)
+                            }
+                        }
+                    }.start()
+                }
             }
         }
         setContent { AppRoot() }
