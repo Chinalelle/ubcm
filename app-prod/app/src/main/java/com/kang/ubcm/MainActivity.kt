@@ -69,22 +69,15 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * 四个页面：首页（聚合卡片）/ 课表周视图 / 图书馆 / 数据体检页（探针 + 登录面板）。
- * 不引 Navigation 库 —— 四个页面一个状态位就够，保持零依赖。
+ * 根组件 = 冷启动分流（登录页 / 主壳）。
  *
- * ⚠️ 这些都**在登录门禁之后**：凭证不齐时根本走不到这里（见 [AppRoot]）。
- */
-private enum class Page { HOME, WEEK, LIBRARY, PROBE }
-
-/**
- * 根组件 = **登录门禁** + 门禁后的主内容。
+ * 定位（2026-11-24 起，docs/28）：**不再强制门禁**。
+ *  - 凭证齐全 → 直接进主壳（[MainShell]），不出现登录页
+ *  - 缺凭证   → 先给 [LoginScreen]，可「先跳过」进主壳
+ *  - 跳过后主壳底部出现红色警示栏（[MainShell] 的 showWarn），可关闭、可「去登录」
  *
- * 定位（2026-11-21 用户明确）：这是测试软件，用来验底层接口和算法，不是产品。
- * 所以打开第一件事是「凭证齐不齐」，缺任何一条必需凭证都强制留在登录页。
- *
- * 登录方式（2026-11-21 改）：**原生表单**，输入学号密码 → 直接和 CAS 通信换 CASTGC
- * → 纯 native SSO 换齐其余凭证。**不跳任何网页**。
- * 只有座位 `ic-cookie` 保留一个网页补登的例外（native 路径不稳，见 docs/13）。
+ * 强制门禁作废（docs/15 已标注变更），但**凭证补齐流程完整保留**：
+ * 原生表单登录 + 凭证清单 + 手工粘贴 + 网页补座位，都在「我的 → 凭证与登录」。
  *
  * 🔴 密码只经过 `loginVm.login()` 一次，不落盘、不写日志。
  */
@@ -120,13 +113,40 @@ private fun AppRoot() {
         ActivityResultContracts.StartActivityForResult()
     ) { gateKey++ }
 
-    if (!audit.allOk) {
-        LoginGateScreen(
-            audit = audit,
+    // 缺凭证 → 登录页（可「先跳过」）；凭证齐全 → 直接进主壳，不出现登录页。
+    var skipped by remember { mutableStateOf(false) }
+    var forcingLogin by remember { mutableStateOf(false) }
+    var warnClosed by remember { mutableStateOf(false) }
+    val needLogin = !audit.allOk && (!skipped || forcingLogin)
+
+    if (needLogin) {
+        LoginScreen(
             login = loginState,
-            onLoadLoginPage = { loginVm.loadLoginPage() },
+            onLoadPage = { loginVm.loadLoginPage() },
             onLogin = { u, p, c -> loginVm.login(u, p, c) },
             onRefreshCaptcha = { loginVm.refreshCaptcha() },
+            onSkip = {
+                skipped = true
+                forcingLogin = false
+            },
+        )
+    } else {
+        MainShell(
+            audit = audit,
+            showWarn = !audit.allOk && !warnClosed,
+            onDismissWarn = { warnClosed = true },
+            onOpenLogin = { forcingLogin = true },
+            onLogout = {
+                Session.clearCredentials(ctx)
+                // WebView 的学校会话也要清，否则重新用「网页补座位」时会带着旧会话直接进去
+                android.webkit.CookieManager.getInstance().removeAllCookies(null)
+                android.webkit.CookieManager.getInstance().flush()
+                loginVm.reset()
+                skipped = false
+                forcingLogin = false
+                warnClosed = false
+                gateKey++
+            },
             onRecheck = { gateKey++ },
             onSaveManual = { jwt, jw, castgc, seat, ecard, openid ->
                 // 空着的字段不动，只覆盖用户真的粘了东西的那些
@@ -146,95 +166,16 @@ private fun AppRoot() {
                 )
             },
         )
-        return
-    }
-
-    MainContent(
-        onLogout = {
-            Session.clearCredentials(ctx)
-            // WebView 的学校会话也要清，否则重新用「网页补座位」时会带着旧会话直接进去
-            android.webkit.CookieManager.getInstance().removeAllCookies(null)
-            android.webkit.CookieManager.getInstance().flush()
-            loginVm.reset()
-            gateKey++          // 重算 audit → 凭证不齐 → 自动回到登录页
-        }
-    )
-}
-
-@Composable
-private fun MainContent(onLogout: () -> Unit) {
-    val homeVm: HomeViewModel = viewModel()
-    val probeVm: ProbeViewModel = viewModel()
-    val libVm: LibraryViewModel = viewModel()
-    // 测试软件落到「数据体检」而不是首页：这里有 18 个探针，是真正要看的东西
-    var page by remember { mutableStateOf(Page.PROBE) }
-    var showAuth by remember { mutableStateOf(false) }
-    val ctx = androidx.compose.ui.platform.LocalContext.current
-
-    when (page) {
-        Page.HOME -> HomeScreen(
-            vm = homeVm,
-            onOpenProbe = { page = Page.PROBE },
-            onOpenLogin = {
-                showAuth = true
-                page = Page.PROBE
-            },
-            onOpenLibrary = { page = Page.LIBRARY },
-            onOpenWeek = { page = Page.WEEK },
-            onLogout = onLogout,
-        )
-
-        Page.WEEK -> WeekScreen(
-            vm = homeVm,
-            onBack = { page = Page.HOME },
-            onOpenProbe = { page = Page.PROBE },
-        )
-
-        Page.LIBRARY -> LibraryScreen(
-            vm = libVm,
-            onBack = { page = Page.HOME },
-            // 座位登录本身就带 ic-cookie 抓取，直接进这个目标
-            onOpenLogin = { LoginWebViewActivity.start(ctx, LoginWebViewActivity.Target.SEAT) },
-            onOpenSchoolPage = {
-                SchoolWebActivity.start(
-                    ctx,
-                    "https://kjyy.bucm.edu.cn/mobile.html",
-                    "图书馆座位预约",
-                    hashAfterLoad = "#/seatReserve",
-                )
-            },
-            onOpenRoom = { roomId, roomName ->
-                // 直达该区域的选座页：学校页面认 roomId 这个 query
-                SchoolWebActivity.start(
-                    ctx,
-                    "https://kjyy.bucm.edu.cn/mobile.html",
-                    roomName,
-                    hashAfterLoad = "#/seatReserve?roomId=$roomId",
-                )
-            },
-        )
-
-        Page.PROBE -> Screen(
-            vm = probeVm,
-            initialShowAuth = showAuth,
-            onLogout = onLogout,
-            onBack = {
-                page = Page.HOME
-                showAuth = false
-                // 从体检页回来时刷新一次首页（可能刚登录过）
-                homeVm.refresh(false)
-                libVm.refresh()
-            },
-        )
     }
 }
 
 @Composable
-private fun Screen(
+internal fun ProbeScreen(
     vm: ProbeViewModel = viewModel(),
     initialShowAuth: Boolean = false,
     onLogout: () -> Unit = {},
     onBack: () -> Unit = {},
+    backLabel: String = "‹  返回首页",
 ) {
     val st by vm.state.collectAsStateWithLifecycle()
     var showAuth by remember { mutableStateOf(initialShowAuth) }
@@ -258,7 +199,7 @@ private fun Screen(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                item { BackRow(onBack, onLogout = onLogout) }
+                item { BackRow(onBack, onLogout = onLogout, backLabel = backLabel) }
                 item { Header(st, onAuth = { showAuth = !showAuth }) }
 
                 // 一卡通是 WebView 承载的，单独给一个明显的入口
@@ -305,7 +246,7 @@ private fun Screen(
  * 而且误触就清空全部凭证、要重新输密码，值得挡一下。
  */
 @Composable
-private fun BackRow(onBack: () -> Unit, onLogout: () -> Unit = {}) {
+private fun BackRow(onBack: () -> Unit, onLogout: () -> Unit = {}, backLabel: String = "‹  返回首页") {
     var confirming by remember { mutableStateOf(false) }
 
     Row(
@@ -313,7 +254,7 @@ private fun BackRow(onBack: () -> Unit, onLogout: () -> Unit = {}) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            "‹  返回首页",
+            backLabel,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             color = InkSoft,

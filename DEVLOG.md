@@ -58,6 +58,7 @@
 | 42 | 2026-11-24 19:44 | **开发提示词 P0–P7 整理 + 8 张预览图入库** | 见本节 |
 | 43 | 2026-11-24 19:48 | **补登录页设计 + 门禁改非强制（docs/28）** | 见本节 |
 | 44 | 2026-11-24 19:55 | **P0 主题层落地：app-prod 换蓝白金（只换皮）** | 见本节 |
+| 45 | 2026-11-24 20:00 | **P1 登录页 + 四 Tab 骨架（门禁改非强制）** | 见本节 |
 
 ---
 
@@ -1990,3 +1991,90 @@ ic-cookie 服务端校验仍是 `code:0`（凌晨拿的那个还活着）。
   `LoginWebViewActivity.kt`、`RoomSeatMap.kt`
 - 改：`app-prod/app/src/main/res/values/themes.xml`
 - 截图：`~/Desktop/data/截屏/ubcm-prod-P0-0{0..4}*.png`
+
+---
+
+## 轮次 45 · 2026-11-24 20:00 → 20:10 · P1 登录页 + 四 Tab 骨架
+
+**用户需求**：按 `docs/20` 的 P1 做登录页（UBCM 大字 + 学号密码 + 先跳过）、门禁改非强制
+（缺凭证可跳过，底部红色警示栏）、底部四 Tab（首页/学习/校园/我的）+ Tab 内子页返回栈。
+只改 `app-prod`，不重排页面内容。
+
+**做了什么**
+
+1. **新增 `LoginScreen.kt`**（按 docs/28 §2 的规格）：
+   - `UBCM` 52sp ExtraBold、brand-700、字距 -1sp，屏幕垂直约 1/3 处；副标题 13sp text-3
+   - 学号（数字键盘）/ 密码（密文 + "显示/隐藏"切换），48dp 白底 12dp 圆角 1dp line，
+     聚焦时描边 1.5dp brand-700（docs/18 §8.5）
+   - 登录按钮 48dp、brand-700、输入非空才可点，登录中转 16dp 小圈 + "登录中…"
+   - "先跳过"（text-2 15sp）、底部说明"密码只在本机与学校 CAS 通信时使用一次，不保存"
+   - 图形验证码**仅在学校要求时出现**（保留原 CAS 流程，不砍功能）
+2. **新增 `AppShell.kt`**：
+   - `MainTab` 四枚举（首页/学习/校园/我的）+ Material Icons（`Home/DateRange/Place/Person`，
+     已在依赖里，**没有新增第三方库**）
+   - `MainShell`：手写四 Tab 骨架（不引 Navigation 库），每 Tab 一个子页栈
+   - `TabBar`：白底 + 1dp 顶边线、无阴影、图标 22dp + 文字 10sp、选中 brand-700 / 未选中 text-3
+   - `WarnBar`：`#FDECEC` 底 + 1dp danger 顶边、40dp、`⚠ 凭证不完整，部分数据不可用 · 去登录 · ×`
+   - `MeHome`：我的占位页（凭证状态 / 数据体检 / 设置建设中 / 退出登录）
+3. **`MainActivity.kt` 门禁改非强制**：
+   - 状态机 `skipped`（本次会话跳过）/ `forcingLogin`（警示栏点"去登录"）/ `warnClosed`（警示栏 ×）
+   - 缺凭证 → `LoginScreen`（可跳过）；齐全 → 直接 `MainShell`（不出现登录页）
+   - 删除 `enum Page` 与旧 `MainContent`（四页面的 `when` 路由）
+   - `Screen`（体检页）改为 `internal fun ProbeScreen` + `backLabel` 参数，供 Tab 内调用
+   - 退出登录时同时重置三个门禁状态，避免退出后又停在"已跳过"的壳里
+4. **`LoginGateScreen.kt`** 改造成「我的 → 凭证与登录」子页：加可选 `onBack`（顶部"‹ 我的"），
+   标题从"UBcm 测试台 / 先登录，再测接口"改为"凭证与登录 / 补齐后各页面数据才可用"
+5. **旧四页面挂到新 Tab（不删功能）**：
+   - 首页 → `HOME`；周视图 → `STUDY`；图书馆 → `CAMPUS`；数据体检 → `ME → 诊断`子页
+   - `ME` 的 `凭证与登录` 子页 = 原门禁页（原生登录 + 凭证清单 + 手工粘贴 + 网页补座位，全保留）
+   - 首页的「数据体检 / 登录 / 课表 / 图书馆」入口改成跨 Tab 跳转
+
+**验收结果**
+
+- [x] 缺凭证冷启动 → 登录页 →「先跳过」→ 进首页（截图 01 → 02）
+- [x] 跳过后底部警示栏出现；`×` 关闭生效（裁图确认只剩 Tab 栏）；「去登录」回到登录页（截图验证）
+- [x] 凭证齐全时时**不出现登录页**（注入本机会话后冷启动直达首页，无警示栏，截图 06）
+- [x] 四 Tab 可切（截图 02/03/04/05）；**切走再切回，首页滚动位置像素级不变**（截图 diff = None）
+- [x] 原有四页面全部可达：首页 ✓、课表 ✓、图书馆 ✓、数据体检（我的 → 数据体检）✓
+- [x] `assembleDebug` 通过；`testDebugUnitTest` **177 个全绿**
+- [x] 截图 6 张存 `~/Desktop/data/截屏/`：`ubcm-prod-P1-01登录页.png`、`02跳过后首页带警示栏`、
+      `03学习`、`04校园`、`05我的`、`06凭证齐全直接进首页`
+
+**关键发现**
+
+- **"切 Tab 保留滚动位置"决定了架构**：现有页面内部的 LazyColumn 状态是 `remember` 不是
+  `rememberSaveable`，一旦离开 composition 就丢。所以四个 Tab 页面**首次进入后常驻 composition**，
+  不可见的用 `alpha(0f)` 盖住，并挂一个消费 `PointerEventPass.Initial` 的 pointerInput 防误触。
+  实测切走再切回，内容区像素级零差异
+- `viewModel()` 在同一 Activity 的 ViewModelStore 下返回同一实例，所以 `MainShell` 里再取一次
+  `LoginViewModel` 与 `AppRoot` 拿到的是同一个 —— 登录态天然共享，不需要把 vm 往下传
+- 材料图标用 `material-icons-extended`（本来就在 dependenices 里），四 Tab 图标零新增依赖
+
+**坑**
+
+- 🔴 **`Modifier.fillMaxSize().widthIn(max = 420.dp)` 的 max 会被 fill 覆盖**：登录页第一次上真机
+  输入框铺满整个平板宽度。改成 `widthIn(max = 420.dp).fillMaxHeight()`（只限宽不限高）才居中生效。
+  这和 HomeScreen 的写法要对齐——它当初就是 `fillMaxHeight().widthIn(max = 640.dp)`
+- 首页 `数据体检` 的点击匹配到页脚说明文字（`pad-tap.sh` 取面积最小项），换文案后正常
+- 跨 Tab 跳转后，`ME` 的子页栈要保持：`open(target, sub)` 同时改 `tab` 与 `stacks`，
+  否则会出现"切到我的但显示根页"
+
+**没做的 / 未验证**
+
+- `STUDY` 只有课表；**成绩 / 考试两个分段未做**（P3）
+- `CAMPUS` 只有图书馆；**一卡通 / 通知两个分段未做**（P5）
+- `ME` 是占位页，设置项写"建设中"；头像、三分组设置、关于页（P6）
+- 「凭证与登录」子页仍是**旧测试台样式**，里面还有"这是测试软件，不是产品""缺凭证时跑测试会一片红"
+  等文案 —— 属 P6 重做范围，本轮没重排
+- **登录页没走过真实登录**（不能代用户输密码）：验证的是 UI、跳过、错误态代码路径；
+  CAS 真实登录链路沿用 app-android 已验证的实现，但本工程未在本轮实测
+- 警示栏"本次会话关闭、下次启动重新出现"：只验证了「关掉后本次不再出现」+「重启后回到登录页再跳过会重新出现」，
+  没验证"不跳过的第二次冷启动"（凭证仍缺时一定先进登录页，所以必然重新出现）
+- 四个 Tab 页面常驻会同时持有 3 个 ViewModel 状态；内存/性能未做长时间压测
+- 平板横屏未验证（竖屏 2272×3408）
+
+**产出**
+
+- 新增：`app-prod/.../LoginScreen.kt`、`app-prod/.../AppShell.kt`
+- 改：`app-prod/.../MainActivity.kt`、`LoginGateScreen.kt`
+- 截图：`~/Desktop/data/截屏/ubcm-prod-P1-0{1..6}*.png`

@@ -56,7 +56,10 @@ fun readCredentialSnapshot(ctx: Context): CredentialGate.Snapshot {
 }
 
 /**
- * 登录页。**凭证不齐时 App 唯一能看到的页面。**
+ * 凭证与登录管理页（挂在「我的」下）。
+ *
+ * 定位（2026-11-24 起）：**不再是强制门禁**。冷启动缺凭证时显示的是 [LoginScreen]
+ * （可「先跳过」），这里则是完整的补齐入口：原生登录 + 凭证清单 + 手工粘贴 + 网页补座位。
  *
  * 主路径是**原生登录**：在这里输入学号和密码，App 直接和学校 CAS 通信换凭证，
  * 不跳任何网页（2026-11-21 用户要求）。
@@ -76,6 +79,8 @@ fun LoginGateScreen(
     onRecheck: () -> Unit,
     onSaveManual: (jwt: String, jw: String, castgc: String, seat: String, ecard: String, openid: String) -> Unit,
     onWebLoginSeat: () -> Unit,
+    /** 从「我的」进来时可返回；直接当冷启动登录页时不传 */
+    onBack: (() -> Unit)? = null,
 ) {
     var showManual by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf(login.lastUsername) }
@@ -97,8 +102,21 @@ fun LoginGateScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 18.dp, vertical = 18.dp),
             ) {
-                Text("UBcm 测试台", fontSize = 24.sp, fontWeight = FontWeight.Black, color = UbcmColors.Ink, letterSpacing = 1.sp)
-                Text("先登录，再测接口", fontSize = 12.sp, color = UbcmColors.InkSoft)
+                if (onBack != null) {
+                    Text(
+                        "‹  我的",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = UbcmColors.InkSoft,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onBack() }
+                            .padding(vertical = 5.dp, horizontal = 3.dp),
+                    )
+                    Spacer(Modifier.height(6.dp))
+                }
+                Text("凭证与登录", fontSize = 24.sp, fontWeight = FontWeight.Black, color = UbcmColors.Ink, letterSpacing = 1.sp)
+                Text("补齐后各页面数据才可用", fontSize = 12.sp, color = UbcmColors.InkSoft)
 
                 Spacer(Modifier.height(14.dp))
                 StatusCard(audit)
