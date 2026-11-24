@@ -33,6 +33,31 @@ object TodoStore {
         return cur
     }
 
+    /** 标记完成（写入完成时间）。 */
+    fun complete(ctx: Context, id: String, atMs: Long = System.currentTimeMillis()): List<TodoItem> {
+        val cur = load(ctx).map { if (it.id == id) it.copy(done = true, completedAt = atMs) else it }
+        save(ctx, cur)
+        return cur
+    }
+
+    /** 撤销完成（回待办分段）。 */
+    fun restore(ctx: Context, id: String): List<TodoItem> {
+        val cur = load(ctx).map { if (it.id == id) it.copy(done = false, completedAt = null) else it }
+        save(ctx, cur)
+        return cur
+    }
+
+    fun clearCompleted(ctx: Context): List<TodoItem> {
+        val cur = load(ctx).filterNot { it.done }
+        save(ctx, cur)
+        return cur
+    }
+
+    fun clearAll(ctx: Context): List<TodoItem> {
+        save(ctx, emptyList())
+        return emptyList()
+    }
+
     fun remove(ctx: Context, id: String): List<TodoItem> {
         val next = load(ctx).filterNot { it.id == id }
         save(ctx, next)
@@ -54,6 +79,7 @@ object TodoStore {
                     .put("dueAt", t.dueAt ?: JSONObject.NULL)
                     .put("done", t.done)
                     .put("createdAt", t.createdAt)
+                    .put("completedAt", t.completedAt ?: JSONObject.NULL)
                     .put("subs", subs)
             )
         }
@@ -86,6 +112,7 @@ object TodoStore {
                     done = o.optBoolean("done", false),
                     subs = subs,
                     createdAt = o.optLong("createdAt", 0L),
+                    completedAt = if (o.isNull("completedAt")) null else o.optLong("completedAt", 0L).takeIf { it > 0 },
                 )
             }
             out

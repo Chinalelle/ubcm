@@ -35,6 +35,8 @@ data class TodoItem(
     val done: Boolean = false,
     val subs: List<SubTodo> = emptyList(),
     val createdAt: Long = 0L,
+    /** 完成时间（已完成页按它倒序 + 显示"11/24 完成任务"） */
+    val completedAt: Long? = null,
 )
 
 object TodoRules {
@@ -72,6 +74,67 @@ object TodoRules {
             .filter { it.dueAt != null && levelOf(it.dueAt, now) != DueLevel.URGENT }
             .sortedBy { it.dueAt }
         return urgent + noDue + rest + done.sortedByDescending { it.createdAt }
+    }
+
+    /** 已完成：按完成时间倒序（最近完成在最上），没有完成时间的排最后。 */
+    fun completedSorted(items: List<TodoItem>): List<TodoItem> =
+        items.filter { it.done }
+            .sortedByDescending { it.completedAt ?: 0L }
+
+    // ---------- DDL 文本（编辑页） ----------
+
+    private val FULL_DDL = Regex("""^(\d{4})-(\d{1,2})-(\d{1,2})[ T](\d{1,2}):(\d{2})$""")
+    private val SHORT_DDL = Regex("""^(\d{1,2})-(\d{1,2})[ T](\d{1,2}):(\d{2})$""")
+
+    /**
+     * 解析编辑页里的 DDL 文本 → 毫秒。
+     *
+     * 支持 `YYYY-MM-DD HH:mm` 与 `MM-DD HH:mm`（后者按 [now] 的年份补全）。
+     * 空 / 非法都返回 null；**区分二者用 [isDdlTextValid]**。
+     */
+    fun parseDdl(raw: String?, now: LocalDate = LocalDate.now()): Long? {
+        val t = raw?.trim().orEmpty()
+        if (t.isEmpty() || t == "null") return null
+
+        FULL_DDL.matchEntire(t)?.let { m ->
+            return runCatching {
+                LocalDate.of(m.groupValues[1].toInt(), m.groupValues[2].toInt(), m.groupValues[3].toInt())
+                    .atTime(m.groupValues[4].toInt(), m.groupValues[5].toInt())
+                    .atZone(Agenda.ZONE).toInstant().toEpochMilli()
+            }.getOrNull()
+        }
+        SHORT_DDL.matchEntire(t)?.let { m ->
+            return runCatching {
+                LocalDate.of(now.year, m.groupValues[1].toInt(), m.groupValues[2].toInt())
+                    .atTime(m.groupValues[3].toInt(), m.groupValues[4].toInt())
+                    .atZone(Agenda.ZONE).toInstant().toEpochMilli()
+            }.getOrNull()
+        }
+        return null
+    }
+
+    /** 空文本合法（= 不设 DDL）；非空必须能解析。 */
+    fun isDdlTextValid(raw: String?, now: LocalDate = LocalDate.now()): Boolean {
+        val t = raw?.trim().orEmpty()
+        if (t.isEmpty()) return true
+        return parseDdl(t, now) != null
+    }
+
+    /** 回填编辑页：`YYYY-MM-DD HH:mm`。 */
+    fun formatDdl(millis: Long?): String {
+        millis ?: return ""
+        return Agenda.dateTimeOf(millis).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+    }
+
+    /** 滚轮组装：日期 + 时 + 分 → 毫秒（越界值会被 `LocalDate.of` 抛异常，交给调用方兜住）。 */
+    fun wheelToMillis(date: LocalDate, hour: Int, minute: Int): Long =
+        date.atTime(hour.coerceIn(0, 23), minute.coerceIn(0, 59))
+            .atZone(Agenda.ZONE).toInstant().toEpochMilli()
+
+    /** 从毫秒拆出滚轮初始值（时、分）。 */
+    fun wheelHourMinute(millis: Long?): Pair<Int, Int> {
+        val dt = Agenda.dateTimeOf(millis ?: System.currentTimeMillis())
+        return dt.hour to dt.minute
     }
 
     /** 首页只显示未完成的前 [limit] 条。 */

@@ -64,6 +64,7 @@
 | 48 | 2026-11-24 20:35 | **P4 座位预约 / 空间预约 / 空教室 + 两处复核** | 见本节 |
 | 49 | 2026-11-24 20:55 | **P5 校园页：校园卡 + 自绘折线/环形图 + 服务宫格** | 见本节 |
 | 50 | 2026-11-24 21:00 | **P6 我的页：信息卡 + 头像上传 + 设置三分组** | 见本节 |
+| 51 | 2026-11-24 21:10 | **P7 待办完整页 + 编辑页 + DDL 滚轮 + 四阶段动画** | 见本节 |
 
 ---
 
@@ -2470,3 +2471,81 @@ ic-cookie 服务端校验仍是 `code:0`（凌晨拿的那个还活着）。
 - 新增测试：`ProfileTest.kt`（4 例）
 - 改：`AppShell.kt`（ME 根页 + 删除旧占位）
 - 截图：`~/Desktop/data/截屏/ubcm-prod-P6-0{1,2,3}*.png`
+
+---
+
+## 轮次 51 · 2026-11-24 21:10 → 21:25 · P7 待办完整页（最后一块）
+
+**用户需求**：按 `docs/22` 做待办完整页：列表/已完成分段、底部固定添加、
+编辑页（含 DDL 文本 + 时/分滚轮）、四阶段完成动画、子待办规则。
+
+**做了什么**
+
+1. **数据层扩展**
+   - `TodoItem` 加 `completedAt`（已完成页倒序 + "11/24 完成"）
+   - `TodoStore`：`complete` / `restore` / `clearCompleted` / `clearAll`，序列化兼容旧数据
+   - `TodoRules`：`parseDdl`（`YYYY-MM-DD HH:mm` / `MM-DD HH:mm`）、`isDdlTextValid`、
+     `formatDdl`、`wheelToMillis`（滚轮组装 + 越界钳制）、`wheelHourMinute`、`completedSorted`
+2. **`TodoListScreen.kt`（新）**
+   - 顶栏 `‹ 待办 ⋯` + 日期 + 分段（待办/已完成胶囊）
+   - 列表：复用首页卡片语义（勾选框/标题/子待办进度条/DDL 三档底色），**点击卡片简略↔详细**
+     （详细显示备注完整不截断 + 子待办逐行勾选，勾掉留原位变灰 + 删除线）
+   - 底部**固定**「＋ 添加待办」（44dp、brand-700、12dp 圆角，不随列表滚）
+   - 已完成：灰化 + 绿色勾 + ↩ 撤销 + "11/24 完成"
+   - `⋯` 菜单：清空已完成 / 清空全部（均二次确认）/ 关于（"数据仅存本机"）
+   - **四阶段完成动画**：对勾（Canvas 路径按进度截取 320ms）→ 浅绿闪 2 次（180ms×2，Animatable）
+     → 收缩淡出（`shrinkVertically + fadeOut` 360ms）→ 动画结束才 `TodoStore.complete`
+   - 子待办全完成 → 父任务自动完成（写盘时判 `allSubsDone`）
+3. **`TodoEditorScreen.kt`（新）**
+   - 顶栏 取消 / 新建·编辑 / 保存（内容空则置灰）
+   - 内容（多行自适应）、备注（多行）、DDL（文本框 + 时钟图标 + 有值时 × 清除）、
+     子待办逐行输入 + × 删除 + "＋ 添加子待办"
+   - **DDL 滚轮弹层**：取消 / 设置 DDL / 完成、日期行 `‹ 2026-11-24 ›`、
+     **时/分双列滚轮**（40dp 行高 + 60dp 上下 padding 让选中项居中，停止自动吸附，
+     选中行 brand-700 15sp、其余 text-3 13sp）、底部「清除 DDL」
+   - 手动输入格式校验：非法时保存标红 + 提示 `格式：2026-11-24 20:00 或 11-24 20:00`
+4. **接线**：首页「查看全部」→ HOME 子页 `todo`（替换占位），保存/完成/撤销后回调首页重读
+
+**验收结果**
+
+- [x] 列表/已完成分段、底部固定按钮、排序（24h内→无DDL→其余）
+- [x] DDL 文本 + 时钟 → 时/分滚轮 → 回填；留空 = 无 DDL
+- [x] **四阶段完成动画**（抓到浅绿闪烁中间帧：整卡淡绿 + 绿色对勾）
+- [x] 子待办勾掉留原位变灰、全完成自动完成父任务（逻辑在写盘处，`allSubsDone` 有单测）
+- [x] 编辑/删除/撤销/**重启保留**（真机验证：撤销后重启仍在待办）
+- [x] `assembleDebug` 通过；**234 单测全绿**（新增 6：DDL 解析/往返/滚轮/已完成排序）
+- [x] 截图 5 张：`P7-01待办列表` / `02编辑页` / `03DDL滚轮` / `04完成动画中间帧` / `05已完成`
+- [x] DEVLOG、中文提交
+
+**关键发现**
+
+- `AnimatedVisibility` 在 `Column` 内会被解析成 **`ColumnScope.AnimatedVisibility`**，
+  在 LazyColumn 的 item 里调用会报"cannot be called with implicit receiver" ——
+  把它抽成独立 `@Composable fun TodoRowItem(...)` 就解析到顶层版本了（踩过）
+- `Modifier.weight(1f)` 只能在 RowScope/ColumnScope 里调；把它当参数传进子组件再拼 modifier 才不会报
+  "Expression 'weight' cannot be invoked as a function"
+- 滚轮吸附不用第三方库：LazyColumn + `contentPadding(vertical = 60.dp)` + 停止后
+  `animateScrollToItem(centerIndex)`，160dp 高度正好让选中项居中
+
+**坑**
+
+- 子待办的点击回调里不能直接调 `LocalContext.current`（Composable 调用）→ 一律上抛给页面写盘
+- 首次截图点时钟没命中：Icon 包了 `size(20.dp).clip().clickable().padding(1.dp)`，
+  实际可点区域比视觉小，得用 uiautomator dump 拿真实 bounds
+
+**没做的 / 未验证**
+
+- DDL 日期行是**左右箭头切天**，没有接日历弹层（docs 说"点开日历"，本轮用箭头替代）
+- 完成动画的"对勾"是 Canvas 路径按 progress 截取，不是逐点描边动画；四阶段节奏已按文档
+- 不做"完成后 5 秒撤销"toast、不做多清单、不做提醒推送、不做桌面小组件（按 docs/22 §10）
+- "保存后滚动到该条"没做（列表不长时无感，未实现定位）
+- 撤销/子待办勾选/清空的**重启后状态**只验证了撤销一条，未逐项验证
+- 清空全部/清空已完成只验证了 UI 与二次确认弹层，未逐个点确认（避免清掉截图用数据）
+
+**产出**
+
+- 新增：`TodoListScreen.kt`、`TodoEditorScreen.kt`
+- 改：`TodoRules.kt`（DDL 文本/滚轮/已完成排序）、`TodoStore.kt`（完成/撤销/清空 + completedAt）、
+  `AppShell.kt`（HOME `todo` 子页接真页面）
+- 新增测试：`TodoRulesTest.kt` +6 用例
+- 截图：`~/Desktop/data/截屏/ubcm-prod-P7-0{1..5}*.png`

@@ -202,10 +202,9 @@ private fun TabRoot(
         MainTab.HOME -> when (sub) {
             "empty_room" -> EmptyRoomScreen(onBack = onPop)
 
-            "todo" -> PlaceholderPage(
-                title = "待办",
-                note = "完整待办页（新增 / 编辑 / 已完成）· P7 接入",
+            "todo" -> TodoListScreen(
                 onBack = onPop,
+                onChanged = { homeVm.reloadTodos() },
             )
 
             else -> HomeScreen(

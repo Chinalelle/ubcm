@@ -101,4 +101,61 @@ class TodoRulesTest {
         assertEquals("23:50", TodoRules.dueTimeText(millis))
         assertNull(TodoRules.dueDayText(null))
     }
+
+    @Test
+    fun `解析完整 DDL 文本`() {
+        val now = LocalDate.of(2026, 11, 24)
+        val ms = TodoRules.parseDdl("2026-11-25 20:30", now)
+        assertEquals(LocalTime.of(20, 30), Agenda.dateTimeOf(ms!!).toLocalTime())
+        assertEquals(LocalDate.of(2026, 11, 25), Agenda.dateTimeOf(ms).toLocalDate())
+    }
+
+    @Test
+    fun `解析省略年份的 DDL 文本`() {
+        val now = LocalDate.of(2026, 11, 24)
+        val ms = TodoRules.parseDdl("12-01 09:05", now)
+        assertEquals(LocalDate.of(2026, 12, 1), Agenda.dateTimeOf(ms!!).toLocalDate())
+        assertEquals(LocalTime.of(9, 5), Agenda.dateTimeOf(ms).toLocalTime())
+    }
+
+    @Test
+    fun `空 DDL 合法 非法格式不合法`() {
+        val now = LocalDate.of(2026, 11, 24)
+        assertTrue(TodoRules.isDdlTextValid("", now))
+        assertTrue(TodoRules.isDdlTextValid("   ", now))
+        assertTrue(TodoRules.isDdlTextValid("2026-11-24 20:00", now))
+        assertTrue(TodoRules.isDdlTextValid("11-24 20:00", now))
+        assertFalse(TodoRules.isDdlTextValid("明天下午", now))
+        assertFalse(TodoRules.isDdlTextValid("2026-13-40 99:99", now))
+        assertNull(TodoRules.parseDdl("", now))
+        assertNull(TodoRules.parseDdl("昨天", now))
+    }
+
+    @Test
+    fun `DDL 回填文本往返一致`() {
+        val date = LocalDate.of(2026, 11, 24)
+        val ms = TodoRules.wheelToMillis(date, 20, 0)
+        assertEquals("2026-11-24 20:00", TodoRules.formatDdl(ms))
+        assertEquals(ms, TodoRules.parseDdl(TodoRules.formatDdl(ms), date))
+        assertEquals(20 to 0, TodoRules.wheelHourMinute(ms))
+        assertEquals("", TodoRules.formatDdl(null))
+    }
+
+    @Test
+    fun `滚轮时间组装与越界钳制`() {
+        val date = LocalDate.of(2026, 11, 24)
+        val ms = TodoRules.wheelToMillis(date, 25, 61)
+        val dt = Agenda.dateTimeOf(ms)
+        assertEquals(23, dt.hour)
+        assertEquals(59, dt.minute)
+    }
+
+    @Test
+    fun `已完成按完成时间倒序`() {
+        val a = todo("a").copy(done = true, completedAt = 100)
+        val b = todo("b").copy(done = true, completedAt = 300)
+        val c = todo("c")
+        val order = TodoRules.completedSorted(listOf(a, b, c)).map { it.id }
+        assertEquals(listOf("b", "a"), order)
+    }
 }
