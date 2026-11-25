@@ -171,7 +171,14 @@ class SchoolWebActivity : ComponentActivity() {
                 builtInZoomControls = false
                 displayZoomControls = false
                 mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-                userAgentString = userAgentString.replace("; wv", "")
+                // 智慧后勤（zhhq）的 JS 用 UA 里的 MicroMessenger 判断"是否在微信里"，
+                // 不带就会显示"请在微信中打开"。只对该域伪装，别影响其他站点（P12）
+                val baseUa = userAgentString.replace("; wv", "")
+                userAgentString = if (url.contains("zhhq.bucm.edu.cn")) {
+                    "$baseUa MicroMessenger/8.0.47.2560(0x28002F30) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN"
+                } else {
+                    baseUa
+                }
             }
             setBackgroundColor(AColor.WHITE)
             CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
@@ -187,6 +194,16 @@ class SchoolWebActivity : ComponentActivity() {
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, u: String?) {
                     progressBar.visibility = View.GONE
+                    // 最小 wx 桩：只让 JS-SDK 的存在性检查不抛错；
+                    // 真实能力（wx.config 签名/支付/相机）仍然不可用，这点不要误导
+                    if (u.orEmpty().contains("zhhq.bucm.edu.cn")) {
+                        view?.evaluateJavascript(
+                            "window.wx = window.wx || {};" +
+                                "window.WeixinJSBridge = window.WeixinJSBridge || { invoke: function(t, p, cb) { if (cb) cb({ err_msg: 'ok' }); } };" +
+                                "void 0;",
+                            null,
+                        )
+                    }
                     if (!hashAfterLoad.isNullOrBlank()) {
                         applyRoute(view, if (hashApplied) null else hashAfterLoad)
                     }

@@ -219,16 +219,16 @@ private fun CardCard(
             Row(Modifier.fillMaxWidth()) {
                 // 纵轴：max / mid / 0
                 Column(
-                    // 给纵轴量标留够宽度，和绘图区之间再空 10dp，避免"¥38"贴着折线（P11 A3）
-                    Modifier.height(120.dp).width(42.dp),
+                    // 量标贴卡片内缘（左对齐、窄列），绘图区反而更宽（P12）
+                    Modifier.height(120.dp).width(30.dp),
                     verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.End,
+                    horizontalAlignment = Alignment.Start,
                 ) {
                     Text("¥%.0f".format(maxV), fontSize = 9.sp, color = UbcmColors.Ash)
                     Text("¥%.0f".format(maxV / 2), fontSize = 9.sp, color = UbcmColors.Ash)
                     Text("¥0", fontSize = 9.sp, color = UbcmColors.Ash)
                 }
-                Spacer(Modifier.width(10.dp))
+                Spacer(Modifier.width(8.dp))
                 // 7 天 ↔ 30 天切换：图表本体淡入淡出过渡（P10 B4）
                 androidx.compose.animation.Crossfade(
                     targetState = days,
@@ -249,7 +249,7 @@ private fun CardCard(
                 }
             }
             Spacer(Modifier.height(6.dp))
-            Row(Modifier.fillMaxWidth().padding(start = 52.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(Modifier.fillMaxWidth().padding(start = 38.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                 axisLabels(daily).forEach { i ->
                     val d = daily[i].first
                     Text("${d.monthValue}/${d.dayOfMonth}", fontSize = 10.sp, color = UbcmColors.Ash)
@@ -263,7 +263,7 @@ private fun CardCard(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     color = UbcmTheme.Brand700,
-                    modifier = Modifier.padding(start = 52.dp),
+                    modifier = Modifier.padding(start = 38.dp),
                 )
             }
         }

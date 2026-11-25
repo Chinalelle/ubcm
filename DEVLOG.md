@@ -69,6 +69,7 @@
 | 53 | 2026-11-25 13:20 | **P9 第二批实机问题 7 项 + 3 个新增（图标/折线交互/动画）** | 见本节 |
 | 54 | 2026-11-25 14:10 | **P10 第三批修复（键盘/焦点/动画）+ 6 项优化 + 图标兼容** | 见本节 |
 | 55 | 2026-11-25 15:25 | **P11 图表逐段/顺时针动画 + 展开自动滚动 + 网页登录入口** | 见本节 |
+| 56 | 2026-11-25 16:10 | **P12 折线纵轴贴边 + zhhq 微信 UA 伪装** | 见本节 |
 
 ---
 
@@ -2858,3 +2859,40 @@ ic-cookie 服务端校验仍是 `code:0`（凌晨拿的那个还活着）。
   `LoginGateScreen.kt`（网页登录区块）、`LoginWebViewActivity.kt`（座位入口 mobile.html）、
   `SchoolWebActivity.kt`（fallbackWework 兜底按钮）、`AppShell.kt`（智慧后勤改 WebView + 传 onWebLogin）
 - 截图：`~/Desktop/data/截屏/ubcm-prod-P11-*.png`
+
+---
+
+## 轮次 56 · 2026-11-25 16:00 → 16:15 · P12 两条小修
+
+### 1. 折线图纵轴贴到卡片左缘
+
+- 量标列宽 42dp → **30dp**，`horizontalAlignment` 由 `End` 改 **`Start`**（文字贴列左缘）
+- 与绘图区间距 10dp → **8dp**；轴标签行起始 padding 52dp → **38dp**（= 30 + 8）
+- 效果：`¥38/¥19/¥0` 距卡片内缘约 16dp（卡片 padding 本身），绘图区反而更宽
+- 截图：`P12-折线纵轴贴边.png`
+
+### 2. 智慧后勤（zhhq）微信 UA 伪装
+
+- `SchoolWebActivity` 只对 `zhhq.bucm.edu.cn` 追加 UA：
+  `... MicroMessenger/8.0.47.2560(0x28002F30) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN`
+  （其他域保持原 UA，不做全局伪装）
+- `onPageFinished` 里对 zhhq 注入最小桩：`window.wx = window.wx || {}` +
+  `WeixinJSBridge.invoke` 直接回调 `{err_msg:'ok'}`（只为让存在性检查不抛错）
+- 顶栏「企业微信」兜底按钮保留
+
+**验证结果（如实）**：
+- WebView 能打开 `zhhq.bucm.edu.cn/bucmzhxy2/zhxyapp2/#/` 并渲染 H5，顶栏显示「企业微信」兜底；
+- 但页面停在 **"Oops! Something went wrong:("** 应用级错误页，没有出现"请在微信中打开"字样；
+- 模拟器 logcat 同期有 `ssl_client_socket_impl handshake failed net_error -101`，
+  无法区分是**缺 wx.config 签名**还是**模拟器网络/证书**导致；
+- 结论按 lead 的预期写：**页面能打开、UA 判断这一层大概率已过，但真实 JS-SDK 能力（签名/支付/相机）仍不可用**；
+  需要真机 + 校园网才能下最终结论。
+
+### 交付
+
+- `assembleDebug` 通过；**234 单测全绿**
+- APK：`app-prod/app/build/outputs/apk/debug/UBcm-P12-debug-v1.0.0.apk`
+- 截图：`P12-折线纵轴贴边.png`、`P12-智慧后勤WebView.png`
+- DEVLOG、中文提交
+
+**产出**：改 `CampusScreen.kt`（纵轴位置）、`SchoolWebActivity.kt`（zhhq UA + wx 桩）
