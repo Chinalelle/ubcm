@@ -1,0 +1,71 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app-prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Gradle (with cache)
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build debug APK
+        # tag 形如 v1.0.1 → versionName=1.0.1；versionCode 用 run number 递增
+        run: |
+          VERSION_NAME="${GITHUB_REF_NAME#v}"
+          if [ "${{ github.ref_type }}" != "tag" ]; then
+            VERSION_NAME="0.0.0-dev"
+          fi
+          ./gradlew :app:assembleDebug \
+            -PversionName="$VERSION_NAME" \
+            -PversionCode="${{ github.run_number }}"
+          ls -lh app/build/outputs/apk/debug/
+
+      - name: Rename artifact
+        id: rename
+        run: |
+          SRC="app/build/outputs/apk/debug/app-debug.apk"
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            OUT="UBcm-${{ github.ref_name }}-debug.apk"
+          else
+            OUT="UBcm-dev-build${{ github.run_number }}-debug.apk"
+          fi
+          cp "$SRC" "$OUT"
+          echo "path=app-prod/$OUT" >> "$GITHUB_OUTPUT"
+          echo "name=$OUT" >> "$GITHUB_OUTPUT"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: ${{ steps.rename.outputs.path }}
+
+      - name: Publish GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.rename.outputs.path }}
+          generate_release_notes: true
+          body: |
+            UBcm ${{ github.ref_name }} 自动构建（debug 包）。
+
+            安装说明：下载下面的 APK，允许「安装未知来源应用」即可。

@@ -175,6 +175,17 @@ class MainActivity : ComponentActivity() {
         val debuggable = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
         if (debuggable) {
             DebugInjection.enabled = true
+            // 应用内更新 UI 验收：给一个假的"新版"（不联网、不下载真实 APK）
+            if (intent?.getBooleanExtra("update_mock", false) == true) {
+                DebugInjection.mockUpdate = UpdateChecker.RemoteRelease(
+                    tag = "v1.2.0",
+                    versionName = "1.2.0",
+                    notes = "· 修复智慧后勤白屏（微信授权拦截）\n· 折线图逐段绘制动画\n· 待办编辑页键盘遮挡修复",
+                    apkUrl = "https://example.com/UBcm-v1.2.0-debug.apk",
+                    fileName = "UBcm-v1.2.0-debug.apk",
+                    sizeBytes = 62L * 1024 * 1024,
+                )
+            }
             DebugInjection.demoReservation = when (intent?.getStringExtra("demo_resv")) {
                 "using" -> demoReservation(using = true)
                 "pending" -> demoReservation(using = false)

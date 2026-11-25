@@ -61,6 +61,9 @@ object DebugInjection {
     var demoKinds: List<SpaceApi.Kind> = emptyList()
     var demoRooms: List<SpaceApi.Room> = emptyList()
     var demoEmptyRooms: List<JwApi.EmptyRoom> = emptyList()
+
+    /** `--ez update_mock true`：不联网，直接给一个"有新版本"的假 Release，用于验收更新 UI */
+    var mockUpdate: UpdateChecker.RemoteRelease? = null
 }
 
 enum class MainTab(val label: String, val icon: ImageVector) {

@@ -11,8 +11,9 @@ android {
         applicationId = "com.kang.ubcm.prod"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0.0"
+        // 默认值给本地开发用；GitHub Actions 会通过 -PversionName=<tag> -PversionCode=<n> 覆盖
+        versionCode = (project.findProperty("versionCode") as String?)?.toIntOrNull() ?: 1
+        versionName = (project.findProperty("versionName") as String?)?.removePrefix("v") ?: "1.0.0"
     }
 
     buildTypes {
@@ -32,7 +33,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        // 版本号要在「关于」里显示，需要 BuildConfig
+        buildConfig = true
+    }
 }
 
 dependencies {

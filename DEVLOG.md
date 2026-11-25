@@ -71,6 +71,7 @@
 | 55 | 2026-11-25 15:25 | **P11 图表逐段/顺时针动画 + 展开自动滚动 + 网页登录入口** | 见本节 |
 | 56 | 2026-11-25 16:10 | **P12 折线纵轴贴边 + zhhq 微信 UA 伪装** | 见本节 |
 | 57 | 2026-11-25 16:20 | **P13 SchoolWebActivity 健壮性 + 定位 zhhq 白屏真因（微信 OAuth 跳转）** | 见本节 |
+| 58 | 2026-11-25 16:45 | **P14 应用内更新 + GitHub Actions 自动构建发布** | 见本节 |
 
 ---
 
@@ -2967,3 +2968,77 @@ D SchoolWeb: onPageFinished: https://open.weixin.qq.com/connect/oauth2/authorize
 - DEVLOG、中文提交
 
 **产出**：改 `SchoolWebActivity.kt`（6 项健壮性 + 撤回 UA + 拦截 OAuth）
+
+---
+
+## 轮次 58 · 2026-11-25 16:25 → 16:50 · P14 自动更新 + CI
+
+**仓库**：`Chinalelle/ubcm`（公开，Apache-2.0）
+
+### 1. 应用内更新
+
+新增 `UpdateChecker.kt`：
+
+| 能力 | 实现 |
+|---|---|
+| 检查 | `GET https://api.github.com/repos/Chinalelle/ubcm/releases/latest`（公开仓库，无 token） |
+| 比较 | `compareVersions()` 语义化比较（去掉 `v` 前缀/后缀、按数字段、多位数正确），`hasUpdate()` 只在远端严格更高时为真 |
+| 解析 | 从 `assets` 里找第一个 `.apk`，取 `browser_download_url`/`name`/`size`；没有 APK 资产视为"无可用更新" |
+| 下载 | 下到 `cache/updates/`，`HttpURLConnection` + 64KB buffer，按 `Content-Length` 报进度（0..100），**只在用户点「下载更新」时执行** |
+| 安装 | `FileProvider` + `ACTION_VIEW`（`application/vnd.android.package-archive`）+ `FLAG_GRANT_READ_URI_PERMISSION` |
+| 失败 | 每种失败都有文案：HTTP 码 / 无 APK 资产 / 网络异常 / 下载失败 / 拉起安装器失败（提示"允许安装未知来源"） |
+
+配置改动：
+- `app/build.gradle.kts`：`buildConfig = true`；`versionCode/versionName` 支持 `-PversionName/-PversionCode` 覆盖（CI 用）
+- `AndroidManifest.xml`：加 `REQUEST_INSTALL_PACKAGES` + `FileProvider`（`${applicationId}.fileprovider`）
+- `res/xml/file_paths.xml`：只暴露 `cache/updates/`
+
+UI（「我的 → 关于本应用」）：
+- 行右侧显示真实版本 `v${BuildConfig.VERSION_NAME}`，**有新版时右侧红点**
+- 展开面板：版本说明 + 「检查更新」按钮；检测到新版时出现蓝底卡片（版本号 + 更新说明前 400 字 + 「下载更新」）
+- 下载中显示百分比 + 进度条；下载完成变成「立即安装」
+
+调试注入（仅 debug）：`am start ... --ez update_mock true` 会给一个假的 `v1.2.0` Release，
+用于验收"检测到新版本"的 UI 路径，**不联网、不下载真实 APK**。
+
+### 2. GitHub Actions
+
+`.github/workflows/build.yml`：
+- 触发：push tag `v*` / 手动 `workflow_dispatch`
+- `working-directory: app-prod`（**只在正式工程里构建**）
+- 步骤：checkout → JDK 21 (temurin) → `gradle/actions/setup-gradle@v3`（带缓存）→
+  `./gradlew :app:assembleDebug -PversionName=<tag去掉v> -PversionCode=<run_number>` →
+  重命名 `UBcm-<tag>-debug.apk` → `upload-artifact` → `softprops/action-gh-release@v2`（tag 触发时）
+- `permissions: contents: write`（发 Release 需要）
+
+### 3. 版本号
+
+- 本地默认 `versionCode=1 / versionName=1.0.0`
+- CI：`versionName` 来自 tag（`v1.0.1` → `1.0.1`），`versionCode` 用 `github.run_number` 递增
+- App 内「关于」显示 `BuildConfig.VERSION_NAME`
+
+### 验证
+
+- ✅ `assembleDebug` 通过；**239 单测全绿**（新增 5 条 `UpdateCheckerTest`：数字段比较、多位数、前缀后缀、缺段、hasUpdate）
+- ✅ 模拟器（debug + `--ez update_mock true`）：
+  - 「关于本应用」显示 `v1.0.0`，点「检查更新」后出现**红点** + 「发现新版本 v1.2.0」+ 更新说明
+  - 截图：`P14-发现新版本.png`
+- ⚠️ **没有真跑 GitHub API**：仓库还没有 Release；下载/安装也没在真机上走完（mock 的 apkUrl 是假地址）。
+- APK：`app-prod/app/build/outputs/apk/debug/UBcm-P14-debug-v1.0.0.apk`
+
+### 需要在 GitHub 上手动做的事（回报给 lead）
+
+1. 建公开仓库 `Chinalelle/ubcm`，把本项目推上去（含 `.github/workflows/build.yml`）
+2. Settings → Actions → General：确认 Actions 允许运行；**Workflow permissions 选 "Read and write"**（发 Release 要写权限）
+3. 打 tag 并推送：`git tag v1.0.1 && git push origin v1.0.1` → 自动构建并创建 Release，附件名 `UBcm-v1.0.1-debug.apk`
+4. 之后 App 的「检查更新」才有数据源（`releases/latest` 需要至少一个**非 draft、非 prerelease** 的 Release）
+
+### 没做的 / 未验证
+
+- 没做后台自动检查/静默更新（按需求明确不做）
+- 没做 release 签名（workflow 先只构建 debug）
+- 真实下载 + 安装流程未验证（需要真实 Release + 真机）
+- 未做"忽略此版本/稍后提醒"
+
+**产出**：新增 `UpdateChecker.kt`、`UpdateCheckerTest.kt`、`.github/workflows/build.yml`、
+`res/xml/file_paths.xml`；改 `build.gradle.kts`、`AndroidManifest.xml`、`MeScreen.kt`、`MainActivity.kt`、`AppShell.kt`

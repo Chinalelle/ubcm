@@ -20,8 +20,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,6 +68,15 @@ fun MeScreen(
     var avatarVersion by remember { mutableStateOf(0) }
     var showAvatarSheet by remember { mutableStateOf(false) }
     var showAbout by remember { mutableStateOf(false) }
+
+    // 应用内更新（P14）：只在用户点「检查更新」时联网/下载
+    val scope = rememberCoroutineScope()
+    var checking by remember { mutableStateOf(false) }
+    var release by remember { mutableStateOf<UpdateChecker.RemoteRelease?>(null) }
+    var newer by remember { mutableStateOf(false) }
+    var updateError by remember { mutableStateOf<String?>(null) }
+    var downloaded by remember { mutableStateOf<java.io.File?>(null) }
+    var progress by remember { mutableStateOf(-1) }
     var confirmingLogout by remember { mutableStateOf(false) }
     var editingAnchor by remember { mutableStateOf(false) }
     var anchorText by remember { mutableStateOf(st.firstWeekMonday.toString()) }
@@ -256,11 +269,64 @@ fun MeScreen(
                         DividerRow()
                         SettingRow(
                             title = "关于本应用",
-                            value = "v1.0",
+                            value = "v" + BuildConfig.VERSION_NAME,
+                            dotColor = if (newer) UbcmColors.Danger else null,
                             onClick = { showAbout = !showAbout },
                         )
                         if (showAbout) {
-                            AboutPanel()
+                            AboutPanel(
+                                versionName = BuildConfig.VERSION_NAME,
+                                checking = checking,
+                                newer = newer,
+                                release = release,
+                                error = updateError,
+                                progress = progress,
+                                downloaded = downloaded,
+                                onCheck = {
+                                    checking = true
+                                    updateError = null
+                                    scope.launch {
+                                        val r = withContext(Dispatchers.IO) {
+                                            val mock = DebugInjection.mockUpdate
+                                            if (mock != null) UpdateChecker.Result(release = mock)
+                                            else UpdateChecker.check(BuildConfig.VERSION_NAME)
+                                        }
+                                        checking = false
+                                        if (r.error != null) {
+                                            updateError = r.error
+                                            newer = false
+                                        } else {
+                                            release = r.release
+                                            newer = r.release != null &&
+                                                UpdateChecker.hasUpdate(
+                                                    r.release.versionName,
+                                                    BuildConfig.VERSION_NAME,
+                                                )
+                                            if (!newer) updateError = "已是最新版本 v${BuildConfig.VERSION_NAME}"
+                                        }
+                                    }
+                                },
+                                onDownload = {
+                                    val rel = release ?: return@AboutPanel
+                                    progress = 0
+                                    updateError = null
+                                    scope.launch {
+                                        val f = withContext(Dispatchers.IO) {
+                                            UpdateChecker.download(ctx, rel) { pct -> progress = pct }
+                                        }
+                                        if (f != null) {
+                                            downloaded = f
+                                        } else {
+                                            progress = -1
+                                            updateError = "下载失败，请检查网络后重试"
+                                        }
+                                    }
+                                },
+                                onInstall = {
+                                    val f = downloaded ?: return@AboutPanel
+                                    updateError = UpdateChecker.install(ctx, f)
+                                },
+                            )
                         }
                     }
                 }
@@ -429,12 +495,113 @@ private fun SettingRow(
 }
 
 @Composable
-private fun AboutPanel() {
+private fun AboutPanel(
+    versionName: String,
+    checking: Boolean,
+    newer: Boolean,
+    release: UpdateChecker.RemoteRelease?,
+    error: String?,
+    progress: Int,
+    downloaded: java.io.File?,
+    onCheck: () -> Unit,
+    onDownload: () -> Unit,
+    onInstall: () -> Unit,
+) {
     Column(Modifier.padding(horizontal = 16.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text("UBcm v1.0 · 北京中医药大学校园助手", fontSize = 12.sp, color = UbcmColors.Ink)
+        Text("UBcm v$versionName · 北京中医药大学校园助手", fontSize = 12.sp, color = UbcmColors.Ink)
         Text("非官方应用 · 个人本地工具，数据只存本机", fontSize = 11.sp, color = UbcmColors.InkSoft)
         Text("数据来源：学校门户 / 教务系统 / 图书馆 / 一卡通（只读）", fontSize = 11.sp, color = UbcmColors.InkSoft)
         Text("不代登录、不托管他人凭证；写操作一律在学校页面完成", fontSize = 11.sp, color = UbcmColors.InkSoft)
+
+        Spacer(Modifier.height(4.dp))
+
+        // 更新卡片（只有"有新版"时才展开说明和按钮）
+        if (newer && release != null) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(UbcmTheme.Brand50)
+                    .padding(12.dp),
+            ) {
+                Text(
+                    "发现新版本 v${release.versionName}",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = UbcmTheme.Brand700,
+                )
+                if (release.notes.isNotBlank()) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        release.notes.take(400),
+                        fontSize = 11.sp,
+                        color = UbcmColors.InkSoft,
+                        lineHeight = 16.sp,
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                when {
+                    progress in 0..99 -> {
+                        Text("正在下载… $progress%", fontSize = 11.sp, color = UbcmColors.InkSoft)
+                        Spacer(Modifier.height(4.dp))
+                        LinearProgressIndicator(
+                            progress = { progress / 100f },
+                            modifier = Modifier.fillMaxWidth().height(4.dp),
+                            color = UbcmTheme.Brand500,
+                        )
+                    }
+                    downloaded != null -> {
+                        Row(
+                            Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(UbcmColors.Cinnabar)
+                                .clickable(onClick = onInstall)
+                                .padding(horizontal = 14.dp, vertical = 7.dp),
+                        ) {
+                            Text("立即安装", fontSize = 12.sp, color = Color.White)
+                        }
+                    }
+                    else -> {
+                        Row(
+                            Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(UbcmColors.Cinnabar)
+                                .clickable(onClick = onDownload)
+                                .padding(horizontal = 14.dp, vertical = 7.dp),
+                        ) {
+                            Text("下载更新", fontSize = 12.sp, color = Color.White)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (error != null) {
+            Text(error, fontSize = 11.sp, color = UbcmColors.Danger, lineHeight = 16.sp)
+        }
+
+        Row(
+            Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(UbcmTheme.Brand50)
+                .clickable(enabled = !checking, onClick = onCheck)
+                .padding(horizontal = 14.dp, vertical = 7.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (checking) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(12.dp),
+                    strokeWidth = 2.dp,
+                    color = UbcmTheme.Brand500,
+                )
+                Spacer(Modifier.width(6.dp))
+            }
+            Text(
+                if (checking) "检查中…" else "检查更新",
+                fontSize = 12.sp,
+                color = UbcmTheme.Brand700,
+            )
+        }
     }
 }
 
