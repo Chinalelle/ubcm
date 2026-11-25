@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -60,6 +61,8 @@ fun TodoEditorScreen(
     var ddlText by remember(initial) { mutableStateOf(TodoRules.formatDdl(initial?.dueAt)) }
     var ddlError by remember { mutableStateOf(false) }
     var showWheel by remember { mutableStateOf(false) }
+    // 新增子待办后要聚焦的那一行（A1）
+    var pendingFocusId by remember { mutableStateOf<String?>(null) }
 
     // 子待办：id → 文本（勾选状态保存在 TodoItem.subs 里，保存时再合并）
     var subRows by remember(initial) {
@@ -69,6 +72,13 @@ fun TodoEditorScreen(
     }
 
     val canSave = title.isNotBlank()
+
+    fun newSubRow(): String {
+        val id = "s-" + System.currentTimeMillis() + "-" + (0..999).random()
+        subRows = subRows + (id to "")
+        pendingFocusId = id
+        return id
+    }
 
     fun save() {
         if (!canSave) return
@@ -109,15 +119,32 @@ fun TodoEditorScreen(
     // DDL 滚轮弹层先消费返回键
     BackHandler(enabled = showWheel) { showWheel = false }
 
+    if (DebugInjection.enabled) {
+        // P10 临时诊断：打印实际 inset（确认 imePadding 是否被重复计算）
+        val imeB = WindowInsets.ime.asPaddingValues().calculateBottomPadding()
+        val navB = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+        val safeB = WindowInsets.safeDrawing.asPaddingValues().calculateBottomPadding()
+        android.util.Log.d(
+            "UBCM_INSETS",
+            "ime=$imeB navigationBars=$navB safeDrawingBottom=$safeB",
+        )
+    }
+
     Surface(color = UbcmColors.Paper, modifier = Modifier.fillMaxSize()) {
-        Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
+        // 底部 inset 由 MainShell 的 imePadding 统一处理；这里只要顶部和左右，
+        // 避免再算一次键盘高度（P10 修的就是这个重复）
+        Box(
+            Modifier.fillMaxSize().windowInsetsPadding(
+                WindowInsets.safeDrawing.only(
+                    WindowInsetsSides.Top + WindowInsetsSides.Horizontal
+                )
+            )
+        ) {
             Column(
                 Modifier
                     .fillMaxSize()
                     .align(Alignment.TopCenter)
-                    .widthIn(max = 640.dp)
-                    // 键盘弹起时整体上移，正在编辑的行不会被 IME 盖住（P9 修复）
-                    .imePadding(),
+                    .widthIn(max = 640.dp),
             ) {
                 // 顶栏：取消 / 标题 / 保存
                 Row(
@@ -153,6 +180,17 @@ fun TodoEditorScreen(
                 // 可滚动内容（字段 + 子待办）。子待办多了也不会把页面撑死
                 val listState = androidx.compose.foundation.lazy.rememberLazyListState()
                 var focusedSubIndex by remember { mutableStateOf<Int?>(null) }
+                // 每行一个 FocusRequester：回车新增后把焦点交给新行（A1）
+                val focusRequesters = remember {
+                    androidx.compose.runtime.mutableStateMapOf<String, androidx.compose.ui.focus.FocusRequester>()
+                }
+                LaunchedEffect(pendingFocusId, subRows.size) {
+                    val id = pendingFocusId ?: return@LaunchedEffect
+                    focusRequesters[id]?.let { fr ->
+                        runCatching { fr.requestFocus() }
+                        pendingFocusId = null
+                    }
+                }
                 LaunchedEffect(focusedSubIndex) {
                     val idx = focusedSubIndex ?: return@LaunchedEffect
                     // 子待办 item 从 1 开始（0 是内容/备注等前导项），多留一格保证整行可见
@@ -244,8 +282,15 @@ fun TodoEditorScreen(
                     }
                     subRows.forEachIndexed { i, (id, text) ->
                         item(key = "sub-$id") {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                // 聚焦行与普通行布局完全一致（P10：排查"聚焦行被横向截断"）
+                                Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
                                 Box(Modifier.weight(1f)) {
+                                    val fr = focusRequesters.getOrPut(id) {
+                                        androidx.compose.ui.focus.FocusRequester()
+                                    }
                                     EditorField(
                                         value = text,
                                         onValueChange = { v ->
@@ -255,10 +300,11 @@ fun TodoEditorScreen(
                                         minLines = 1,
                                         maxLines = 1,
                                         singleLine = true,
+                                        focusRequester = fr,
                                         onFocus = { focusedSubIndex = i },
                                         onImeDone = {
-                                            // 键盘"确认"= 新增下一条，不是换行
-                                            subRows = subRows + ("s-" + System.currentTimeMillis() to "")
+                                            // 键盘"确认"= 新增下一条并聚焦它（不是换行）
+                                            newSubRow()
                                             focusedSubIndex = subRows.lastIndex
                                         },
                                     )
@@ -287,14 +333,14 @@ fun TodoEditorScreen(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .clickable {
-                                subRows = subRows + ("s-" + System.currentTimeMillis() to "")
+                                newSubRow()
                                 focusedSubIndex = subRows.lastIndex
                             }
                             .padding(horizontal = 4.dp, vertical = 8.dp),
                     )
                 }
                 // 底部再留一点，避免被导航条贴住
-                Spacer(Modifier.height(8.dp).navigationBarsPadding())
+                Spacer(Modifier.height(8.dp))
             }
 
             if (showWheel) {
@@ -326,6 +372,7 @@ private fun EditorField(
     minLines: Int,
     maxLines: Int,
     singleLine: Boolean = false,
+    focusRequester: androidx.compose.ui.focus.FocusRequester? = null,
     onFocus: (() -> Unit)? = null,
     onImeDone: (() -> Unit)? = null,
 ) {
@@ -357,6 +404,7 @@ private fun EditorField(
             ),
             modifier = Modifier
                 .fillMaxWidth()
+                .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
                 .then(
                     if (onFocus != null) {
                         Modifier.onFocusChanged { if (it.isFocused) onFocus() }

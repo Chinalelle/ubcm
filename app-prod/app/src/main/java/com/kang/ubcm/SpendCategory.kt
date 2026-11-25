@@ -18,7 +18,8 @@ object SpendCategory {
     data class Spend(val merchant: String, val amountYuan: Double, val timeMs: Long)
 
     /** 一个分类的合计。 */
-    data class Slice(val label: String, val amountYuan: Double, val percent: Int)
+    /** percent 保留一位小数（38.2%），合计严格等于 100.0（舍入误差归到最大块）。 */
+    data class Slice(val label: String, val amountYuan: Double, val percent: Double)
 
     /**
      * 商户名 → 分类标签（"校区 + 场所"）。
@@ -119,15 +120,23 @@ object SpendCategory {
         val rest = named.drop(limit).sumOf { it.second } + otherAmount
         val rows = if (rest > 0) head + ("其他" to rest) else head
 
-        return rows
-            .map { (label, amount) ->
-                Slice(
-                    label = label,
-                    amountYuan = amount,
-                    percent = Math.round(amount / total * 100).toInt(),
-                )
-            }
-            // 占比 0% 的行对用户没有信息量（除了"其他"）
-            .filter { it.percent > 0 || it.label == "其他" }
+        // 用「千分比整数」计算，避免 double 累加的尾差
+        val rawTenths = rows.map { Math.round(it.second / total * 1000).toInt() }
+        val tenths = rawTenths.toMutableList()
+        val diff = 1000 - tenths.sum()
+        if (diff != 0 && tenths.isNotEmpty()) {
+            // 误差归到最大块，保证合计 = 100.0%
+            val maxIdx = rawTenths.indices.maxByOrNull { rawTenths[it] } ?: 0
+            tenths[maxIdx] = (tenths[maxIdx] + diff).coerceAtLeast(0)
+        }
+        return rows.mapIndexed { i, (label, amount) ->
+            Slice(
+                label = label,
+                amountYuan = amount,
+                percent = tenths[i] / 10.0,
+            )
+        }
+            // 占比 0.0% 的行对用户没有信息量（除了"其他"）
+            .filter { it.percent > 0.0 || it.label == "其他" }
     }
 }

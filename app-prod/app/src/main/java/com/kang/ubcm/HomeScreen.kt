@@ -1,6 +1,8 @@
 package com.kang.ubcm
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -920,50 +922,96 @@ private fun TodoCard(todo: TodoItem, nowMillis: Long) {
         DueLevel.NEAR -> UbcmTheme.Gold500.copy(alpha = 0.3f)
         else -> UbcmColors.Line
     }
+    // 点卡片展开详情（备注 + 子待办），再点收起（P10 B3）
+    var expanded by remember(todo.id) { mutableStateOf(false) }
 
-    Row(
+    Column(
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(cardBg)
             .border(1.dp, borderColor, RoundedCornerShape(12.dp))
+            .clickable { expanded = !expanded }
+            .animateContentSize(tween(220))
             .padding(horizontal = 12.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
-        TodoCheckbox(todo.done)
-        Spacer(Modifier.width(12.dp))
+        Row(verticalAlignment = Alignment.Top) {
+            Box(Modifier.padding(top = 1.dp)) { TodoCheckbox(todo.done) }
+            Spacer(Modifier.width(12.dp))
 
-        Column(Modifier.weight(1f)) {
-            Text(
-                todo.title,
-                fontSize = 15.sp,
-                color = if (todo.done) UbcmColors.Ash else UbcmColors.Ink,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            if (todo.subs.isNotEmpty()) {
-                Spacer(Modifier.height(8.dp))
-                SubProgressBar(subs = todo.subs, cardColor = cardBg)
+            Column(Modifier.weight(1f)) {
+                Text(
+                    todo.title,
+                    fontSize = 15.sp,
+                    color = if (todo.done) UbcmColors.Ash else UbcmColors.Ink,
+                    maxLines = if (expanded) 3 else 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (todo.subs.isNotEmpty()) {
+                    Spacer(Modifier.height(8.dp))
+                    SubProgressBar(subs = todo.subs, cardColor = cardBg)
+                }
+            }
+
+            Spacer(Modifier.width(10.dp))
+
+            // DDL 固定宽 64dp（docs/21 §6.2）
+            Column(Modifier.width(64.dp), horizontalAlignment = Alignment.End) {
+                TodoRules.countdown(todo.dueAt, nowMillis)?.let {
+                    Text(it, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = UbcmColors.Danger, style = TABULAR)
+                }
+                TodoRules.dueDayText(todo.dueAt)?.let {
+                    Text(
+                        it,
+                        fontSize = 13.sp,
+                        color = if (level == DueLevel.URGENT) UbcmColors.Ink else UbcmColors.InkSoft,
+                        style = TABULAR,
+                    )
+                }
+                TodoRules.dueTimeText(todo.dueAt)?.let {
+                    Text(it, fontSize = 11.sp, color = UbcmColors.Ash, style = TABULAR)
+                }
             }
         }
 
-        Spacer(Modifier.width(10.dp))
-
-        // DDL 固定宽 64dp（docs/21 §6.2）
-        Column(Modifier.width(64.dp), horizontalAlignment = Alignment.End) {
-            TodoRules.countdown(todo.dueAt, nowMillis)?.let {
-                Text(it, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = UbcmColors.Danger, style = TABULAR)
-            }
-            TodoRules.dueDayText(todo.dueAt)?.let {
-                Text(
-                    it,
-                    fontSize = 13.sp,
-                    color = if (level == DueLevel.URGENT) UbcmColors.Ink else UbcmColors.InkSoft,
-                    style = TABULAR,
-                )
-            }
-            TodoRules.dueTimeText(todo.dueAt)?.let {
-                Text(it, fontSize = 11.sp, color = UbcmColors.Ash, style = TABULAR)
+        // 展开区：备注 + 子待办（高度由父改的 animateContentSize 统一驱动）
+        androidx.compose.animation.AnimatedVisibility(
+            visible = expanded,
+            enter = androidx.compose.animation.fadeIn(tween(180)),
+            exit = androidx.compose.animation.fadeOut(tween(120)),
+        ) {
+            Column {
+                todo.note?.takeIf { it.isNotBlank() }?.let { note ->
+                    Spacer(Modifier.height(10.dp))
+                    Text(note, fontSize = 12.sp, color = UbcmColors.InkSoft, lineHeight = 18.sp)
+                }
+                if (todo.subs.isNotEmpty()) {
+                    Spacer(Modifier.height(8.dp))
+                    todo.subs.forEach { sub ->
+                        Row(
+                            Modifier.fillMaxWidth().padding(vertical = 3.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Box(
+                                Modifier.size(13.dp).clip(RoundedCornerShape(4.dp))
+                                    .background(if (sub.done) UbcmTheme.Success else Color.Transparent)
+                                    .border(
+                                        1.5.dp,
+                                        if (sub.done) UbcmTheme.Success else UbcmColors.Ash,
+                                        RoundedCornerShape(4.dp),
+                                    )
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                sub.text,
+                                fontSize = 12.sp,
+                                color = if (sub.done) UbcmColors.Ash else UbcmColors.Ink,
+                                textDecoration = if (sub.done) androidx.compose.ui.text.style.TextDecoration.LineThrough
+                                else androidx.compose.ui.text.style.TextDecoration.None,
+                            )
+                        }
+                    }
+                }
             }
         }
     }

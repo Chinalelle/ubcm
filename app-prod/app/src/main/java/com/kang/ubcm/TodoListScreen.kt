@@ -445,12 +445,12 @@ private fun TodoFullCard(
                     Spacer(Modifier.height(8.dp))
                     SubTodoBar(todo.subs, cardBg)
                 }
+                // 高度统一由父卡片的 animateContentSize 驱动，这里只做淡入淡出，
+                // 避免「子待办先展开、卡片高度后展开」的串行观感（P10 A3）
                 androidx.compose.animation.AnimatedVisibility(
                     visible = expanded,
-                    enter = androidx.compose.animation.expandVertically(tween(220)) +
-                        androidx.compose.animation.fadeIn(tween(220)),
-                    exit = androidx.compose.animation.shrinkVertically(tween(180)) +
-                        androidx.compose.animation.fadeOut(tween(150)),
+                    enter = androidx.compose.animation.fadeIn(tween(180)),
+                    exit = androidx.compose.animation.fadeOut(tween(120)),
                 ) {
                     Column {
                     todo.note?.takeIf { it.isNotBlank() }?.let { note ->

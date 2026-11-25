@@ -67,6 +67,7 @@
 | 51 | 2026-11-24 21:10 | **P7 待办完整页 + 编辑页 + DDL 滚轮 + 四阶段动画** | 见本节 |
 | 52 | 2026-11-24 21:25 | **P8 用户首次实机反馈 7 项修复（真实凭证验证）** | 见本节 |
 | 53 | 2026-11-25 13:20 | **P9 第二批实机问题 7 项 + 3 个新增（图标/折线交互/动画）** | 见本节 |
+| 54 | 2026-11-25 14:10 | **P10 第三批修复（键盘/焦点/动画）+ 6 项优化 + 图标兼容** | 见本节 |
 
 ---
 
@@ -2694,3 +2695,108 @@ ic-cookie 服务端校验仍是 `code:0`（凌晨拿的那个还活着）。
   `AndroidManifest.xml`（icon/roundIcon）
 - 新增资源：`mipmap-*/ic_launcher*.png`、`mipmap-anydpi-v26/ic_launcher*.xml`、`values/colors.xml`
 - 截图：`~/Desktop/data/截屏/ubcm-prod-P9-0{1..7}*.png`
+
+---
+
+## 轮次 54 · 2026-11-25 13:55 → 14:15 · P10 第三批修复 + 6 项优化
+
+**用户反馈**：第三批 3 个问题 + 6 个优化。测试环境：模拟器 `duedo`（1080×2400 @420dpi）。
+
+### 问题 2「依然有阻挡」—— 复现与诊断（lead 要求必须有截图 + 诊断）
+
+**复现**：编辑页 → 10 条子待办 → 滚到底 → 点最后一条 → 键盘弹起
+（`~/Desktop/data/截屏/ubcm-prod-P10-复现键盘遮挡-前.png`）。
+
+**现象**：被编辑行在键盘上方可见，但它与键盘顶之间有一块**约 215 显示px（≈390 设备px）的空白底色**。
+不是输入法工具条（Gboard 那条 88/键盘/表情 的条在空白下方，属输入法自绘 UI）。
+
+**诊断（打印真实 inset 确认）**：
+
+```
+键盘收起：ime=0.0dp  navigationBars=24.0dp  safeDrawingBottom=24.0dp
+键盘弹起：ime=336.0dp navigationBars=24.0dp  safeDrawingBottom=336.0dp
+```
+
+根因**不是** `imePadding` 与 `navigationBarsPadding` 重复叠加，而是：
+1. `WindowInsets.ime` 的 336dp 是**按全屏高度**算的；
+2. 编辑页挂在 MainShell 的 Tab 内容区里，该区域底部已被 **64dp TabBar + 40dp 警示栏**占掉；
+3. 在 Tab 内容区里减去"全屏口径"的 336dp → 内容底比键盘顶高出约 273px，就是那块空白。
+
+**修复**：
+- `MainShell` 的根 Column 加 `imePadding()`；键盘可见时**临时隐藏 TabBar 与警示栏**
+  （`WindowInsets.ime.getBottom(density) > 0`）→ 外壳整体收缩到键盘上方，坐标口径一致；
+- 编辑页的 `safeDrawing` 只取 **Top + Horizontal**，底部交给外壳，不再自己算键盘；
+- 去掉底部 `Spacer` 上重复的 `navigationBarsPadding()`。
+
+**结果**：`P10-键盘遮挡-修复后.png` —— 被编辑行紧贴"＋ 添加子待办"，其下 20px 就是键盘顶，空白消失。
+
+**关于「聚焦行输入框被横向截断」**（lead 补充的用户圈图）：
+在模拟器上**未能复现**。逐行聚焦并做像素测量：
+
+```
+聚焦第 1 行 / 第 2 行，两行白框水平范围都是 x = 45..908（1080 宽屏）
+长文本行 vs 空行，同样都是 45..908
+```
+
+两行宽度、右边缘与 × 按钮的间距完全一致（`P10-聚焦行宽度对比-修复后.png`）。
+已做的防御性改动：子待办 item 的 Row 显式 `fillMaxWidth()`；新增行也走同一布局路径
+（`P10-A1回车新增并聚焦新行.png` 里两行等宽）。**若用户手机仍复现，需要用户手机上的原图**。
+
+### A. 三个问题
+
+| # | 处理 | 验证 |
+|---|---|---|
+| 1 回车新增后焦点没跳 | 每行一个 `FocusRequester`（`mutableStateMapOf`），新增时记 `pendingFocusId`，`LaunchedEffect` 里 `requestFocus()`；键盘不收起 | ✅ AAA 回车 → 新行出现并直接输入 BBB |
+| 2 依然有阻挡 | 见上：外壳 `imePadding` + 隐藏底栏；编辑页只取顶部 inset | ✅ 空白消失（前后对比截图） |
+| 3 展开动画不同步 | 子内容只做 `fadeIn/fadeOut`，**高度统一由父卡片 `animateContentSize` 驱动**，不再是两层高度动画串联 | 代码层面已合并（截图看不出串行/并行，见「未验证」） |
+
+### B. 六个优化
+
+1. **折线图升级**：画横轴 + 纵轴轴线；选中时同时画**垂直参考线**（x=该天）与水平参考线；
+   `detectHorizontalDragGestures` 支持**手指在图上左右滑动实时切换选中天**，松手停在最近一天；点击仍可取消。
+   截图 `P10-B1折线图坐标轴与垂直参考线.png`（能看到轴线、十字参考线、11/22 消费 ¥9.00）。
+2. **饼图一位小数**：`Slice.percent` 由 `Int` 改 `Double`，用「千分比整数」计算（避免 double 尾差），
+   误差归到最大块保证合计 100.0%。截图里显示 `34.2%`。
+3. **首页待办可展开**：点卡片展开备注 + 子待办（父勾选框顶部对齐），再点收起；高度 `animateContentSize`。
+   截图 `P10-B3首页待办展开.png`。
+4. **图表切换动画**：7 天 ↔ 30 天，折线图与环形图各包一层 `Crossfade(350ms)` 并在内部按目标天数重算数据。
+   ⚠️ 是**淡入淡出 + 重算**，不是逐点路径插值（点数不同，插值需要重采样，本轮没做）。
+5. **刷新率上限**：`MainActivity.onCreate` 读 `defaultDisplay.supportedModes` 取最大 `refreshRate`，
+   `window.attributes.preferredDisplayModeId`，整体 `runCatching` 包住。
+   ⚠️ **模拟器只有 60Hz 一档**（`supportedModes` 单条），无法验证提升效果；真机才会生效。
+6. **底栏指示 + 页面滑动**：`TabBar` 顶部 3dp 指示条用 `animateDpAsState(250ms)` 滑动；
+   页面内容用 `Animatable` 做 `translationX` + alpha 过渡（同 250ms）。
+   截图 `P10-B6底栏指示块切换前/后.png`（指示条从「校园」滑到「学习」）。
+
+### 图标兼容（lead 补充）
+
+- `mipmap-anydpi-v26/ic_launcher.xml` 与 `ic_launcher_round.xml` **都已是 adaptive-icon**（背景色 + 前景图）；
+- 两个文件都补上 `<monochrome android:drawable="@mipmap/ic_launcher_foreground" />`（Android 13+ 主题图标）；
+- Manifest `android:roundIcon="@mipmap/ic_launcher_round"` 已确认；
+- **不写任何"刷新桌面图标"的 hack**。用户设备是覆盖安装，图标缓存属系统行为，
+  建议用户**卸载后重装**（或重启手机）再看。
+
+### 验收
+
+- [x] `assembleDebug` 通过；**234 单测全绿**
+- [x] 截图 8 张（含问题 2 前后对比、聚焦行像素对比）
+- [x] DEVLOG、中文提交
+- [x] APK：`app-prod/app/build/outputs/apk/debug/app-debug.apk`
+
+### 未验证 / 做不到
+
+- **「聚焦行被横向截断」在模拟器复现不出**：像素测量两行完全一致（45..908）。
+  可能与应用无关（用户手机上的输入法/系统版本差异），需要用户手机原图才能进一步定位。
+- A3「动画同步」只能从代码层保证（高度只由父驱动），没有逐帧对比证明串行已消失。
+- B4 是 Crossfade 淡入淡出，**不是数值/路径插值**。
+- B5 刷新率在模拟器无法验证（只有 60Hz 一档）。
+- B6 页面滑动过渡只截到底栏指示条两帧，页面位移没有逐帧验证。
+- 所有验证都是模拟器 + 注入数据，**真机未复测**。
+
+**产出**
+
+- 改：`TodoEditorScreen.kt`（inset 收窄/焦点跳转）、`AppShell.kt`（键盘收缩 + 隐藏底栏 + 底栏指示条 + 页面滑动）、
+  `TodoListScreen.kt`（展开动画合并）、`HomeScreen.kt`（首页待办展开）、`CampusScreen.kt`（折线轴线/垂直参考线/滑动、图表 Crossfade）、
+  `SpendCategory.kt`（百分比一位小数 + 误差归最大块）、`MainActivity.kt`（刷新率）、
+  `AndroidManifest.xml`/`mipmap-anydpi-v26/*`（monochrome）
+- 截图：`~/Desktop/data/截屏/ubcm-prod-P10-*.png`

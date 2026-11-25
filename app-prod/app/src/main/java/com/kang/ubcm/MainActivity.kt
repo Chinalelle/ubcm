@@ -153,6 +153,16 @@ class MainActivity : ComponentActivity() {
         // 教务站证书链缺中间证书，必须先装好补链 TrustManager，否则课表请求会 SSLHandshakeException
         Tls.install(this)
         enableEdgeToEdge()
+        // 让界面跑在屏幕支持的最高刷新率上（失败静默忽略，不影响耗电策略）
+        runCatching {
+            val best = windowManager.defaultDisplay.supportedModes
+                .maxByOrNull { it.refreshRate }
+            if (best != null) {
+                window.attributes = window.attributes.apply {
+                    preferredDisplayModeId = best.modeId
+                }
+            }
+        }
         // 调试注入。注意：adb shell 会把参数拼成一条命令再在设备上重新解析，
         // 所以含 ";" 的 cookie 必须走 base64，否则会被当命令分隔符截断（踩过）。
         readB64("jwt_b64")?.let { Session.saveToken(this, it) }

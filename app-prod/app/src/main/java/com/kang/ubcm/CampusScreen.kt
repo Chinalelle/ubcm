@@ -1,6 +1,7 @@
 package com.kang.ubcm
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.input.pointer.pointerInput
 import kotlin.math.roundToInt
@@ -225,12 +227,24 @@ private fun CardCard(
                     Text("¥0", fontSize = 9.sp, color = UbcmColors.Ash)
                 }
                 Spacer(Modifier.width(6.dp))
-                SpendLineChart(
-                    values = daily,
-                    picked = picked,
-                    onPick = { idx -> picked = if (picked == idx) null else idx },
+                // 7 天 ↔ 30 天切换：图表本体淡入淡出过渡（P10 B4）
+                androidx.compose.animation.Crossfade(
+                    targetState = days,
+                    animationSpec = tween(350),
+                    label = "line-days",
                     modifier = Modifier.weight(1f).height(120.dp),
-                )
+                ) { d ->
+                    val dDaily = remember(st.spends, d) {
+                        SpendCategory.dailyTotals(st.spends, d, LocalDate.now())
+                    }
+                    SpendLineChart(
+                        values = dDaily,
+                        picked = picked,
+                        onPick = { idx -> picked = if (picked == idx) null else idx },
+                        onDragPick = { idx -> picked = idx },
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
             }
             Spacer(Modifier.height(6.dp))
             Row(Modifier.fillMaxWidth().padding(start = 40.dp), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -263,10 +277,23 @@ private fun CardCard(
             Text("暂无消费记录", fontSize = 12.sp, color = UbcmColors.Ash)
         } else {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                DonutChart(
-                    slices = slices,
-                    centerLabel = if (days == 7) "7 天" else "30 天",
-                )
+                androidx.compose.animation.Crossfade(
+                    targetState = days,
+                    animationSpec = tween(350),
+                    label = "donut-days",
+                ) { d ->
+                    val dSlices = remember(st.spends, d) {
+                        SpendCategory.topCategories(
+                            st.spends,
+                            System.currentTimeMillis() - d * DAY_MS,
+                            limit = 6,
+                        )
+                    }
+                    DonutChart(
+                        slices = dSlices,
+                        centerLabel = if (d == 7) "7 天" else "30 天",
+                    )
+                }
                 Spacer(Modifier.width(20.dp))
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                     slices.forEachIndexed { i, s ->
@@ -284,7 +311,7 @@ private fun CardCard(
                                 maxLines = 1,
                             )
                             Text(
-                                "${s.percent}%",
+                                "%.1f%%".format(s.percent),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = UbcmColors.Ink,
@@ -329,6 +356,7 @@ private fun SpendLineChart(
     values: List<Pair<LocalDate, Double>>,
     picked: Int?,
     onPick: (Int) -> Unit,
+    onDragPick: (Int) -> Unit,
     modifier: Modifier,
 ) {
     val line = UbcmTheme.Brand500
@@ -336,24 +364,40 @@ private fun SpendLineChart(
     val clear = UbcmTheme.Brand500.copy(alpha = 0.0f)
     val maxV = (values.maxOfOrNull { it.second } ?: 0.0).coerceAtLeast(1.0)
 
+    fun indexAt(x: Float, width: Int): Int {
+        if (values.size < 2 || width <= 0) return 0
+        return ((x / width) * (values.size - 1)).roundToInt().coerceIn(0, values.lastIndex)
+    }
+
     Canvas(
-        modifier.pointerInput(values) {
-            detectTapGestures { pos ->
-                if (values.size < 2) return@detectTapGestures
-                val idx = ((pos.x / size.width) * (values.size - 1)).roundToInt()
-                    .coerceIn(0, values.lastIndex)
-                onPick(idx)
+        modifier
+            .pointerInput(values) {
+                detectTapGestures { pos -> onPick(indexAt(pos.x, size.width)) }
             }
-        }
+            // 手指在图上左右滑动 → 实时切换选中天（P10 B1）
+            .pointerInput(values) {
+                detectHorizontalDragGestures(
+                    onDragStart = { pos -> onDragPick(indexAt(pos.x, size.width)) },
+                    onHorizontalDrag = { change, _ ->
+                        onDragPick(indexAt(change.position.x, size.width))
+                    },
+                )
+            }
     ) {
         if (values.size < 2) return@Canvas
         val w = size.width
         val h = size.height
         val padTop = 8.dp.toPx()
-        val usable = h - padTop - 2.dp.toPx()
+        val padBottom = 4.dp.toPx()
+        val usable = h - padTop - padBottom
+        val axisColor = UbcmColors.Line
 
         fun x(i: Int): Float = w * i / (values.size - 1).toFloat()
         fun y(v: Double): Float = padTop + usable * (1.0 - v / maxV).toFloat()
+
+        // 坐标轴（P10 B1：轴线可见，不只刻度）
+        drawLine(axisColor, Offset(0f, h - padBottom), Offset(w, h - padBottom), 1.dp.toPx())
+        drawLine(axisColor, Offset(0f, 0f), Offset(0f, h - padBottom), 1.dp.toPx())
 
         val path = Path()
         values.forEachIndexed { i, (_, v) ->
@@ -362,13 +406,13 @@ private fun SpendLineChart(
 
         val area = Path().apply {
             addPath(path)
-            lineTo(x(values.lastIndex), h)
-            lineTo(x(0), h)
+            lineTo(x(values.lastIndex), h - padBottom)
+            lineTo(x(0), h - padBottom)
             close()
         }
         drawPath(
             path = area,
-            brush = Brush.verticalGradient(listOf(top, clear), startY = padTop, endY = h),
+            brush = Brush.verticalGradient(listOf(top, clear), startY = padTop, endY = h - padBottom),
         )
         drawPath(
             path = path,
@@ -376,21 +420,28 @@ private fun SpendLineChart(
             style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
         )
 
-        // 选中的那天：横向参考线 + 高亮点
+        // 选中：垂直参考线（x=该天）+ 水平参考线（y=该值）+ 高亮点
         picked?.takeIf { it in values.indices }?.let { i ->
             val v = values[i].second
+            val vx = x(i)
             val vy = y(v)
+            val dash = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(6f, 6f), 0f)
             drawLine(
-                color = UbcmColors.Ash.copy(alpha = 0.7f),
+                color = UbcmColors.Ash.copy(alpha = 0.75f),
+                start = Offset(vx, 0f),
+                end = Offset(vx, h - padBottom),
+                strokeWidth = 1.dp.toPx(),
+                pathEffect = dash,
+            )
+            drawLine(
+                color = UbcmColors.Ash.copy(alpha = 0.75f),
                 start = Offset(0f, vy),
                 end = Offset(w, vy),
                 strokeWidth = 1.dp.toPx(),
-                pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(
-                    floatArrayOf(6f, 6f), 0f
-                ),
+                pathEffect = dash,
             )
-            drawCircle(line, radius = 4.dp.toPx(), center = Offset(x(i), vy))
-            drawCircle(Color.White, radius = 1.8.dp.toPx(), center = Offset(x(i), vy))
+            drawCircle(line, radius = 4.dp.toPx(), center = Offset(vx, vy))
+            drawCircle(Color.White, radius = 1.8.dp.toPx(), center = Offset(vx, vy))
         }
 
         values.forEachIndexed { i, (_, v) ->

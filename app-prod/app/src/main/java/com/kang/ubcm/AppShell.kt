@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
@@ -124,7 +126,17 @@ fun MainShell(
         }
     }
 
-    Column(Modifier.fillMaxSize().background(UbcmColors.Paper)) {
+    // 键盘弹起时：整个外壳收缩到键盘上方，并临时隐藏底栏/警示栏。
+    // 否则 IME 高度按全屏算，而 Tab 内容区底部被底栏占掉一截 → 内容下方会多出一块空白。
+    val imeVisible =
+        WindowInsets.ime.getBottom(androidx.compose.ui.platform.LocalDensity.current) > 0
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(UbcmColors.Paper)
+            .imePadding()
+    ) {
         Box(Modifier.weight(1f)) {
             // 先画不可见的（只保留上一个 Tab），再画当前的：当前层在上面，点击优先命中它
             listOf(lastTab).distinct().filter { it != tab }.forEach { t ->
@@ -158,7 +170,20 @@ fun MainShell(
                     }
                 }
             }
+            // 页面左右滑动过渡（方向跟随 Tab 序号，250ms，与指示块同节奏）
+            val slideX = androidx.compose.animation.core.Animatable(0f)
+            LaunchedEffect(tab) {
+                val dir = if (tab.ordinal >= lastTab.ordinal) 1f else -1f
+                slideX.snapTo(26f * dir)
+                slideX.animateTo(0f, androidx.compose.animation.core.tween(250))
+            }
             key(tab) {
+                Box(
+                    Modifier.fillMaxSize().graphicsLayer {
+                        translationX = slideX.value.dp.toPx()
+                        alpha = 1f - (kotlin.math.abs(slideX.value) / 26f) * 0.35f
+                    }
+                ) {
                 TabRoot(
                     tab = tab,
                     stack = stacks[tab].orEmpty(),
@@ -179,14 +204,17 @@ fun MainShell(
                     onNav = ::open,
                     onPop = ::pop,
                 )
+                }
             }
         }
 
-        if (showWarn) {
+        if (showWarn && !imeVisible) {
             WarnBar(onLogin = onOpenLogin, onClose = onDismissWarn)
         }
 
-        TabBar(current = tab, onSelect = { t -> open(t) })
+        if (!imeVisible) {
+            TabBar(current = tab, onSelect = { t -> open(t) })
+        }
     }
 }
 
@@ -402,35 +430,56 @@ private fun TabBar(current: MainTab, onSelect: (MainTab) -> Unit) {
     Column(Modifier.fillMaxWidth().background(UbcmColors.CardWhite)) {
         // 1dp 顶边线，无阴影（docs/18 §8.2）
         Box(Modifier.fillMaxWidth().height(1.dp).background(UbcmColors.Line))
-        Row(Modifier.fillMaxWidth().navigationBarsPadding().height(64.dp)) {
-            MainTab.entries.forEach { t ->
-                val selected = t == current
-                val tone by androidx.compose.animation.animateColorAsState(
-                    targetValue = if (selected) UbcmColors.Cinnabar else UbcmColors.Ash,
-                    animationSpec = androidx.compose.animation.core.tween(150),
-                    label = "tab-tone",
-                )
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
-                        .clickable { onSelect(t) },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Icon(
-                        imageVector = t.icon,
-                        contentDescription = t.label,
-                        tint = tone,
-                        modifier = Modifier.size(22.dp),
+        androidx.compose.foundation.layout.BoxWithConstraints(
+            Modifier.fillMaxWidth()
+        ) {
+            // 选中指示块：随 Tab 切换平滑滑动（P10 B6），与页面过渡同为 250ms
+            val itemWidth = maxWidth / MainTab.entries.size
+            val indicatorX by androidx.compose.animation.core.animateDpAsState(
+                targetValue = itemWidth * current.ordinal,
+                animationSpec = androidx.compose.animation.core.tween(250),
+                label = "tab-indicator",
+            )
+            Box(
+                Modifier
+                    .offset(x = indicatorX)
+                    .width(itemWidth)
+                    .height(3.dp)
+                    .padding(horizontal = 34.dp)
+                    .clip(RoundedCornerShape(bottomStart = 2.dp, bottomEnd = 2.dp))
+                    .background(UbcmColors.Cinnabar)
+            )
+
+            Row(Modifier.fillMaxWidth().navigationBarsPadding().height(64.dp)) {
+                MainTab.entries.forEach { t ->
+                    val selected = t == current
+                    val tone by androidx.compose.animation.animateColorAsState(
+                        targetValue = if (selected) UbcmColors.Cinnabar else UbcmColors.Ash,
+                        animationSpec = androidx.compose.animation.core.tween(150),
+                        label = "tab-tone",
                     )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        t.label,
-                        fontSize = 10.sp,
-                        fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
-                        color = tone,
-                    )
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clickable { onSelect(t) },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Icon(
+                            imageVector = t.icon,
+                            contentDescription = t.label,
+                            tint = tone,
+                            modifier = Modifier.size(22.dp),
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            t.label,
+                            fontSize = 10.sp,
+                            fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
+                            color = tone,
+                        )
+                    }
                 }
             }
         }
