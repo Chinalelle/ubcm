@@ -70,6 +70,7 @@
 | 54 | 2026-11-25 14:10 | **P10 第三批修复（键盘/焦点/动画）+ 6 项优化 + 图标兼容** | 见本节 |
 | 55 | 2026-11-25 15:25 | **P11 图表逐段/顺时针动画 + 展开自动滚动 + 网页登录入口** | 见本节 |
 | 56 | 2026-11-25 16:10 | **P12 折线纵轴贴边 + zhhq 微信 UA 伪装** | 见本节 |
+| 57 | 2026-11-25 16:20 | **P13 SchoolWebActivity 健壮性 + 定位 zhhq 白屏真因（微信 OAuth 跳转）** | 见本节 |
 
 ---
 
@@ -2896,3 +2897,73 @@ ic-cookie 服务端校验仍是 `code:0`（凌晨拿的那个还活着）。
 - DEVLOG、中文提交
 
 **产出**：改 `CampusScreen.kt`（纵轴位置）、`SchoolWebActivity.kt`（zhhq UA + wx 桩）
+
+---
+
+## 轮次 57 · 2026-11-25 16:05 → 16:20 · P13 WebView 健壮性 + zhhq 白屏定位
+
+**用户现象**：点智慧后勤 → 白屏一下 → **回到原页面（校园页）**，不是 App 退出。
+
+### 诊断过程（有日志，不猜）
+
+先按 lead 要求补齐 6 项健壮性，然后**在模拟器复现并抓 logcat**：
+
+```
+D SchoolWeb: onPageStarted: https://zhhq.bucm.edu.cn/bucmzhxy2/zhxyapp2/#/
+D SchoolWeb: onPageFinished: https://zhhq.bucm.edu.cn/bucmzhxy2/zhxyapp2/#/
+D SchoolWeb: console[LOG] App Launch
+D SchoolWeb: console[LOG] App Show
+D SchoolWeb: console[LOG] App Hide
+D SchoolWeb: onPageStarted: https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx636e84444c7a2fdc&...
+D SchoolWeb: onPageFinished: https://open.weixin.qq.com/connect/oauth2/authorize?...
+```
+
+**结论（三条排除）**：
+1. ❌ **不是 SSL/证书**：`onPageStarted → onPageFinished` 正常，全程**没有** `onReceivedSslError`；
+   lead 也验证过 curl 不带 `-k` 得 200（链完整）。
+2. ❌ **不是渲染进程崩溃**：没有 `onRenderProcessGone`。
+3. ✅ **是业务逻辑**：zhhq 的 H5 启动后（App Launch / App Show）**主动跳**
+   `open.weixin.qq.com/connect/oauth2/authorize?...&scope=snsapi_userinfo` 去换 openid。
+   这个地址在普通 WebView 里必然落到微信的 **"Oops! Something went wrong"**（用户看到的"白屏"），
+   而 P12 加的 MicroMessenger UA 让页面**以为**在微信里，更是主动走进这条死路。
+
+### 修法
+
+1. **撤回 P12 的 MicroMessenger UA 伪装**（负优化：它诱导页面走微信授权）
+2. **`shouldOverrideUrlLoading` 拦截微信 OAuth 地址** → 显示明确错误页「需要微信授权」+ 「重新加载」+ 右上角「企业微信」兜底
+   - ⚠️ 踩了个顺序坑：微信 OAuth 检查最初写在 `http(s) 放行之后`，https 先 `return false` 导致拦截永不生效；
+     日志里看到 `onPageStarted: open.weixin.qq.com` 但没有拦截记录才发现。已把检查提前。
+3. 其余健壮性一并补齐（见下）
+
+### 健壮性清单（P13 全部落地）
+
+| 项 | 实现 |
+|---|---|
+| `onCloseWindow` | 拦截 `window.close()`，标题栏提示"页面请求关闭（已拦截）"，不退出 Activity |
+| `onRenderProcessGone` | 记日志 + 标题栏提示，`return true` 阻止 Activity 崩溃 |
+| `onReceivedError` | 仅主框架；显示错误页（错误码 + 描述 + 重新加载） |
+| `onReceivedSslError` | 校园域 `.bucm.edu.cn` **proceed 兜底**（其他域 cancel + 错误页）；实测不触发 |
+| `shouldOverrideUrlLoading` | 拦截 `weixin://` / `wxwork://` / `intent://` / `tel:` / **微信 OAuth 地址**，提示不切走 Activity |
+| 诊断日志 | zhhq 域打 `onPageStarted/Finished/Error/ConsoleMessage`（`tag=SchoolWeb`），真机连上直接看 |
+| wx 桩 | 改为 `new Proxy({}, { get: () => () => {} })`，避免页面 `wx.xxx()` 抛 TypeError |
+
+### 验证（模拟器）
+
+- ✅ 点智慧后勤：不再白屏/退页，显示**「需要微信授权」错误页**（说明 + 重新加载 + 企业微信兜底）
+- ✅ 日志有 `拦截微信 OAuth 跳转` 记录
+- 截图：`P13-智慧后勤-拦截后.png`
+
+### 待用户确认（lead 请转达）
+
+用户说"回到原页面"，但日志里我们这边**没有 Activity 被 finish 的迹象**。需要用户确认：
+**点进去白屏后是"回到校园页（App 内 Tab）"还是"整个 App 退到桌面"？**
+- 若是回 App 内 Tab → 现在已被错误页拦住，不会再退
+- 若整个 App 退出 → 那是另一个问题（可能是 WebView 进程崩溃把 App 带崩），需要真机 logcat
+
+### 交付
+
+- `assembleDebug` 通过；**234 单测全绿**
+- APK：`app-prod/app/build/outputs/apk/debug/UBcm-P13-debug-v1.0.0.apk`
+- DEVLOG、中文提交
+
+**产出**：改 `SchoolWebActivity.kt`（6 项健壮性 + 撤回 UA + 拦截 OAuth）

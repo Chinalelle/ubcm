@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color as AColor
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,7 @@ import androidx.activity.ComponentActivity
 class SchoolWebActivity : ComponentActivity() {
 
     companion object {
+        private const val TAG = "SchoolWeb"
         private const val EXTRA_URL = "url"
         private const val EXTRA_TITLE = "title"
         private const val EXTRA_HASH = "hash"
@@ -171,14 +173,12 @@ class SchoolWebActivity : ComponentActivity() {
                 builtInZoomControls = false
                 displayZoomControls = false
                 mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-                // 智慧后勤（zhhq）的 JS 用 UA 里的 MicroMessenger 判断"是否在微信里"，
-                // 不带就会显示"请在微信中打开"。只对该域伪装，别影响其他站点（P12）
-                val baseUa = userAgentString.replace("; wv", "")
-                userAgentString = if (url.contains("zhhq.bucm.edu.cn")) {
-                    "$baseUa MicroMessenger/8.0.47.2560(0x28002F30) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN"
-                } else {
-                    baseUa
-                }
+                // 不再伪装 MicroMessenger UA（P13 撤回 P12 的改动）：
+                // 实测带了这个 UA 后，zhhq 页面会认为自己在微信里，然后**主动跳**
+                // open.weixin.qq.com/connect/oauth2/authorize 走网页授权 —— 普通 WebView 无法完成，
+                // 落到微信的 "Oops! Something went wrong"。不带 UA 时页面会安静地显示
+                // "请在微信中打开" 的静态提示，才是可预期的状态。
+                userAgentString = userAgentString.replace("; wv", "")
             }
             setBackgroundColor(AColor.WHITE)
             CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
@@ -187,18 +187,42 @@ class SchoolWebActivity : ComponentActivity() {
                     progressBar.progress = p
                     progressBar.visibility = if (p in 1..99) View.VISIBLE else View.GONE
                 }
+
                 override fun onReceivedTitle(view: WebView?, t: String?) {
                     if (!t.isNullOrBlank()) statusText.text = t
                 }
+
+                /**
+                 * 页面调用 `window.close()` 时**不要静默销毁**（用户看到的就是"闪一下就关"）。
+                 * 这里保留 Activity，把提示写进标题栏，用户可以自己返回或重试。
+                 */
+                override fun onCloseWindow(window: WebView?) {
+                    Log.w(TAG, "onCloseWindow: 页面请求关闭，已拦截（不退出） url=$url")
+                    statusText.text = "页面请求关闭（已拦截）"
+                    // 不调用 super、不 finish()
+                }
+
+                override fun onConsoleMessage(msg: android.webkit.ConsoleMessage): Boolean {
+                    if (isZhhq) {
+                        Log.d(TAG, "console[${msg.messageLevel()}] ${msg.message()} @${msg.sourceId()}:${msg.lineNumber()}")
+                    }
+                    return super.onConsoleMessage(msg)
+                }
             }
             webViewClient = object : WebViewClient() {
+                override fun onPageStarted(view: WebView?, u: String?, favicon: android.graphics.Bitmap?) {
+                    super.onPageStarted(view, u, favicon)
+                    if (isZhhq) Log.d(TAG, "onPageStarted: $u")
+                }
+
                 override fun onPageFinished(view: WebView?, u: String?) {
                     progressBar.visibility = View.GONE
-                    // 最小 wx 桩：只让 JS-SDK 的存在性检查不抛错；
-                    // 真实能力（wx.config 签名/支付/相机）仍然不可用，这点不要误导
-                    if (u.orEmpty().contains("zhhq.bucm.edu.cn")) {
+                    if (isZhhq) Log.d(TAG, "onPageFinished: $u")
+                    // wx 桩：用 Proxy 返回 no-op 函数，页面里 wx.xxx() 随便调都不会 TypeError；
+                    // 但**真实 JS-SDK 能力（wx.config 签名/支付/相机）依然不可用**
+                    if (isZhhq) {
                         view?.evaluateJavascript(
-                            "window.wx = window.wx || {};" +
+                            "window.wx = new Proxy({}, { get: function(){ return function(){}; } });" +
                                 "window.WeixinJSBridge = window.WeixinJSBridge || { invoke: function(t, p, cb) { if (cb) cb({ err_msg: 'ok' }); } };" +
                                 "void 0;",
                             null,
@@ -208,6 +232,63 @@ class SchoolWebActivity : ComponentActivity() {
                         applyRoute(view, if (hashApplied) null else hashAfterLoad)
                     }
                 }
+
+                /** 非 http(s) 链接（weixin:// wxwork:// intent:// 等）不交给系统，避免 Activity 被切走 */
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: android.webkit.WebResourceRequest?,
+                ): Boolean {
+                    val target = request?.url?.toString().orEmpty()
+                    return handleUrl(target)
+                }
+
+                @Deprecated("旧回调，兜底")
+                override fun shouldOverrideUrlLoading(view: WebView?, u: String?): Boolean =
+                    handleUrl(u.orEmpty())
+
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: android.webkit.WebResourceRequest?,
+                    error: android.webkit.WebResourceError?,
+                ) {
+                    // 只处理主框架，子资源失败不打扰用户
+                    if (request?.isForMainFrame != true) return
+                    val code = error?.errorCode ?: -1
+                    val desc = error?.description?.toString().orEmpty()
+                    Log.e(TAG, "onReceivedError code=$code desc=$desc url=${request.url}")
+                    showErrorPage("页面加载失败", "错误码 $code\n$desc")
+                }
+
+                override fun onReceivedSslError(
+                    view: WebView?,
+                    handler: android.webkit.SslErrorHandler?,
+                    error: android.net.http.SslError?,
+                ) {
+                    val host = runCatching { android.net.Uri.parse(error?.url.orEmpty()).host }.getOrNull().orEmpty()
+                    Log.e(TAG, "onReceivedSslError: primary=${error?.primaryError} url=${error?.url} host=$host")
+                    // 只对校园域做 proceed 兜底（其他域仍拒绝）。
+                    // 注意：zhhq 实测证书链完整，这条正常不会触发；真触发说明是别的问题，日志里能看到。
+                    if (host.endsWith(".bucm.edu.cn") || host == "bucm.edu.cn") {
+                        Log.w(TAG, "SSL 错误在校园域，proceed 兜底: $host")
+                        handler?.proceed()
+                    } else {
+                        handler?.cancel()
+                        showErrorPage(
+                            "证书校验失败",
+                            "服务器证书有问题（错误 ${error?.primaryError}）。",
+                        )
+                    }
+                }
+
+                /** 渲染进程崩溃：返回 true 表示已处理，Activity 不跟着挂 */
+                override fun onRenderProcessGone(
+                    view: WebView?,
+                    detail: android.webkit.RenderProcessGoneDetail?,
+                ): Boolean {
+                    Log.e(TAG, "onRenderProcessGone: crashed=${detail?.didCrash()} url=$url")
+                    statusText.text = "页面渲染进程异常，请返回重进"
+                    return true
+                }
             }
             loadUrl(url)
         }
@@ -216,6 +297,62 @@ class SchoolWebActivity : ComponentActivity() {
     }
 
     private var hashApplied = false
+
+    private val isZhhq: Boolean by lazy { intent.getStringExtra(EXTRA_URL).orEmpty().contains("zhhq.bucm.edu.cn") }
+
+    /** 拦截非 http(s) scheme，交给系统会把当前 Activity 切走（用户看到"闪退"） */
+    private fun handleUrl(target: String): Boolean {
+        if (target.isBlank()) return false
+        val lower = target.lowercase()
+
+        // ⚠️ 微信 OAuth 检查必须放在 http(s) 放行**之前**，否则 https 会先 return false（踩过）
+        if (lower.startsWith("https://open.weixin.qq.com/connect/oauth2") ||
+            lower.startsWith("http://open.weixin.qq.com/connect/oauth2")
+        ) {
+            Log.w(TAG, "拦截微信 OAuth 跳转: $target")
+            statusText.text = "需要在微信内授权（已拦截）"
+            showErrorPage(
+                "需要微信授权",
+                "这个页面要先用微信完成授权（openid），在 App 内无法完成。\n请点右上角「企业微信」打开，或复制链接到微信里打开。",
+            )
+            return true
+        }
+
+        if (lower.startsWith("http://") || lower.startsWith("https://") ||
+            lower.startsWith("about:") || lower.startsWith("javascript:") || lower.startsWith("data:")
+        ) {
+            return false
+        }
+
+        Log.w(TAG, "拦截非 http(s) 跳转: $target")
+        val hint = when {
+            lower.startsWith("weixin://") -> "该页面想打开微信"
+            lower.startsWith("wxwork://") || lower.startsWith("wxwork") -> "该页面想打开企业微信"
+            lower.startsWith("intent://") -> "该页面想启动其他 App"
+            lower.startsWith("tel:") -> "该页面想拨打电话"
+            else -> "该页面想启动外部应用"
+        }
+        statusText.text = "$hint（已拦截）"
+        return true
+    }
+
+    /** 用内置错误页替代白屏/闪退 */
+    private fun showErrorPage(title: String, detail: String) {
+        progressBar.visibility = View.GONE
+        statusText.text = title
+        val target = intent.getStringExtra(EXTRA_URL).orEmpty()
+        if (!::webView.isInitialized) return
+        val html = """
+            <html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+            <body style="font-family:-apple-system,sans-serif;padding:28px;text-align:center;color:#101B2B">
+              <div style="font-size:34px;line-height:1;margin-bottom:14px">&#9888;</div>
+              <h3 style="margin:0 0 10px">${title}</h3>
+              <p style="color:#4E5D73;font-size:14px;line-height:1.6;margin:0 0 18px">${detail}</p>
+              <a href="${target}" style="display:inline-block;padding:10px 22px;background:#1B4A7E;color:#fff;border-radius:10px;text-decoration:none">重新加载</a>
+            </body></html>
+        """.trimIndent()
+        webView.loadDataWithBaseURL(target, html, "text/html", "utf-8", null)
+    }
 
     /**
      * 把页面切到指定路由。
