@@ -96,13 +96,13 @@ fun MainShell(
     val loginState by loginVm.state.collectAsStateWithLifecycle()
 
     var tab by remember { mutableStateOf(MainTab.HOME) }
+    // 只保留「当前 + 上一个」Tab 的 composition（P9：四个常驻会让切 Tab 掉帧）
+    var lastTab by remember { mutableStateOf(MainTab.HOME) }
     // 每个 Tab 自己的子页栈（栈里存的是子页 key，目前只有 "auth" / "probe"）
     var stacks by remember { mutableStateOf<Map<MainTab, List<String>>>(emptyMap()) }
-    // 懒挂载：进过的 Tab 才渲染，之后常驻（保状态）
-    var visited by remember { mutableStateOf(setOf(MainTab.HOME)) }
 
     fun open(target: MainTab, sub: String? = null) {
-        if (target !in visited) visited = visited + target
+        if (target != tab) lastTab = tab
         if (sub != null) stacks = stacks + (target to (stacks[target].orEmpty() + sub))
         tab = target
     }
@@ -112,12 +112,29 @@ fun MainShell(
         if (cur.isNotEmpty()) stacks = stacks + (tab to cur.dropLast(1))
     }
 
+    // 返回键：子页 → 上一页；Tab 根页 → 回首页 Tab；已在首页 → 退出 App（P9）
+    androidx.activity.compose.BackHandler {
+        when {
+            stacks[tab].orEmpty().isNotEmpty() -> pop()
+            tab != MainTab.HOME -> {
+                lastTab = tab
+                tab = MainTab.HOME
+            }
+            else -> (ctx as? android.app.Activity)?.finish()
+        }
+    }
+
     Column(Modifier.fillMaxSize().background(UbcmColors.Paper)) {
         Box(Modifier.weight(1f)) {
-            // 先画不可见的，再画当前的：当前层在上面，点击优先命中它
-            MainTab.entries.filter { it in visited && it != tab }.forEach { t ->
+            // 先画不可见的（只保留上一个 Tab），再画当前的：当前层在上面，点击优先命中它
+            listOf(lastTab).distinct().filter { it != tab }.forEach { t ->
                 key(t) {
-                    Box(Modifier.fillMaxSize().alpha(0f).blockInputs()) {
+                    val invisibleAlpha by androidx.compose.animation.core.animateFloatAsState(
+                        targetValue = 0f,
+                        animationSpec = androidx.compose.animation.core.tween(150),
+                        label = "tab-out",
+                    )
+                    Box(Modifier.fillMaxSize().alpha(invisibleAlpha).blockInputs()) {
                         TabRoot(
                             tab = t,
                             stack = stacks[t].orEmpty(),
@@ -388,7 +405,11 @@ private fun TabBar(current: MainTab, onSelect: (MainTab) -> Unit) {
         Row(Modifier.fillMaxWidth().navigationBarsPadding().height(64.dp)) {
             MainTab.entries.forEach { t ->
                 val selected = t == current
-                val tone = if (selected) UbcmColors.Cinnabar else UbcmColors.Ash
+                val tone by androidx.compose.animation.animateColorAsState(
+                    targetValue = if (selected) UbcmColors.Cinnabar else UbcmColors.Ash,
+                    animationSpec = androidx.compose.animation.core.tween(150),
+                    label = "tab-tone",
+                )
                 Column(
                     Modifier
                         .weight(1f)

@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,8 @@ fun NoticeListScreen(
     onRetry: () -> Unit,
 ) {
     var detail by remember { mutableStateOf<NoticeItem?>(null) }
+
+    BackHandler(enabled = detail != null) { detail = null }
 
     Surface(color = UbcmColors.Paper, modifier = Modifier.fillMaxSize()) {
         Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {

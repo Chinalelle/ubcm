@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,6 +16,7 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -103,9 +106,19 @@ fun TodoEditorScreen(
         onSaved()
     }
 
+    // DDL 滚轮弹层先消费返回键
+    BackHandler(enabled = showWheel) { showWheel = false }
+
     Surface(color = UbcmColors.Paper, modifier = Modifier.fillMaxSize()) {
         Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
-            Column(Modifier.fillMaxSize().align(Alignment.TopCenter).widthIn(max = 640.dp)) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .align(Alignment.TopCenter)
+                    .widthIn(max = 640.dp)
+                    // 键盘弹起时整体上移，正在编辑的行不会被 IME 盖住（P9 修复）
+                    .imePadding(),
+            ) {
                 // 顶栏：取消 / 标题 / 保存
                 Row(
                     Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 16.dp),
@@ -137,118 +150,151 @@ fun TodoEditorScreen(
                     )
                 }
 
-                Column(
-                    Modifier.weight(1f).padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    // 内容
-                    EditorField(
-                        value = title,
-                        onValueChange = { title = it },
-                        placeholder = "待办内容（必填）",
-                        minLines = 1,
-                        maxLines = 6,
-                    )
-                    // 备注
-                    EditorField(
-                        value = note,
-                        onValueChange = { note = it },
-                        placeholder = "备注（选填）",
-                        minLines = 2,
-                        maxLines = 8,
-                    )
+                // 可滚动内容（字段 + 子待办）。子待办多了也不会把页面撑死
+                val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+                var focusedSubIndex by remember { mutableStateOf<Int?>(null) }
+                LaunchedEffect(focusedSubIndex) {
+                    val idx = focusedSubIndex ?: return@LaunchedEffect
+                    // 子待办 item 从 1 开始（0 是内容/备注等前导项），多留一格保证整行可见
+                    listState.animateScrollToItem((idx + SUB_ITEM_OFFSET).coerceAtLeast(0))
+                }
 
-                    // DDL
-                    Text("DDL", fontSize = 13.sp, color = UbcmColors.InkSoft)
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(UbcmColors.CardWhite)
-                            .border(
-                                width = if (ddlError) 1.5.dp else 1.dp,
-                                color = if (ddlError) UbcmColors.Danger else UbcmColors.Line,
-                                shape = RoundedCornerShape(12.dp),
-                            )
-                            .padding(horizontal = 14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Box(Modifier.weight(1f)) {
-                            if (ddlText.isEmpty()) {
-                                Text("留空 = 不设 DDL", fontSize = 15.sp, color = UbcmColors.Ash)
-                            }
-                            androidx.compose.foundation.text.BasicTextField(
-                                value = ddlText,
-                                onValueChange = { ddlText = it; ddlError = false },
-                                singleLine = true,
-                                textStyle = TextStyle(fontSize = 15.sp, color = UbcmColors.Ink),
-                                cursorBrush = androidx.compose.ui.graphics.SolidColor(UbcmColors.Cinnabar),
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
-                            )
-                        }
-                        if (ddlText.isNotEmpty()) {
-                            Text(
-                                "×",
-                                fontSize = 16.sp,
-                                color = UbcmColors.Ash,
-                                modifier = Modifier.clip(CircleShape)
-                                    .clickable { ddlText = ""; ddlError = false }
-                                    .padding(horizontal = 6.dp, vertical = 2.dp),
-                            )
-                        }
-                        Icon(
-                            Icons.Filled.Schedule,
-                            contentDescription = "设置 DDL",
-                            tint = UbcmTheme.Brand700,
-                            modifier = Modifier
-                                .size(20.dp)
-                                .clip(CircleShape)
-                                .clickable { showWheel = true }
-                                .padding(1.dp),
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    item {
+                        EditorField(
+                            value = title,
+                            onValueChange = { title = it },
+                            placeholder = "待办内容（必填）",
+                            minLines = 1,
+                            maxLines = 6,
                         )
                     }
-                    if (ddlError) {
-                        Text("格式：2026-11-24 20:00 或 11-24 20:00", fontSize = 11.sp, color = UbcmColors.Danger)
+                    item {
+                        EditorField(
+                            value = note,
+                            onValueChange = { note = it },
+                            placeholder = "备注（选填）",
+                            minLines = 2,
+                            maxLines = 8,
+                        )
                     }
-
-                    // 子待办
-                    Text("子待办", fontSize = 13.sp, color = UbcmColors.InkSoft)
-                    subRows.forEachIndexed { i, (id, text) ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.weight(1f)) {
-                                EditorField(
-                                    value = text,
-                                    onValueChange = { v ->
-                                        subRows = subRows.toMutableList().also { it[i] = id to v }
-                                    },
-                                    placeholder = "子待办内容",
-                                    minLines = 1,
-                                    maxLines = 2,
+                    item {
+                        Column {
+                            Text("DDL", fontSize = 13.sp, color = UbcmColors.InkSoft)
+                            Spacer(Modifier.height(6.dp))
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(UbcmColors.CardWhite)
+                                    .border(
+                                        width = if (ddlError) 1.5.dp else 1.dp,
+                                        color = if (ddlError) UbcmColors.Danger else UbcmColors.Line,
+                                        shape = RoundedCornerShape(12.dp),
+                                    )
+                                    .padding(horizontal = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Box(Modifier.weight(1f)) {
+                                    if (ddlText.isEmpty()) {
+                                        Text("留空 = 不设 DDL", fontSize = 15.sp, color = UbcmColors.Ash)
+                                    }
+                                    androidx.compose.foundation.text.BasicTextField(
+                                        value = ddlText,
+                                        onValueChange = { ddlText = it; ddlError = false },
+                                        singleLine = true,
+                                        textStyle = TextStyle(fontSize = 15.sp, color = UbcmColors.Ink),
+                                        cursorBrush = androidx.compose.ui.graphics.SolidColor(UbcmColors.Cinnabar),
+                                        modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
+                                    )
+                                }
+                                if (ddlText.isNotEmpty()) {
+                                    Text(
+                                        "×",
+                                        fontSize = 16.sp,
+                                        color = UbcmColors.Ash,
+                                        modifier = Modifier.clip(CircleShape)
+                                            .clickable { ddlText = ""; ddlError = false }
+                                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                                    )
+                                }
+                                Icon(
+                                    Icons.Filled.Schedule,
+                                    contentDescription = "设置 DDL",
+                                    tint = UbcmTheme.Brand700,
+                                    modifier = Modifier
+                                        .size(26.dp)
+                                        .clip(CircleShape)
+                                        .clickable { showWheel = true }
+                                        .padding(3.dp),
                                 )
                             }
-                            Spacer(Modifier.width(8.dp))
-                            Box(
-                                Modifier.size(40.dp).clip(RoundedCornerShape(10.dp))
-                                    .border(1.dp, UbcmColors.Line, RoundedCornerShape(10.dp))
-                                    .clickable { subRows = subRows.filterNot { it.first == id } },
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text("×", fontSize = 16.sp, color = UbcmColors.Ash)
+                            if (ddlError) {
+                                Spacer(Modifier.height(4.dp))
+                                Text("格式：2026-11-24 20:00 或 11-24 20:00", fontSize = 11.sp, color = UbcmColors.Danger)
+                            }
+                            Spacer(Modifier.height(12.dp))
+                            Text("子待办", fontSize = 13.sp, color = UbcmColors.InkSoft)
+                        }
+                    }
+                    subRows.forEachIndexed { i, (id, text) ->
+                        item(key = "sub-$id") {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(Modifier.weight(1f)) {
+                                    EditorField(
+                                        value = text,
+                                        onValueChange = { v ->
+                                            subRows = subRows.toMutableList().also { it[i] = id to v }
+                                        },
+                                        placeholder = "子待办内容",
+                                        minLines = 1,
+                                        maxLines = 1,
+                                        singleLine = true,
+                                        onFocus = { focusedSubIndex = i },
+                                        onImeDone = {
+                                            // 键盘"确认"= 新增下一条，不是换行
+                                            subRows = subRows + ("s-" + System.currentTimeMillis() to "")
+                                            focusedSubIndex = subRows.lastIndex
+                                        },
+                                    )
+                                }
+                                Spacer(Modifier.width(8.dp))
+                                Box(
+                                    Modifier.size(40.dp).clip(RoundedCornerShape(10.dp))
+                                        .border(1.dp, UbcmColors.Line, RoundedCornerShape(10.dp))
+                                        .clickable { subRows = subRows.filterNot { it.first == id } },
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Text("×", fontSize = 16.sp, color = UbcmColors.Ash)
+                                }
                             }
                         }
                     }
+                    item { Spacer(Modifier.height(4.dp)) }
+                }
+
+                // 固定区：「＋ 添加子待办」始终可见（不随列表滚走）
+                Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
                     Text(
                         "＋ 添加子待办",
                         fontSize = 13.sp,
                         color = UbcmTheme.Brand500,
-                        modifier = Modifier.clip(RoundedCornerShape(6.dp))
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
                             .clickable {
                                 subRows = subRows + ("s-" + System.currentTimeMillis() to "")
+                                focusedSubIndex = subRows.lastIndex
                             }
-                            .padding(horizontal = 4.dp, vertical = 6.dp),
+                            .padding(horizontal = 4.dp, vertical = 8.dp),
                     )
-                    Spacer(Modifier.height(24.dp))
                 }
+                // 底部再留一点，避免被导航条贴住
+                Spacer(Modifier.height(8.dp).navigationBarsPadding())
             }
 
             if (showWheel) {
@@ -279,6 +325,9 @@ private fun EditorField(
     placeholder: String,
     minLines: Int,
     maxLines: Int,
+    singleLine: Boolean = false,
+    onFocus: (() -> Unit)? = null,
+    onImeDone: (() -> Unit)? = null,
 ) {
     Box(
         Modifier
@@ -296,9 +345,23 @@ private fun EditorField(
             onValueChange = onValueChange,
             textStyle = TextStyle(fontSize = 15.sp, color = UbcmColors.Ink, lineHeight = 22.sp),
             cursorBrush = androidx.compose.ui.graphics.SolidColor(UbcmColors.Cinnabar),
-            minLines = minLines,
-            maxLines = maxLines,
-            modifier = Modifier.fillMaxWidth(),
+            singleLine = singleLine,
+            minLines = if (singleLine) 1 else minLines,
+            maxLines = if (singleLine) 1 else maxLines,
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                imeAction = if (onImeDone != null) androidx.compose.ui.text.input.ImeAction.Done
+                else androidx.compose.ui.text.input.ImeAction.Default,
+            ),
+            keyboardActions = androidx.compose.foundation.text.KeyboardActions(
+                onDone = { onImeDone?.invoke() },
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(
+                    if (onFocus != null) {
+                        Modifier.onFocusChanged { if (it.isFocused) onFocus() }
+                    } else Modifier
+                ),
         )
     }
 }
@@ -306,6 +369,9 @@ private fun EditorField(
 // ---------------- DDL 滚轮 ----------------
 
 private val HOURS = (0..23).map { "%02d".format(it) }
+
+/** 子待办在 LazyColumn 里的起始下标（前面有 内容/备注/DDL 三个 item） */
+private const val SUB_ITEM_OFFSET = 3
 private val MINUTES = (0..59).map { "%02d".format(it) }
 
 @Composable

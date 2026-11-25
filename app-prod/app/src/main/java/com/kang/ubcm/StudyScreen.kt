@@ -19,8 +19,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.gestures.draggable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.animation.core.Animatable
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.platform.LocalDensity
+import kotlin.math.roundToInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -94,6 +101,9 @@ fun StudyScreen(
     var dayOffset by remember { mutableStateOf(0) }
     var picked by remember { mutableStateOf<WeekGrid.Slot?>(null) }
 
+    // 课程详情 Sheet 打开时，返回键先关它
+    BackHandler(enabled = picked != null) { picked = null }
+
     val grid = remember(st.sessions, st.shownWeek) { WeekGrid.build(st.sessions, st.shownWeek) }
 
     Surface(color = UbcmColors.Paper, modifier = Modifier.fillMaxSize()) {
@@ -140,26 +150,13 @@ fun StudyScreen(
                             item { EmptyTimetable() }
                         } else if (mode == TimetableMode.WEEK) {
                             item {
-                                // 切周动画：方向跟随「前进/后退」（P8 用户反馈"切周太生硬"）
-                                val prevWeek = remember { mutableStateOf(st.shownWeek) }
-                                val direction = remember(st.shownWeek) {
-                                    if (st.shownWeek >= prevWeek.value) 1 else -1
-                                }
-                                LaunchedEffect(st.shownWeek) { prevWeek.value = st.shownWeek }
-
-                                AnimatedContent(
-                                    targetState = st.shownWeek,
-                                    transitionSpec = {
-                                        (slideInHorizontally(tween(230)) { full -> full * direction } +
-                                            fadeIn(tween(230))) togetherWith
-                                            (slideOutHorizontally(tween(230)) { full -> -full * direction } +
-                                                fadeOut(tween(230)))
-                                    },
-                                    label = "week-switch",
-                                ) { week ->
-                                    val wg = remember(st.sessions, week) { WeekGrid.build(st.sessions, week) }
+                                WeekPager(
+                                    week = st.shownWeek,
+                                    sessions = st.sessions,
+                                    onShift = { dir -> homeVm.shiftWeek(dir) },
+                                ) { weekGrid ->
                                     WeekView(
-                                        grid = wg,
+                                        grid = weekGrid,
                                         st = st,
                                         now = now,
                                         nowMillis = nowMillis,
@@ -167,7 +164,6 @@ fun StudyScreen(
                                         onPick = { s ->
                                             picked = if (picked != null && slotKey(picked!!) == slotKey(s)) null else s
                                         },
-                                        onSwipeWeek = { dir -> homeVm.shiftWeek(dir) },
                                     )
                                 }
                             }
@@ -501,7 +497,6 @@ private fun WeekView(
     nowMillis: Long,
     pickedName: String?,
     onPick: (WeekGrid.Slot) -> Unit,
-    onSwipeWeek: (Int) -> Unit,
 ) {
     val today = now.toLocalDate()
     val firstMonday = Timetable.mondayOf(grid.week, st.firstWeekMonday)
@@ -514,18 +509,7 @@ private fun WeekView(
             .background(UbcmColors.CardWhite)
             .border(1.dp, UbcmColors.Line, RoundedCornerShape(16.dp))
             .padding(vertical = 10.dp)
-            // 左右滑切换周（只有在水平位移明显时才触发，避免和竖向滚动打架）
-            .pointerInput(grid.week) {
-                var dx = 0f
-                detectHorizontalDragGestures(
-                    onDragStart = { dx = 0f },
-                    onDragEnd = {
-                        if (dx < -90f) onSwipeWeek(1)
-                        else if (dx > 90f) onSwipeWeek(-1)
-                    },
-                    onHorizontalDrag = { _, amount -> dx += amount },
-                )
-            },
+
     ) {
         // 两行表头：星期 + 日期（M/d）。
         // 固定渲染周一~周日 7 列 —— 不看 WeekGrid.days：那个字段带着旧测试台"周末没课就只画 5 天"
@@ -630,6 +614,82 @@ private fun WeekView(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+/**
+ * 周切换 = **手指拖动实时跟随**（P9 修复"松手才整页切换"）。
+ *
+ * 做法：`Animatable<Float>` 记水平偏移，外层 `draggable` 直接 snap 到手指位移；
+ * 拖动时同时画出相邻一周（offset ± 屏宽），松手按位移/速度决定「吸附到下一周」还是「回弹」。
+ */
+@Composable
+private fun WeekPager(
+    week: Int,
+    sessions: List<CourseSession>,
+    onShift: (Int) -> Unit,
+    content: @Composable (WeekGrid.Grid) -> Unit,
+) {
+    val density = LocalDensity.current
+    val offset = remember { Animatable(0f) }
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+
+    BoxWithConstraints(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))) {
+        val widthPx = with(density) { maxWidth.toPx() }
+        val prevGrid = remember(sessions, week) { WeekGrid.build(sessions, week - 1) }
+        val nextGrid = remember(sessions, week) { WeekGrid.build(sessions, week + 1) }
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .draggable(
+                    orientation = androidx.compose.foundation.gestures.Orientation.Horizontal,
+                    state = androidx.compose.foundation.gestures.rememberDraggableState { delta ->
+                        scope.launch {
+                            // 边缘阻尼：越界只跟 35%，手感像"拉到头"
+                            val v = offset.value + delta
+                            val damped = when {
+                                v < -widthPx * 0.35f -> -widthPx * 0.35f + (v + widthPx * 0.35f) * 0.3f
+                                v > widthPx * 0.35f -> widthPx * 0.35f + (v - widthPx * 0.35f) * 0.3f
+                                else -> v
+                            }
+                            offset.snapTo(damped)
+                        }
+                    },
+                    onDragStopped = { velocity ->
+                        val threshold = widthPx * 0.26f
+                        val target = when {
+                            offset.value < -threshold || velocity < -900f -> 1
+                            offset.value > threshold || velocity > 900f -> -1
+                            else -> 0
+                        }
+                        scope.launch {
+                            if (target == 0) {
+                                offset.animateTo(0f, tween(180))
+                            } else {
+                                val end = if (target > 0) -widthPx else widthPx
+                                offset.animateTo(end, tween(190))
+                                onShift(target)
+                                offset.snapTo(0f)
+                            }
+                        }
+                    },
+                ),
+        ) {
+            // 相邻周（先画，当前周盖上面）
+            if (offset.value < 0f) {
+                Box(Modifier.offset { androidx.compose.ui.unit.IntOffset((offset.value + widthPx).roundToInt(), 0) }) {
+                    content(nextGrid)
+                }
+            } else if (offset.value > 0f) {
+                Box(Modifier.offset { androidx.compose.ui.unit.IntOffset((offset.value - widthPx).roundToInt(), 0) }) {
+                    content(prevGrid)
+                }
+            }
+            Box(Modifier.offset { androidx.compose.ui.unit.IntOffset(offset.value.roundToInt(), 0) }) {
+                content(WeekGrid.build(sessions, week))
             }
         }
     }

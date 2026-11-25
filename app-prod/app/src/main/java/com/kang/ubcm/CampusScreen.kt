@@ -38,6 +38,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
+import kotlin.math.roundToInt
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -206,17 +209,46 @@ private fun CardCard(
                 Text("暂无消费记录", fontSize = 12.sp, color = UbcmColors.Ash)
             }
         } else {
-            SpendLineChart(values = daily, modifier = Modifier.fillMaxWidth().height(120.dp))
+            // 纵轴量标 + 可点击选中的折线（P9 新增交互）
+            var picked by remember(days) { mutableStateOf<Int?>(null) }
+            val maxV = (daily.maxOfOrNull { it.second } ?: 0.0).coerceAtLeast(1.0)
+
+            Row(Modifier.fillMaxWidth()) {
+                // 纵轴：max / mid / 0
+                Column(
+                    Modifier.height(120.dp).width(34.dp),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.End,
+                ) {
+                    Text("¥%.0f".format(maxV), fontSize = 9.sp, color = UbcmColors.Ash)
+                    Text("¥%.0f".format(maxV / 2), fontSize = 9.sp, color = UbcmColors.Ash)
+                    Text("¥0", fontSize = 9.sp, color = UbcmColors.Ash)
+                }
+                Spacer(Modifier.width(6.dp))
+                SpendLineChart(
+                    values = daily,
+                    picked = picked,
+                    onPick = { idx -> picked = if (picked == idx) null else idx },
+                    modifier = Modifier.weight(1f).height(120.dp),
+                )
+            }
             Spacer(Modifier.height(6.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(Modifier.fillMaxWidth().padding(start = 40.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                 axisLabels(daily).forEach { i ->
                     val d = daily[i].first
-                    Text(
-                        "${d.monthValue}/${d.dayOfMonth}",
-                        fontSize = 10.sp,
-                        color = UbcmColors.Ash,
-                    )
+                    Text("${d.monthValue}/${d.dayOfMonth}", fontSize = 10.sp, color = UbcmColors.Ash)
                 }
+            }
+            // 选中那天的金额（点空白处取消）
+            picked?.takeIf { it in daily.indices }?.let { i ->
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "${daily[i].first.monthValue}/${daily[i].first.dayOfMonth} 消费 ¥%.2f".format(daily[i].second),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = UbcmTheme.Brand700,
+                    modifier = Modifier.padding(start = 40.dp),
+                )
             }
         }
 
@@ -293,14 +325,28 @@ private fun axisLabels(daily: List<Pair<LocalDate, Double>>): List<Int> {
 }
 
 @Composable
-private fun SpendLineChart(values: List<Pair<LocalDate, Double>>, modifier: Modifier) {
+private fun SpendLineChart(
+    values: List<Pair<LocalDate, Double>>,
+    picked: Int?,
+    onPick: (Int) -> Unit,
+    modifier: Modifier,
+) {
     val line = UbcmTheme.Brand500
     val top = UbcmTheme.Brand500.copy(alpha = 0.22f)
     val clear = UbcmTheme.Brand500.copy(alpha = 0.0f)
+    val maxV = (values.maxOfOrNull { it.second } ?: 0.0).coerceAtLeast(1.0)
 
-    Canvas(modifier) {
+    Canvas(
+        modifier.pointerInput(values) {
+            detectTapGestures { pos ->
+                if (values.size < 2) return@detectTapGestures
+                val idx = ((pos.x / size.width) * (values.size - 1)).roundToInt()
+                    .coerceIn(0, values.lastIndex)
+                onPick(idx)
+            }
+        }
+    ) {
         if (values.size < 2) return@Canvas
-        val maxV = (values.maxOfOrNull { it.second } ?: 0.0).coerceAtLeast(1.0)
         val w = size.width
         val h = size.height
         val padTop = 8.dp.toPx()
@@ -329,8 +375,26 @@ private fun SpendLineChart(values: List<Pair<LocalDate, Double>>, modifier: Modi
             color = line,
             style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
         )
+
+        // 选中的那天：横向参考线 + 高亮点
+        picked?.takeIf { it in values.indices }?.let { i ->
+            val v = values[i].second
+            val vy = y(v)
+            drawLine(
+                color = UbcmColors.Ash.copy(alpha = 0.7f),
+                start = Offset(0f, vy),
+                end = Offset(w, vy),
+                strokeWidth = 1.dp.toPx(),
+                pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(
+                    floatArrayOf(6f, 6f), 0f
+                ),
+            )
+            drawCircle(line, radius = 4.dp.toPx(), center = Offset(x(i), vy))
+            drawCircle(Color.White, radius = 1.8.dp.toPx(), center = Offset(x(i), vy))
+        }
+
         values.forEachIndexed { i, (_, v) ->
-            drawCircle(line, radius = 2.5.dp.toPx(), center = Offset(x(i), y(v)))
+            if (i != picked) drawCircle(line, radius = 2.5.dp.toPx(), center = Offset(x(i), y(v)))
         }
     }
 }

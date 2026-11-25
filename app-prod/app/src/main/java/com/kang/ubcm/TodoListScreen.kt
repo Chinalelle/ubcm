@@ -1,6 +1,9 @@
 package com.kang.ubcm
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -17,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -78,6 +82,19 @@ fun TodoListScreen(onBack: () -> Unit, onChanged: () -> Unit = {}) {
         while (true) {
             delay(1000)
             nowMillis = System.currentTimeMillis()
+        }
+    }
+
+    // 内部弹层/编辑页优先消费返回键（否则会直接退出整个待办页）
+    BackHandler(
+        enabled = editorOpen || menuOpen || confirmClearDone || confirmClearAll || showAbout
+    ) {
+        when {
+            editorOpen -> { editorOpen = false; editingItem = null }
+            menuOpen -> menuOpen = false
+            confirmClearDone -> confirmClearDone = false
+            confirmClearAll -> confirmClearAll = false
+            showAbout -> showAbout = false
         }
     }
 
@@ -395,6 +412,7 @@ private fun TodoFullCard(
             .background(cardBg)
             .border(1.dp, borderColor, RoundedCornerShape(12.dp))
             .clickable { expanded = !expanded }
+            .animateContentSize(tween(220))
             .padding(horizontal = 12.dp, vertical = 14.dp),
     ) {
         if (flash.value > 0f) {
@@ -404,12 +422,15 @@ private fun TodoFullCard(
             )
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            TodoTickBox(
-                done = todo.done || checking,
-                animated = checking,
-                onClick = { if (!doneMode) onToggle() },
-            )
+        // 展开时父勾选框必须与父内容**顶部对齐**，不能被 Row 居中拉到中部（P9 修复）
+        Row(verticalAlignment = Alignment.Top) {
+            Box(Modifier.padding(top = 1.dp)) {
+                TodoTickBox(
+                    done = todo.done || checking,
+                    animated = checking,
+                    onClick = { if (!doneMode) onToggle() },
+                )
+            }
             Spacer(Modifier.width(12.dp))
 
             Column(Modifier.weight(1f)) {
@@ -424,7 +445,14 @@ private fun TodoFullCard(
                     Spacer(Modifier.height(8.dp))
                     SubTodoBar(todo.subs, cardBg)
                 }
-                if (expanded) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = expanded,
+                    enter = androidx.compose.animation.expandVertically(tween(220)) +
+                        androidx.compose.animation.fadeIn(tween(220)),
+                    exit = androidx.compose.animation.shrinkVertically(tween(180)) +
+                        androidx.compose.animation.fadeOut(tween(150)),
+                ) {
+                    Column {
                     todo.note?.takeIf { it.isNotBlank() }?.let { note ->
                         Spacer(Modifier.height(8.dp))
                         Text(note, fontSize = 12.sp, color = UbcmColors.InkSoft, lineHeight = 18.sp)
@@ -454,6 +482,7 @@ private fun TodoFullCard(
                                 )
                             }
                         }
+                    }
                     }
                 }
             }

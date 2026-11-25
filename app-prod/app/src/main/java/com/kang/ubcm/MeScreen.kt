@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -101,6 +102,8 @@ fun MeScreen(
     val name = st.userName ?: id?.name
     val studentNo = id?.studentNo
     val className = st.sessions.firstOrNull { it.className.isNotBlank() }?.className
+
+    BackHandler(enabled = showAvatarSheet) { showAvatarSheet = false }
 
     Surface(color = UbcmColors.Paper, modifier = Modifier.fillMaxSize()) {
         Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {

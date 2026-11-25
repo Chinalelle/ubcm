@@ -66,6 +66,7 @@
 | 50 | 2026-11-24 21:00 | **P6 我的页：信息卡 + 头像上传 + 设置三分组** | 见本节 |
 | 51 | 2026-11-24 21:10 | **P7 待办完整页 + 编辑页 + DDL 滚轮 + 四阶段动画** | 见本节 |
 | 52 | 2026-11-24 21:25 | **P8 用户首次实机反馈 7 项修复（真实凭证验证）** | 见本节 |
+| 53 | 2026-11-25 13:20 | **P9 第二批实机问题 7 项 + 3 个新增（图标/折线交互/动画）** | 见本节 |
 
 ---
 
@@ -2613,3 +2614,83 @@ ic-cookie 服务端校验仍是 `code:0`（凌晨拿的那个还活着）。
   `HomeViewModel.kt`（NoticeItem）、`StudyScreen.kt`（切周动画）、`AppShell.kt`（通知子页 / 后勤 / 教务入口）、
   `AndroidManifest.xml`（queries）
 - 截图：`~/Desktop/data/截屏/ubcm-prod-P8-0{1..7}*.png`
+
+---
+
+## 轮次 53 · 2026-11-25 13:20 → 14:00 · P9 第二批实机问题 + 3 个新增
+
+**测试环境**：模拟器 `duedo`（1080×2400 / density 420），用户手机未连电脑。
+待办与课表用注入的本地数据（`ubcm_home.xml` / `files/timetable.json`），无登录凭证。
+
+### A. 待办编辑页（1–4）
+
+| # | 问题 | 处理 | 验证 |
+|---|---|---|---|
+| 1 | 键盘遮挡编辑行 | 根布局加 `imePadding()`；内容区改 `LazyColumn` + `rememberLazyListState`；子待办获得焦点时 `animateScrollToItem` 滚到该行 | ✅ 编辑行贴在键盘上缘、完整可见 |
+| 2 | 子待办过多不滚动 | 内容区改 `LazyColumn`（可滚）；**「＋ 添加子待办」移到列表外的固定区**（始终可见）；子待办输入框改 `singleLine` + `ImeAction.Done` + `KeyboardActions(onDone = 新增一条)` | ✅ 8 条子待办时按钮仍在；回车新增一条 |
+| 3 | 展开时父勾选框被下移 | 卡片内层 `Row` 由 `CenterVertically` 改 **`Alignment.Top`**，勾选框加 `top=1dp` 微调 | ✅ 勾选框与标题同一水平线，展开只往下追加 |
+| 4 | 展开动画丢失 | 卡片加 `animateContentSize(tween(220))`；展开区用 `AnimatedVisibility(expandVertically + fadeIn)` | ✅ 展开/收起有过渡 |
+
+### B. 课表（5）
+
+- 左右切周由"检测到滑动就切"改为 **`Animatable<Float>` + `draggable`**：
+  - 拖动时 `snapTo(offset + delta)`，**内容实时跟随手指**
+  - 同时渲染**相邻一周**（offset ± 屏宽），滑动时下一周真的从侧面进来
+  - 越界阻尼 30%，松手按位移（26% 屏宽）或速度（900px/s）决定吸附/回弹，分别 190ms/180ms
+- 删掉了 P8 的 `AnimatedContent`（跟手本身就是动画）
+- 验证：拖动中截图能看到「周三~周日」左移、「周一 11/30」从右侧进入；松手切到第 13 周并出现「回本周」
+
+### C. 全局（6–7）
+
+6. **Tab 切换卡顿**：composition 策略从「进过就常驻」改为 **只保留当前 + 上一个 Tab**；
+   不可见层透明度用 `animateFloatAsState(150ms)` 过渡，TabBar 选中色用 `animateColorAsState(150ms)`。
+   ⚠️ **掉帧没有量化**（没接 Choreographer/GPU 渲染条读数），只验证了切换功能正常、无视觉跳变。
+7. **全面屏手势退 App**：`MainShell` 接 `BackHandler` —— 子页 → 上一页；Tab 根页 → 回首页 Tab；首页 → `finish()`。
+   另外给**所有内部弹层/编辑页**补了 `BackHandler`（待办编辑页、⋯菜单、确认弹层、DDL 滚轮、
+   课程详情 Sheet、通知详情、头像 Sheet），否则返回键会直接退出整个子页。
+   验证：校园 Tab 按返回 → 首页；再返回 → 回到桌面。
+   ⚠️ 未接 `PredictiveBackHandler`（Android 14 预测性返回动画），仍是普通返回。
+
+### D. 新增
+
+1. **应用图标**：`adaptive-icon`（红底 `#B32444` + 白色 UBCM）
+   - `mipmap-anydpi-v26/ic_launcher(.round).xml` + `values/colors.xml` 的 `ic_launcher_background`
+   - foreground 与 legacy 图标用 PIL 生成五套密度 PNG（mdpi~xxxhdpi）
+   - **第一版文字超出 adaptive 安全区，圆形遮罩把 U/B/C/M 裁掉两边** → 改成按 60% 宽自适应字号，重新生成后完整显示
+   - 桌面名称保持 `UBcm`
+2. **校园卡折线图**：
+   - 左侧纵轴量标 `¥max / ¥mid / ¥0`（自动按当期最大值取整）
+   - **点击某天** → 该点高亮（白心大圆）+ 虚线横向参考线（y=该天消费）+ 下方「11/22 消费 ¥9.00」
+   - 再次点同一点 / 点空白取消
+3. **交互动画**：Tab 颜色/透明度过渡、卡片展开、切周跟手；没有加重型动画（按"卡顿的动画不如不做"）
+
+### 验收
+
+- [x] `assembleDebug` 通过；**234 单测全绿**
+- [x] 截图 7 张：`P9-01待办列表` / `02编辑页多条子待办` / `03编辑页键盘不遮挡` / `04待办展开对齐` /
+      `05切周跟手拖动中` / `06折线图选中` / `07应用图标`
+- [x] DEVLOG、中文提交
+- [x] APK：`app-prod/app/build/outputs/apk/debug/app-debug.apk`
+
+### 坑
+
+- `AnimatedVisibility` 在 Column 作用域里会解析到 `ColumnScope` 版本 → 抽独立 composable 才用顶层版本
+- 子待办用 `maxLines=2` 时硬件 ENTER 是换行不是 Done → 必须 `singleLine = true` 才会走 `KeyboardActions.onDone`
+- adaptive icon 的 foreground 安全区是 66%，文字宽度按 size*0.30 字号会超 → 改成按 60% 宽自适应
+
+### 没做的 / 未验证
+
+- **Tab 切换流畅度没有量化**（仅验证功能与视觉过渡），没有 Choreographer/GPU 读数对比
+- 未接 Android 14 `PredictiveBackHandler`（预测性返回动画）
+- 模拟器验证的是注入数据（无凭证），**真机（用户手机）未复测**；空间/图书馆等需登录的模块本轮没碰
+- 编辑页滚动的 `animateScrollToItem` 只在 8 条子待办下验证，超长列表（30+）未压测
+- 返回键在「有 IME 打开」时要按两次（第一次收键盘），这是系统行为未做特殊处理
+
+**产出**
+
+- 改：`TodoEditorScreen.kt`（imePadding/LazyColumn/固定添加/单行 Done）、`TodoListScreen.kt`（顶部对齐/动画/BackHandler）、
+  `StudyScreen.kt`（WeekPager 跟手 + BackHandler）、`AppShell.kt`（Tab 合成策略 + BackHandler + 过渡）、
+  `CampusScreen.kt`（折线纵轴 + 选中）、`NoticeListScreen.kt`/`MeScreen.kt`（BackHandler）、
+  `AndroidManifest.xml`（icon/roundIcon）
+- 新增资源：`mipmap-*/ic_launcher*.png`、`mipmap-anydpi-v26/ic_launcher*.xml`、`values/colors.xml`
+- 截图：`~/Desktop/data/截屏/ubcm-prod-P9-0{1..7}*.png`
