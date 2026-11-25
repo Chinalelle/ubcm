@@ -162,6 +162,9 @@ fun MainShell(
                             onRecheck = onRecheck,
                             onSaveManual = onSaveManual,
                             onWebLoginSeat = onWebLoginSeat,
+                onWebLogin = { target ->
+                    LoginWebViewActivity.start(ctx, target)
+                },
                             onOpenGate = onOpenLogin,
                             onLogout = onLogout,
                             onNav = ::open,
@@ -199,6 +202,9 @@ fun MainShell(
                     onRecheck = onRecheck,
                     onSaveManual = onSaveManual,
                     onWebLoginSeat = onWebLoginSeat,
+                onWebLogin = { target ->
+                    LoginWebViewActivity.start(ctx, target)
+                },
                     onOpenGate = onOpenLogin,
                     onLogout = onLogout,
                     onNav = ::open,
@@ -235,6 +241,7 @@ private fun TabRoot(
     onRecheck: () -> Unit,
     onSaveManual: (String, String, String, String, String, String) -> Unit,
     onWebLoginSeat: () -> Unit,
+    onWebLogin: (LoginWebViewActivity.Target) -> Unit,
     onOpenGate: () -> Unit,
     onLogout: () -> Unit,
     onNav: (MainTab, String?) -> Unit,
@@ -274,7 +281,15 @@ private fun TabRoot(
                     openTodoAll = { onNav(MainTab.HOME, "todo") },
                     openLogin = onOpenGate,
                     openProbe = { onNav(MainTab.ME, "probe") },
-                    openLogistics = { WeworkLauncher.open(ctx) },
+                    // 首选 App 内 WebView 直开学校 H5（用户实测可用；X-Frame-Options 只挡 iframe，不挡顶层加载）
+                    openLogistics = {
+                        SchoolWebActivity.start(
+                            ctx,
+                            "https://zhhq.bucm.edu.cn/bucmzhxy2/zhxyapp2/#/",
+                            "智慧后勤",
+                            fallbackWework = true,
+                        )
+                    },
                     openJw = {
                         SchoolWebActivity.start(
                             ctx,
@@ -340,7 +355,15 @@ private fun TabRoot(
                 vm = campusVm,
                 actions = CampusActions(
                     openEcard = { EcardActivity.start(ctx) },
-                    openLogistics = { WeworkLauncher.open(ctx) },
+                    // 首选 App 内 WebView 直开学校 H5（用户实测可用；X-Frame-Options 只挡 iframe，不挡顶层加载）
+                    openLogistics = {
+                        SchoolWebActivity.start(
+                            ctx,
+                            "https://zhhq.bucm.edu.cn/bucmzhxy2/zhxyapp2/#/",
+                            "智慧后勤",
+                            fallbackWework = true,
+                        )
+                    },
                     openJw = {
                         SchoolWebActivity.start(
                             ctx,
@@ -372,6 +395,9 @@ private fun TabRoot(
                 onRecheck = onRecheck,
                 onSaveManual = onSaveManual,
                 onWebLoginSeat = onWebLoginSeat,
+                onWebLogin = { target ->
+                    LoginWebViewActivity.start(ctx, target)
+                },
                 onBack = onPop,
             )
 

@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -218,7 +219,8 @@ private fun CardCard(
             Row(Modifier.fillMaxWidth()) {
                 // 纵轴：max / mid / 0
                 Column(
-                    Modifier.height(120.dp).width(34.dp),
+                    // 给纵轴量标留够宽度，和绘图区之间再空 10dp，避免"¥38"贴着折线（P11 A3）
+                    Modifier.height(120.dp).width(42.dp),
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.End,
                 ) {
@@ -226,7 +228,7 @@ private fun CardCard(
                     Text("¥%.0f".format(maxV / 2), fontSize = 9.sp, color = UbcmColors.Ash)
                     Text("¥0", fontSize = 9.sp, color = UbcmColors.Ash)
                 }
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.width(10.dp))
                 // 7 天 ↔ 30 天切换：图表本体淡入淡出过渡（P10 B4）
                 androidx.compose.animation.Crossfade(
                     targetState = days,
@@ -247,7 +249,7 @@ private fun CardCard(
                 }
             }
             Spacer(Modifier.height(6.dp))
-            Row(Modifier.fillMaxWidth().padding(start = 40.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(Modifier.fillMaxWidth().padding(start = 52.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                 axisLabels(daily).forEach { i ->
                     val d = daily[i].first
                     Text("${d.monthValue}/${d.dayOfMonth}", fontSize = 10.sp, color = UbcmColors.Ash)
@@ -261,7 +263,7 @@ private fun CardCard(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     color = UbcmTheme.Brand700,
-                    modifier = Modifier.padding(start = 40.dp),
+                    modifier = Modifier.padding(start = 52.dp),
                 )
             }
         }
@@ -364,6 +366,16 @@ private fun SpendLineChart(
     val clear = UbcmTheme.Brand500.copy(alpha = 0.0f)
     val maxV = (values.maxOfOrNull { it.second } ?: 0.0).coerceAtLeast(1.0)
 
+    // 逐段绘制：进度 0→1，按路径长度截取，末点最后亮起（P11 A1）
+    val reveal = remember(values) { androidx.compose.animation.core.Animatable(0f) }
+    LaunchedEffect(values) {
+        reveal.snapTo(0f)
+        reveal.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(700, easing = androidx.compose.animation.core.LinearEasing),
+        )
+    }
+
     fun indexAt(x: Float, width: Int): Int {
         if (values.size < 2 || width <= 0) return 0
         return ((x / width) * (values.size - 1)).roundToInt().coerceIn(0, values.lastIndex)
@@ -404,21 +416,34 @@ private fun SpendLineChart(
             if (i == 0) path.moveTo(x(i), y(v)) else path.lineTo(x(i), y(v))
         }
 
+        val p = reveal.value
+
         val area = Path().apply {
             addPath(path)
             lineTo(x(values.lastIndex), h - padBottom)
             lineTo(x(0), h - padBottom)
             close()
         }
-        drawPath(
-            path = area,
-            brush = Brush.verticalGradient(listOf(top, clear), startY = padTop, endY = h - padBottom),
-        )
-        drawPath(
-            path = path,
-            color = line,
-            style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
-        )
+        // 面积随绘制进度横向展开（裁剪到当前进度处）
+        clipRect(right = (w * p).coerceAtLeast(0.01f)) {
+            drawPath(
+                path = area,
+                brush = Brush.verticalGradient(listOf(top, clear), startY = padTop, endY = h - padBottom),
+            )
+        }
+
+        // 折线：按进度从第一个点开始逐段画出来
+        val seg = Path()
+        if (p > 0.001f) {
+            val measure = androidx.compose.ui.graphics.PathMeasure()
+            measure.setPath(path, false)
+            measure.getSegment(0f, measure.length * p, seg, true)
+            drawPath(
+                path = seg,
+                color = line,
+                style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round),
+            )
+        }
 
         // 选中：垂直参考线（x=该天）+ 水平参考线（y=该值）+ 高亮点
         picked?.takeIf { it in values.indices }?.let { i ->
@@ -445,7 +470,12 @@ private fun SpendLineChart(
         }
 
         values.forEachIndexed { i, (_, v) ->
-            if (i != picked) drawCircle(line, radius = 2.5.dp.toPx(), center = Offset(x(i), y(v)))
+            val reach = i / (values.size - 1).toFloat()
+            if (i != picked && p >= reach - 0.001f) {
+                val isLast = i == values.lastIndex
+                val r = if (isLast && p > 0.985f) 4.dp.toPx() else 2.5.dp.toPx()
+                drawCircle(line, radius = r, center = Offset(x(i), y(v)))
+            }
         }
     }
 }
@@ -466,24 +496,37 @@ private fun donutColors(): List<Color> = listOf(
 private fun DonutChart(slices: List<SpendCategory.Slice>, centerLabel: String) {
     val colors = donutColors()
     val total = slices.sumOf { it.amountYuan }.coerceAtLeast(0.0001)
+
+    // 从 12 点方向顺时针依次展开（P11 A2）
+    val reveal = remember(slices) { androidx.compose.animation.core.Animatable(0f) }
+    LaunchedEffect(slices) {
+        reveal.snapTo(0f)
+        reveal.animateTo(1f, tween(500, easing = androidx.compose.animation.core.FastOutSlowInEasing))
+    }
+
     Box(Modifier.size(100.dp), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
             val stroke = 14.dp.toPx()
             val r = (size.minDimension - stroke) / 2f
             val c = Offset(size.width / 2f, size.height / 2f)
-            var start = -90f
+            // 已扫过的总角度：0 → 360
+            val drawn = reveal.value * 360f
+            var cum = 0f
             slices.forEachIndexed { i, s ->
                 val sweep = (s.amountYuan / total * 360.0).toFloat()
-                drawArc(
-                    color = colors[i % colors.size],
-                    startAngle = start,
-                    sweepAngle = (sweep - 1.2f).coerceAtLeast(0.6f),
-                    useCenter = false,
-                    style = Stroke(width = stroke, cap = StrokeCap.Butt),
-                    topLeft = Offset(c.x - r, c.y - r),
-                    size = Size(r * 2, r * 2),
-                )
-                start += sweep
+                val visible = (drawn - cum).coerceIn(0f, sweep)
+                if (visible > 0.5f) {
+                    drawArc(
+                        color = colors[i % colors.size],
+                        startAngle = -90f + cum + 0.6f,
+                        sweepAngle = (visible - 1.2f).coerceAtLeast(0.4f),
+                        useCenter = false,
+                        style = Stroke(width = stroke, cap = StrokeCap.Butt),
+                        topLeft = Offset(c.x - r, c.y - r),
+                        size = Size(r * 2, r * 2),
+                    )
+                }
+                cum += sweep
             }
         }
         Text(centerLabel, fontSize = 11.sp, color = UbcmColors.InkSoft)

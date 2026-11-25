@@ -51,7 +51,8 @@ class LoginWebViewActivity : ComponentActivity() {
         val cookieHost: String,
         val label: String,
     ) {
-        SEAT("https://kjyy.bucm.edu.cn/", "ic-cookie", "https://kjyy.bucm.edu.cn/ic-web/", "图书馆座位预约"),
+        // 用移动端入口：直接落到座位预约的登录页，用户过完滑块就能拿到 ic-cookie
+        SEAT("https://kjyy.bucm.edu.cn/mobile.html", "ic-cookie", "https://kjyy.bucm.edu.cn/ic-web/", "图书馆座位预约"),
         ECARD("https://ykt.bucm.edu.cn/servicehall/sso/login", "servicehall", "https://ykt.bucm.edu.cn/servicehall/", "一卡通"),
         JW(
             "https://cas.bucm.edu.cn/cas/login?service=https%3A%2F%2Fjw.bucm.edu.cn%2F",

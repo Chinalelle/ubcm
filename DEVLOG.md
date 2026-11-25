@@ -68,6 +68,7 @@
 | 52 | 2026-11-24 21:25 | **P8 用户首次实机反馈 7 项修复（真实凭证验证）** | 见本节 |
 | 53 | 2026-11-25 13:20 | **P9 第二批实机问题 7 项 + 3 个新增（图标/折线交互/动画）** | 见本节 |
 | 54 | 2026-11-25 14:10 | **P10 第三批修复（键盘/焦点/动画）+ 6 项优化 + 图标兼容** | 见本节 |
+| 55 | 2026-11-25 15:25 | **P11 图表逐段/顺时针动画 + 展开自动滚动 + 网页登录入口** | 见本节 |
 
 ---
 
@@ -2800,3 +2801,60 @@ ic-cookie 服务端校验仍是 `code:0`（凌晨拿的那个还活着）。
   `SpendCategory.kt`（百分比一位小数 + 误差归最大块）、`MainActivity.kt`（刷新率）、
   `AndroidManifest.xml`/`mipmap-anydpi-v26/*`（monochrome）
 - 截图：`~/Desktop/data/截屏/ubcm-prod-P10-*.png`
+
+---
+
+## 轮次 55 · 2026-11-25 14:45 → 15:25 · P11 视觉 + 手感 + 功能
+
+**环境**：模拟器 `duedo`；图表动画用 `screenrecord` 录屏后抽帧验证。
+
+### A. 视觉
+
+1. **折线图逐段绘制** ✅
+   - `Animatable(0f)` + `LaunchedEffect(values)` 重播，700ms 线性；用 **`PathMeasure.getSegment`** 按进度截取路径；
+     面积用 `clipRect(right = w * p)` 同步展开；点只在画到该位置时出现；**末点在 p>0.985 时放大亮起**。
+   - 证据：`P11-折线逐段绘制-中间帧.png`（只画到左侧 1/5，末点未亮）、`P11-折线逐段绘制-末点亮起.png`（完整 + 末点大圆）。
+2. **饼图从 12 点顺时针依次展开** ✅
+   - 起始角 `-90°`；用"已扫过总角度 = reveal×360"与每个扇区累积角度比较，逐块裁剪 `sweep`；500ms `FastOutSlowInEasing`。
+   - 证据：`P11-饼图顺时针展开序列.png`（录屏 8fps 抽 7 帧：空 → 顶部一小段 → 1/3 → 2/3 → 完整）。
+3. **纵轴左移** ✅ 量标列 34dp→**42dp**，与绘图区间距 6dp→**10dp**，轴标签行起始 padding 40dp→**52dp**。
+
+### B. 手感
+
+4. **首页展开待办后自动滚动** ✅
+   - 卡片加 `BringIntoViewRequester`；展开时 `delay(90)` 先滚一次、`delay(280)` 再补一次（等高度动画铺开）。
+   - 证据：`P11-展开前.png` / `P11-展开后自动滚动.png` —— 展开后背方歌整卡（备注 + 8 条子待办）完整进入可视区，底部刚好在警示栏上方。收起不强制滚。
+
+### C. 功能
+
+5. **智慧后勤改回 WebView 直开**（lead 修正）
+   - 入口改为 `SchoolWebActivity` 打开 `https://zhhq.bucm.edu.cn/bucmzhxy2/zhxyapp2/#/`（用户实测可用的真实 H5）；
+   - `SchoolWebActivity` 新增 `fallbackWework` 参数：顶部栏出现「企业微信」按钮作为兜底（有些子公司页面要微信授权）；
+   - `WeworkLauncher` 保留（唤起企业微信 + 未安装则复制链接），**不逆向企业微信、不拼小程序 scheme**。
+   - 一卡通继续 `ykt.bucm.edu.cn` + servicehall 注入的 WebView，不走微信。
+
+6. **凭证页「网页登录」入口** ✅
+   - 「我的 → 凭证状态」页新增区块「网页登录（取图书馆凭证等）」，三个入口：
+     **图书馆座位凭证（ic-cookie）/ 一卡通（servicehall）/ 教务系统（JSESSIONID）**；
+   - 复用现有 `LoginWebViewActivity`（本来就有 4 个 Target + 每秒轮询抓 cookie + 座位 cookie 后台校验 + "已获取 xxx（N 字节）"反馈）；
+   - 座位入口 URL 由站点首页改为 lead 指定的 **`https://kjyy.bucm.edu.cn/mobile.html`**；
+   - 截图 `P11-凭证页网页登录入口.png`。
+
+### 交付
+
+- **APK**：`app-prod/app/build/outputs/apk/debug/UBcm-P11-debug-v1.0.0.apk`（已按批次号命名，防 QQ 覆盖）
+- `assembleDebug` 通过；**234 单测全绿**；DEVLOG、中文提交
+
+### 未验证 / 边界
+
+- 图表动画是在模拟器 + **示例数据**（一卡通凭证过期）上验证的，真机未复测。
+- 智慧后勤 WebView 在模拟器打不开（校园网/凭证限制），**只验证了入口跳转与兜底按钮存在**，页面内容未验证。
+- 网页登录：只验证了三入口 UI 与 URL，**没有真实走一遍登录抓 cookie**（模拟器无账号）。
+- 折线动画 700ms / 饼图 500ms 是按 lead 给的范围，真机观感未调。
+
+**产出**
+
+- 改：`CampusScreen.kt`（逐段绘制/顺时针展开/纵轴位置）、`HomeScreen.kt`（BringIntoView 自动滚动）、
+  `LoginGateScreen.kt`（网页登录区块）、`LoginWebViewActivity.kt`（座位入口 mobile.html）、
+  `SchoolWebActivity.kt`（fallbackWework 兜底按钮）、`AppShell.kt`（智慧后勤改 WebView + 传 onWebLogin）
+- 截图：`~/Desktop/data/截屏/ubcm-prod-P11-*.png`

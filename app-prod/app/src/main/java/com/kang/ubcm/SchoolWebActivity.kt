@@ -34,6 +34,7 @@ class SchoolWebActivity : ComponentActivity() {
         private const val EXTRA_TITLE = "title"
         private const val EXTRA_HASH = "hash"
         private const val EXTRA_JS = "js"
+        private const val EXTRA_WEWORK = "wework_fallback"
 
         /**
          * @param hashAfterLoad SPA 的 hash 路由（如 `#/seatReserve?roomId=43`）。
@@ -47,6 +48,8 @@ class SchoolWebActivity : ComponentActivity() {
             hashAfterLoad: String? = null,
             /** 切完路由后再执行的 JS（用来预填表单，比如日期和时段） */
             jsAfterLoad: String? = null,
+            /** 智慧后勤这类 H5 打不开/要微信授权时，给一个"用企业微信打开"的兜底按钮 */
+            fallbackWework: Boolean = false,
         ) {
             ctx.startActivity(
                 Intent(ctx, SchoolWebActivity::class.java)
@@ -54,6 +57,7 @@ class SchoolWebActivity : ComponentActivity() {
                     .putExtra(EXTRA_TITLE, title)
                     .putExtra(EXTRA_HASH, hashAfterLoad)
                     .putExtra(EXTRA_JS, jsAfterLoad)
+                    .putExtra(EXTRA_WEWORK, fallbackWework)
             )
         }
     }
@@ -135,6 +139,19 @@ class SchoolWebActivity : ComponentActivity() {
         }
         titles.addView(statusText)
         bar.addView(titles, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+
+        // 兜底入口：智慧后勤这类 H5 若打不开/要微信授权，用户可一键转企业微信（P11 C5 修正）
+        if (intent.getBooleanExtra(EXTRA_WEWORK, false)) {
+            bar.addView(TextView(this).apply {
+                text = "企业微信"
+                setTextColor(AColor.parseColor("#3A7BC8"))
+                textSize = 12f
+                setPadding(dp(10), dp(4), dp(2), dp(4))
+                setOnClickListener {
+                    WeworkLauncher.open(this@SchoolWebActivity)
+                }
+            })
+        }
         root.addView(bar, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
 
         progressBar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {

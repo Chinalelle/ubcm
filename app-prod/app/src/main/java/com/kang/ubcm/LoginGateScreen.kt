@@ -79,6 +79,8 @@ fun LoginGateScreen(
     onRecheck: () -> Unit,
     onSaveManual: (jwt: String, jw: String, castgc: String, seat: String, ecard: String, openid: String) -> Unit,
     onWebLoginSeat: () -> Unit,
+    /** 通用网页登录入口：座位 / 一卡通 / 教务（P11 C6） */
+    onWebLogin: (LoginWebViewActivity.Target) -> Unit = { onWebLoginSeat() },
     /** 从「我的」进来时可返回；直接当冷启动登录页时不传 */
     onBack: (() -> Unit)? = null,
 ) {
@@ -282,13 +284,38 @@ fun LoginGateScreen(
                 }
                 if (showManual) ManualPanel(onSaveManual)
 
-                Spacer(Modifier.height(10.dp))
+                Spacer(Modifier.height(12.dp))
+                // 网页登录：让用户自己在学校页面里登录/过滑块，成功后会收到反馈（P11 C6）
                 Text(
-                    "座位凭证拿不到？用网页登录一次（只有这一个目标还需要网页）",
+                    "网页登录（取图书馆凭证等）",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = UbcmColors.InkSoft,
+                )
+                Spacer(Modifier.height(6.dp))
+                listOf(
+                    LoginWebViewActivity.Target.SEAT to "图书馆座位凭证（ic-cookie）",
+                    LoginWebViewActivity.Target.ECARD to "一卡通（servicehall）",
+                    LoginWebViewActivity.Target.JW to "教务系统（JSESSIONID）",
+                ).forEach { (target, label) ->
+                    Row(
+                        Modifier.fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(UbcmColors.Paper)
+                            .clickable { onWebLogin(target) }
+                            .padding(horizontal = 10.dp, vertical = 9.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(label, fontSize = 12.sp, color = UbcmColors.Ink, modifier = Modifier.weight(1f))
+                        Text("›", fontSize = 14.sp, color = UbcmColors.Ash)
+                    }
+                    Spacer(Modifier.height(6.dp))
+                }
+                Text(
+                    "在网页里登录或过完滑块即可，App 只读取登录后的凭证，不保存密码。",
                     fontSize = 10.sp,
                     color = UbcmColors.Ash,
-                    modifier = Modifier.clip(RoundedCornerShape(6.dp)).clickable { onWebLoginSeat() }
-                        .padding(vertical = 4.dp),
+                    lineHeight = 15.sp,
                 )
 
                 Spacer(Modifier.height(14.dp))

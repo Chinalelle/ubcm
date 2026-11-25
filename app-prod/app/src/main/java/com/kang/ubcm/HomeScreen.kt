@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -924,10 +925,21 @@ private fun TodoCard(todo: TodoItem, nowMillis: Long) {
     }
     // 点卡片展开详情（备注 + 子待办），再点收起（P10 B3）
     var expanded by remember(todo.id) { mutableStateOf(false) }
+    // 展开后自动滚动，让展开内容完整进入可视区（P11 B4）；收起不强制滚
+    val bringRequester = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
+    LaunchedEffect(expanded) {
+        if (expanded) {
+            kotlinx.coroutines.delay(90)
+            runCatching { bringRequester.bringIntoView() }
+            kotlinx.coroutines.delay(280)
+            runCatching { bringRequester.bringIntoView() }
+        }
+    }
 
     Column(
         Modifier
             .fillMaxWidth()
+            .bringIntoViewRequester(bringRequester)
             .clip(RoundedCornerShape(12.dp))
             .background(cardBg)
             .border(1.dp, borderColor, RoundedCornerShape(12.dp))
